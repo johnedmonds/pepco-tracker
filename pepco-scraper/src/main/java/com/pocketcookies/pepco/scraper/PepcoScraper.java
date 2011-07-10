@@ -27,7 +27,6 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -116,17 +115,18 @@ public class PepcoScraper {
 				if (this.zoom > maxZoom
 						|| scrapedSpatialIndices.contains(this.spatialIndex))
 					return;
+				scrapedSpatialIndices.add(this.spatialIndex);
+				logger.debug("Scraping " + this.spatialIndex);
 				parse(makeRequest());
 			} catch (Exception e) {
-				logger.log(Level.ERROR,
-						"Error while attempting to download outage list.", e);
+				logger.error("Error while attempting to download outage list.",
+						e);
 			}
 		}
 
 		private Document makeRequest() throws ClientProtocolException,
 				IOException, IllegalStateException, SAXException,
 				ParserConfigurationException, FactoryConfigurationError {
-			System.out.println("Scraping " + spatialIndex);
 			final HttpClient client = new DefaultHttpClient();
 			final HttpGet get = new HttpGet(dataHTMLPrefix + outagesFolder
 					+ "/" + spatialIndex + ".xml");
@@ -235,7 +235,6 @@ public class PepcoScraper {
 						.getActiveOutage(outage.getLat(), outage.getLon(),
 								outage.getClass());
 				if (existingOutage == null) {
-					System.out.println("Saving");
 					sessionFactory.getCurrentSession().save(outage);
 					sessionFactory.getCurrentSession().save(revision);
 				} else {
@@ -321,6 +320,7 @@ public class PepcoScraper {
 		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory))
 				.scrape();
 		sessionFactory.getCurrentSession().getTransaction().commit();
+		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();
 	}
 }

@@ -17,6 +17,20 @@ public class OutageRevision extends AbstractOutageRevision {
 		setStatus(status);
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof OutageRevision))
+			return false;
+		final OutageRevision revision = (OutageRevision) o;
+		return super.equals(revision) && revision.cause.equals(this.cause)
+				&& revision.status.equals(this.status);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + cause.hashCode() + status.hashCode();
+	}
+
 	public OutageRevision() {
 		super();
 	}

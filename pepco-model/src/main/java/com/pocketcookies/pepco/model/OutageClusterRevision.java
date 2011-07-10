@@ -19,6 +19,19 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 		setNumOutages(numOutages);
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof AbstractOutageRevision))
+			return false;
+		final OutageClusterRevision revision = (OutageClusterRevision) o;
+		return super.equals(o) && revision.numOutages == this.numOutages;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + numOutages;
+	}
+
 	public int getNumOutages() {
 		return numOutages;
 	}

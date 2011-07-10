@@ -32,6 +32,21 @@ public abstract class AbstractOutageRevision {
 		setOutage(outage);
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof AbstractOutageRevision))
+			return false;
+		final AbstractOutageRevision revision = (AbstractOutageRevision) o;
+		return this.numCustomersAffected == revision.numCustomersAffected
+				&& this.estimatedRestoration
+						.equals(revision.estimatedRestoration);
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) (numCustomersAffected + estimatedRestoration.getTime());
+	}
+
 	public int getId() {
 		return id;
 	}

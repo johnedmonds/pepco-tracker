@@ -11,8 +11,10 @@ public class OutageRevision extends AbstractOutageRevision {
 	}
 
 	public OutageRevision(int numCustomersAffected, Date estimatedRestoration,
-			final Outage outage, String cause, CrewStatus status) {
-		super(numCustomersAffected, estimatedRestoration, outage);
+			final Date observationDate, final Outage outage, String cause,
+			CrewStatus status) {
+		super(numCustomersAffected, estimatedRestoration, observationDate,
+				outage);
 		setCause(cause);
 		setStatus(status);
 	}

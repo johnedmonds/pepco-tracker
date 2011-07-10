@@ -13,15 +13,16 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 	}
 
 	public OutageClusterRevision(final int numCustomersAffected,
-			final Date estimatedRestoration, final OutageCluster cluster,
-			int numOutages) {
-		super(numCustomersAffected, estimatedRestoration, cluster);
+			final Date estimatedRestoration, final Date observationDate,
+			final Outage outage, int numOutages) {
+		super(numCustomersAffected, estimatedRestoration, observationDate,
+				outage);
 		setNumOutages(numOutages);
 	}
 
 	@Override
 	public boolean equals(final Object o) {
-		if (!(o instanceof AbstractOutageRevision))
+		if (!(o instanceof OutageClusterRevision))
 			return false;
 		final OutageClusterRevision revision = (OutageClusterRevision) o;
 		return super.equals(o) && revision.numOutages == this.numOutages;

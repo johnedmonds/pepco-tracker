@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 10, 2011 1:05:16 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 10, 2011 6:09:15 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="com.pocketcookies.pepco.model.AbstractOutageRevision"
 		table="ABSTRACTOUTAGEREVISION" abstract="true">
@@ -10,7 +10,7 @@
 			<generator class="increment" />
 		</id>
 		<discriminator type="string">
-			<column name="REVISIONTYPE" />
+			<column name="OUTAGETYPE" />
 		</discriminator>
 		<property name="numCustomersAffected" type="int">
 			<column name="NUMCUSTOMERSAFFECTED" />
@@ -18,9 +18,12 @@
 		<property name="estimatedRestoration" type="java.util.Date">
 			<column name="ESTIMATEDRESTORATION" />
 		</property>
-		<many-to-one name="outage"
-			class="com.pocketcookies.pepco.model.AbstractOutage" fetch="join">
+		<many-to-one name="outage" class="com.pocketcookies.pepco.model.Outage"
+			fetch="join">
 			<column name="OUTAGE" />
 		</many-to-one>
+		<property name="observationDate" type="java.util.Date">
+			<column name="OBSERVATIONDATE" />
+		</property>
 	</class>
 </hibernate-mapping>

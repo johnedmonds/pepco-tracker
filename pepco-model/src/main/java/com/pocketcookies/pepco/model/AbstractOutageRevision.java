@@ -18,25 +18,37 @@ public abstract class AbstractOutageRevision {
 	 */
 	private int numCustomersAffected;
 	private Date estimatedRestoration;
-	private AbstractOutage outage;
+	private Outage outage;
+	private Date observationDate;
 
 	protected AbstractOutageRevision() {
 		super();
 	}
 
 	public AbstractOutageRevision(int numCustomersAffected,
-			Date estimatedRestoration, AbstractOutage outage) {
+			Date estimatedRestoration, final Date observationDate, Outage outage) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
 		setOutage(outage);
+		setObservationDate(observationDate);
 	}
 
 	@Override
+	/**
+	 * Checks whether this object is the same as o.
+	 * 
+	 * Note that we do not check observationDate.  Thus, use care when storing collections of AbstractOutageRevision in sets. 
+	 */
 	public boolean equals(final Object o) {
 		if (!(o instanceof AbstractOutageRevision))
 			return false;
 		final AbstractOutageRevision revision = (AbstractOutageRevision) o;
+		return equalsIgnoreObservationDate(revision)
+				&& this.observationDate.equals(revision.observationDate);
+	}
+
+	public boolean equalsIgnoreObservationDate(AbstractOutageRevision revision) {
 		return this.numCustomersAffected == revision.numCustomersAffected
 				&& this.estimatedRestoration
 						.equals(revision.estimatedRestoration);
@@ -44,7 +56,8 @@ public abstract class AbstractOutageRevision {
 
 	@Override
 	public int hashCode() {
-		return (int) (numCustomersAffected + estimatedRestoration.getTime());
+		return (int) (numCustomersAffected + estimatedRestoration.getTime() + observationDate
+				.getTime());
 	}
 
 	public int getId() {
@@ -59,7 +72,7 @@ public abstract class AbstractOutageRevision {
 		return estimatedRestoration;
 	}
 
-	public AbstractOutage getOutage() {
+	public Outage getOutage() {
 		return outage;
 	}
 
@@ -76,8 +89,16 @@ public abstract class AbstractOutageRevision {
 		this.estimatedRestoration = estimatedRestoration;
 	}
 
-	public void setOutage(AbstractOutage outage) {
+	public void setOutage(Outage outage) {
 		this.outage = outage;
+	}
+
+	public Date getObservationDate() {
+		return observationDate;
+	}
+
+	private void setObservationDate(Date observationDate) {
+		this.observationDate = observationDate;
 	}
 
 }

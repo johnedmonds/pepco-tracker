@@ -20,33 +20,28 @@ public class TestOutage extends TestCase {
 				.buildSessionFactory();
 	}
 
-	public void testOutage1() {
+	public void testOutageRevisionDiscriminator() {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
-
-		Date now = new Date();
+		final Date now = new Date();
 		Outage outage = new Outage(1, 1, now, now);
-		OutageCluster cluster = new OutageCluster(2, 2, now, now);
+		OutageRevision r1 = new OutageRevision(1, now, now, outage, "test",
+				CrewStatus.PENDING);
+		OutageClusterRevision r2 = new OutageClusterRevision(1, now, now,
+				outage, 1);
 		session.save(outage);
-		session.save(cluster);
+		session.save(r1);
+		session.save(r2);
 		session.getTransaction().commit();
 		session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
-
-		final List<AbstractOutage> outages = session.createQuery(
-				"from AbstractOutage order by id").list();
-		assertTrue(outages.get(1) instanceof OutageCluster);
-		assertTrue(outages.get(0) instanceof AbstractOutage);
-	}
-
-	public void testOutage2() {
-		final Session session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		final Date now = new Date();
-		session.save(new OutageCluster(1, 1, now, now));
-		session.save(new Outage(1, 1, now, now));
-		assertEquals(1, session.createQuery("from OutageCluster").list().size());
-		assertEquals(1, session.createQuery("from Outage").list().size());
+		final List<AbstractOutageRevision> revisions = session.createQuery(
+				"from AbstractOutageRevision order by id").list();
+		assertTrue(revisions.get(0) instanceof OutageRevision);
+		assertTrue(revisions.get(1) instanceof OutageClusterRevision);
+		outage = (Outage) session.load(Outage.class, outage.getId());
+		assertTrue(outage.getRevisions().contains(revisions.get(0)));
+		assertTrue(outage.getRevisions().contains(revisions.get(1)));
 	}
 
 	public void testRevisions() {
@@ -55,20 +50,18 @@ public class TestOutage extends TestCase {
 		Date now = new Date();
 		Outage o1 = new Outage(1, 1, now, now);
 		Outage o2 = new Outage(1, 1, now, now);
-		OutageCluster c1 = new OutageCluster(1, 1, now, now);
-		OutageCluster c2 = new OutageCluster(1, 1, now, now);
 
 		session.save(o1);
 		session.save(o2);
-		session.save(c1);
-		session.save(c2);
 
-		OutageRevision or1 = new OutageRevision(1, now, o1, "test",
+		OutageRevision or1 = new OutageRevision(1, now, now, o1, "test",
 				CrewStatus.PENDING);
-		OutageRevision or2 = new OutageRevision(2, now, o2, "test",
+		OutageRevision or2 = new OutageRevision(2, now, now, o2, "test",
 				CrewStatus.PENDING);
-		OutageClusterRevision cr1 = new OutageClusterRevision(1, now, c1, 1);
-		OutageClusterRevision cr2 = new OutageClusterRevision(2, now, c2, 2);
+		OutageClusterRevision cr1 = new OutageClusterRevision(1, now, now, o1,
+				1);
+		OutageClusterRevision cr2 = new OutageClusterRevision(2, now, now, o2,
+				2);
 
 		session.save(or1);
 		session.save(or2);
@@ -81,23 +74,18 @@ public class TestOutage extends TestCase {
 
 		o1 = (Outage) session.load(Outage.class, o1.getId());
 		o2 = (Outage) session.load(Outage.class, o2.getId());
-		c1 = (OutageCluster) session.load(OutageCluster.class, c1.getId());
-		c2 = (OutageCluster) session.load(OutageCluster.class, c2.getId());
 		or1 = (OutageRevision) session.load(OutageRevision.class, or1.getId());
 		or2 = (OutageRevision) session.load(OutageRevision.class, or2.getId());
 		cr1 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
 				cr1.getId());
 		cr2 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
 				cr2.getId());
-		assertEquals(1, o1.getRevisions().size());
-		assertEquals(1, o2.getRevisions().size());
-		assertEquals(1, c1.getRevisions().size());
-		assertEquals(1, c2.getRevisions().size());
-		assertEquals(or1, o1.getRevisions().iterator().next());
-		assertEquals(or2, o2.getRevisions().iterator().next());
-		assertEquals(cr1, c1.getRevisions().iterator().next());
-		assertEquals(cr2, c2.getRevisions().iterator().next());
-
+		assertEquals(2, o1.getRevisions().size());
+		assertEquals(2, o2.getRevisions().size());
+		assertTrue(o1.getRevisions().contains(or1));
+		assertTrue(o1.getRevisions().contains(cr1));
+		assertTrue(o2.getRevisions().contains(or2));
+		assertTrue(o2.getRevisions().contains(cr2));
 	}
 
 	public void testActiveOutage() {
@@ -105,38 +93,20 @@ public class TestOutage extends TestCase {
 		final Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		assertNull(dao.getActiveOutage(1, 1, null));
-		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
-		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
-		assertNull(dao.getActiveOutage(1, 1, OutageCluster.class));
+		assertNull(dao.getActiveOutage(1, 1));
 
 		final Date now = new Date();
 
-		session.save(new OutageCluster(1, 1, now, now));
 		session.save(new Outage(1, 1, now, now));
 
-		assertNull(dao.getActiveOutage(1, 1, null));
-		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
-		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
-		assertNull(dao.getActiveOutage(1, 1, OutageCluster.class));
+		assertNull(dao.getActiveOutage(1, 1));
 
-		final OutageCluster cluster = new OutageCluster(1, 1, now, null);
-		session.save(cluster);
-		final AbstractOutage outage = new Outage(1, 1, now, null);
+		final Outage outage = new Outage(1, 1, now, null);
 		session.save(outage);
 
-		assertEquals(
-				cluster,
-				dao.getActiveOutage(cluster.getLat(), cluster.getLon(),
-						cluster.getClass()));
+		assertEquals(outage,
+				dao.getActiveOutage(outage.getLat(), outage.getLon()));
 
-		assertEquals(
-				outage,
-				dao.getActiveOutage(outage.getLat(), outage.getLon(),
-						outage.getClass()));
-
-		assertNotNull(dao.getActiveOutage(cluster.getLat(), cluster.getLon(),
-				AbstractOutage.class));
 	}
 
 	public void testOutageEquals() {
@@ -159,37 +129,66 @@ public class TestOutage extends TestCase {
 		final Date now = new Date();
 		final Date then = new Date(now.getTime() + 1);
 		final Date now2 = new Date(now.getTime());
-		final OutageRevision or1 = new OutageRevision(1, now, null, "test",
-				CrewStatus.ASSIGNED);
-		final OutageRevision or2 = new OutageRevision(1, now2, null, "test",
-				CrewStatus.ASSIGNED);
+		final OutageRevision or1 = new OutageRevision(1, now, now, null,
+				"test", CrewStatus.ASSIGNED);
+		final OutageRevision or2 = new OutageRevision(1, now2, now2, null,
+				"test", CrewStatus.ASSIGNED);
 		final OutageClusterRevision cr1 = new OutageClusterRevision(1, now,
-				null, 1);
+				now, null, 1);
 		final OutageClusterRevision cr2 = new OutageClusterRevision(1, now2,
-				null, 1);
+				now2, null, 1);
 		assertEquals(or1, or2);
 		assertEquals(cr1, cr2);
 		assertEquals(or1.hashCode(), or2.hashCode());
 		assertEquals(cr1.hashCode(), cr2.hashCode());
 
-		assertFalse(new OutageRevision(1, now, null, "test",
-				CrewStatus.ASSIGNED).equals(new OutageRevision(2, now, null,
-				"test", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, null, "test",
-				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, null,
-				"test", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, null, "test",
-				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, null,
-				"test2", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, null, "test",
-				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, null,
-				"test", CrewStatus.PENDING)));
+		assertFalse(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.PENDING).equals(new OutageRevision(1, now, then,
+				null, "test", CrewStatus.PENDING)));
+		assertTrue(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.PENDING)
+				.equalsIgnoreObservationDate(new OutageRevision(1, now, then,
+						null, "test", CrewStatus.PENDING)));
 
-		assertFalse(new OutageClusterRevision(1, now, null, 1)
-				.equals(new OutageClusterRevision(2, now, null, 1)));
-		assertFalse(new OutageClusterRevision(1, now, null, 1)
-				.equals(new OutageClusterRevision(1, then, null, 1)));
-		assertFalse(new OutageClusterRevision(1, now, null, 1)
-				.equals(new OutageClusterRevision(1, now, null, 2)));
+		assertFalse(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(2, now, now,
+				null, "test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, then,
+				null, "test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
+				null, "test2", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
+				null, "test", CrewStatus.PENDING)));
+
+		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
+				.equals(new OutageClusterRevision(2, now, now, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
+				.equals(new OutageClusterRevision(1, then, then, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
+				.equals(new OutageClusterRevision(1, now, now, null, 2)));
+	}
+
+	public void testRevisionOrdering() {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		final Date now = new Date();
+		final Date later = new Date(now.getTime() + 1);
+		Outage outage = new Outage(1, 1, now, null);
+		final OutageRevision r2 = new OutageRevision(1, now, later, outage,
+				"test", CrewStatus.PENDING);
+		final OutageRevision r1 = new OutageRevision(1, now, now, outage,
+				"test", CrewStatus.PENDING);
+		session.save(outage);
+		session.save(r1);
+		session.save(r2);
+		session.getTransaction().commit();
+		session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		outage = (Outage) session.load(Outage.class, outage.getId());
+		assertTrue(outage.getRevisions().get(0).getObservationDate().getTime() > outage
+				.getRevisions().get(1).getObservationDate().getTime());
 	}
 }

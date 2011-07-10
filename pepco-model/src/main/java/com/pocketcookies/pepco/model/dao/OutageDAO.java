@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 
-import com.pocketcookies.pepco.model.AbstractOutage;
+import com.pocketcookies.pepco.model.Outage;
 
 public class OutageDAO {
 	private final SessionFactory sessionFactory;
@@ -15,18 +15,13 @@ public class OutageDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public AbstractOutage getActiveOutage(final double lat, final double lon,
-			final Class<? extends AbstractOutage> outageType) {
+	public Outage getActiveOutage(final double lat, final double lon) {
 
-		final String outageClass = outageType == null ? AbstractOutage.class
-				.getName() : outageType.getName();
-		final List<AbstractOutage> outages;
+		final List<Outage> outages;
 		outages = this.sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from "
-								+ outageClass
-								+ " where lat=:lat and lon=:lon and observedEnd=null")
+						"from Outage where lat=:lat and lon=:lon and observedEnd=null")
 				.setDouble("lat", lat).setDouble("lon", lon).list();
 		if (outages.isEmpty())
 			return null;

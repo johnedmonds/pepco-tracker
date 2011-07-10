@@ -8,6 +8,7 @@
   <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
   <property name="current_session_context_class">thread</property>
   <property name="hibernate.hbm2ddl.auto">create-drop</property>
+  <property name="hibernate.show_sql">true</property>
   <mapping class="com.pocketcookies.pepco.model.AbstractOutage" resource="mappings/AbstractOutage.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.Outage" resource="mappings/Outage.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.OutageCluster" resource="mappings/OutageCluster.hbm.xml"/>

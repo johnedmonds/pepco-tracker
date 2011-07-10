@@ -11,6 +11,11 @@ import java.util.Date;
  */
 public abstract class AbstractOutageRevision {
 	private int id;
+	/**
+	 * The number of customers affected. If fewer than 5 customers are affected,
+	 * Pepco will say "Less than 5". To represent this uncertainty, we will use
+	 * 0 to represent that there are fewer than 5 customers for that outage.
+	 */
 	private int numCustomersAffected;
 	private Date estimatedRestoration;
 	private AbstractOutage outage;

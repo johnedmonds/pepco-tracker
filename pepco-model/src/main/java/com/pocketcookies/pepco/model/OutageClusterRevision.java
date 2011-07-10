@@ -6,6 +6,8 @@ public class OutageClusterRevision {
 	// have a way of tracking exactly which outages correspond with this
 	// cluster so for now we just keep track of the count.
 	private int numOutages;
+	private int numCustomersAffected;
+	// The parent OutageCluster.
 	private OutageCluster cluster;
 
 	public OutageClusterRevision() {
@@ -13,11 +15,12 @@ public class OutageClusterRevision {
 	}
 
 	public OutageClusterRevision(int id, int numOutages,
-			final OutageCluster cluster) {
+			final int numCustomersAffected, final OutageCluster cluster) {
 		this();
 		setId(id);
 		setNumOutages(numOutages);
 		setCluster(cluster);
+		setNumCustomersAffected(numCustomersAffected);
 	}
 
 	public int getNumOutages() {
@@ -42,5 +45,13 @@ public class OutageClusterRevision {
 
 	private void setId(int id) {
 		this.id = id;
+	}
+
+	public int getNumCustomersAffected() {
+		return numCustomersAffected;
+	}
+
+	private void setNumCustomersAffected(int numCustomersAffected) {
+		this.numCustomersAffected = numCustomersAffected;
 	}
 }

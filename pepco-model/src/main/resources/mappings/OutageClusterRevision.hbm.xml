@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 9, 2011 8:21:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 10, 2011 12:36:58 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="com.pocketcookies.pepco.model.OutageClusterRevision" table="OUTAGECLUSTERREVISION">
         <id name="id" type="int">
@@ -10,6 +10,9 @@
         </id>
         <property name="numOutages" type="int">
             <column name="NUMOUTAGES" />
+        </property>
+        <property name="numCustomersAffected" type="int">
+            <column name="NUMCUSTOMERSAFFECTED" />
         </property>
         <many-to-one name="cluster" class="com.pocketcookies.pepco.model.OutageCluster" fetch="join">
             <column name="CLUSTER" />

@@ -4,6 +4,8 @@ public class OutageRevision {
 	private int id;
 	private String cause;
 	private CrewStatus status;
+	private int numCustomersAffected;
+	// Parent outage.
 	private Outage outage;
 
 	public static enum CrewStatus {
@@ -11,11 +13,12 @@ public class OutageRevision {
 	}
 
 	public OutageRevision(int id, String cause, CrewStatus status,
-			final Outage outage) {
+			int numCustomersAffected, final Outage outage) {
 		this();
 		setId(id);
 		setCause(cause);
 		setStatus(status);
+		setNumCustomersAffected(numCustomersAffected);
 		setOutage(outage);
 	}
 
@@ -53,6 +56,14 @@ public class OutageRevision {
 
 	private void setId(int id) {
 		this.id = id;
+	}
+
+	public int getNumCustomersAffected() {
+		return numCustomersAffected;
+	}
+
+	private void setNumCustomersAffected(int numCustomersAffected) {
+		this.numCustomersAffected = numCustomersAffected;
 	};
 
 }

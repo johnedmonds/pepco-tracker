@@ -18,20 +18,16 @@ public class OutageDAO {
 	public AbstractOutage getActiveOutage(final double lat, final double lon,
 			final Class<? extends AbstractOutage> outageType) {
 
+		final String outageClass = outageType == null ? AbstractOutage.class
+				.getName() : outageType.getName();
 		final List<AbstractOutage> outages;
-		if (outageType == null)
-			outages = this.sessionFactory
-					.getCurrentSession()
-					.createQuery(
-							"from AbstractOutage where lat=:lat and lon=:lon and observedEnd=null")
-					.setDouble("lat", lat).setDouble("lon", lon).list();
-		else
-			outages = this.sessionFactory
-					.getCurrentSession()
-					.createQuery(
-							"from AbstractOutage where lat=:lat and lon=:lon and observedEnd=null and outageType=:outageType")
-					.setDouble("lat", lat).setDouble("lon", lon)
-					.setString("outageType", outageType.getName()).list();
+		outages = this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from "
+								+ outageClass
+								+ " where lat=:lat and lon=:lon and observedEnd=null")
+				.setDouble("lat", lat).setDouble("lon", lon).list();
 		if (outages.isEmpty())
 			return null;
 		return outages.get(0);

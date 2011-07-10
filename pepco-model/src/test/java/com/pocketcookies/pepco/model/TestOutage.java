@@ -64,11 +64,11 @@ public class TestOutage extends TestCase {
 		session.save(c2);
 
 		OutageRevision or1 = new OutageRevision(1, "test", CrewStatus.PENDING,
-				o1);
+				1, o1);
 		OutageRevision or2 = new OutageRevision(2, "test", CrewStatus.PENDING,
-				o2);
-		OutageClusterRevision cr1 = new OutageClusterRevision(1, 1, c1);
-		OutageClusterRevision cr2 = new OutageClusterRevision(2, 2, c2);
+				1, o2);
+		OutageClusterRevision cr1 = new OutageClusterRevision(1, 1, 1, c1);
+		OutageClusterRevision cr2 = new OutageClusterRevision(2, 2, 2, c2);
 
 		session.save(or1);
 		session.save(or2);
@@ -135,7 +135,7 @@ public class TestOutage extends TestCase {
 				dao.getActiveOutage(outage.getLat(), outage.getLon(),
 						outage.getClass()));
 
-		assertNull(dao.getActiveOutage(cluster.getLat(), cluster.getLon(),
+		assertNotNull(dao.getActiveOutage(cluster.getLat(), cluster.getLon(),
 				AbstractOutage.class));
 	}
 

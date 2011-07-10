@@ -12,8 +12,6 @@ public abstract class AbstractOutage {
 	private int id;
 	private double lat, lon;
 	private Date earliestReport;
-	// Used as the descriminator for Hibernate.
-	private String outageType;
 
 	/**
 	 * The time we scraped the site and this outage disappeared. This will
@@ -35,7 +33,6 @@ public abstract class AbstractOutage {
 		if (earliestReport == null)
 			throw new IllegalArgumentException("earliestReport cannot be null.");
 		this.observedEnd = observedEnd;
-		this.outageType = this.getClass().getName();
 	}
 
 	@Override
@@ -94,15 +91,6 @@ public abstract class AbstractOutage {
 	@SuppressWarnings("unused")
 	private void setObservedEnd(Date observedEnd) {
 		this.observedEnd = observedEnd;
-	}
-
-	public String getOutageType() {
-		return outageType;
-	}
-
-	@SuppressWarnings("unused")
-	private void setOutageType(String outageType) {
-		this.outageType = outageType;
 	}
 
 }

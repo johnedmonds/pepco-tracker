@@ -11,9 +11,9 @@ public class OutageCluster extends AbstractOutage {
 		super();
 	}
 
-	public OutageCluster(int id, double lat, double lon, Date earliestReport,
+	public OutageCluster(double lat, double lon, Date earliestReport,
 			Date observedEnd) {
-		super(id, lat, lon, earliestReport, observedEnd);
+		super(lat, lon, earliestReport, observedEnd);
 	}
 
 	public Collection<OutageClusterRevision> getRevisions() {

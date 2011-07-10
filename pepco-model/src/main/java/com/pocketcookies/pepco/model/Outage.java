@@ -11,9 +11,8 @@ public class Outage extends AbstractOutage {
 		super();
 	}
 
-	public Outage(int id, double lat, double lon, Date earliestReport,
-			Date observedEnd) {
-		super(id, lat, lon, earliestReport, observedEnd);
+	public Outage(double lat, double lon, Date earliestReport, Date observedEnd) {
+		super(lat, lon, earliestReport, observedEnd);
 	}
 
 	public Collection<OutageRevision> getRevisions() {

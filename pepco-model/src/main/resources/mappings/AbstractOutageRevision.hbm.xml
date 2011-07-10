@@ -7,7 +7,7 @@
 		table="ABSTRACTOUTAGEREVISION" abstract="true">
 		<id name="id" type="int">
 			<column name="ID" />
-			<generator class="assigned" />
+			<generator class="increment" />
 		</id>
 		<discriminator type="string">
 			<column name="REVISIONTYPE" />

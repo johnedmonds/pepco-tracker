@@ -12,10 +12,10 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 		super();
 	}
 
-	public OutageClusterRevision(int id, final int numCustomersAffected,
+	public OutageClusterRevision(final int numCustomersAffected,
 			final Date estimatedRestoration, final OutageCluster cluster,
 			int numOutages) {
-		super(id, numCustomersAffected, estimatedRestoration, cluster);
+		super(numCustomersAffected, estimatedRestoration, cluster);
 		setNumOutages(numOutages);
 	}
 

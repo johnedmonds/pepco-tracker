@@ -23,16 +23,15 @@ public abstract class AbstractOutage {
 		super();
 	}
 
-	public AbstractOutage(int id, double lat, double lon, Date earliestReport,
+	public AbstractOutage(double lat, double lon, Date earliestReport,
 			Date observedEnd) {
 		super();
-		this.id = id;
-		this.lat = lat;
-		this.lon = lon;
-		this.earliestReport = earliestReport;
 		if (earliestReport == null)
 			throw new IllegalArgumentException("earliestReport cannot be null.");
-		this.observedEnd = observedEnd;
+		setLat(lat);
+		setLon(lon);
+		setEarliestReport(earliestReport);
+		setObservedEnd(observedEnd);
 	}
 
 	@Override
@@ -73,22 +72,18 @@ public abstract class AbstractOutage {
 		this.id = id;
 	}
 
-	@SuppressWarnings("unused")
 	private void setLat(double lat) {
 		this.lat = lat;
 	}
 
-	@SuppressWarnings("unused")
 	private void setLon(double lon) {
 		this.lon = lon;
 	}
 
-	@SuppressWarnings("unused")
 	private void setEarliestReport(Date earliestReport) {
 		this.earliestReport = earliestReport;
 	}
 
-	@SuppressWarnings("unused")
 	private void setObservedEnd(Date observedEnd) {
 		this.observedEnd = observedEnd;
 	}

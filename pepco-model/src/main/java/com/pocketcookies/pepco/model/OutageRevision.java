@@ -10,10 +10,9 @@ public class OutageRevision extends AbstractOutageRevision {
 		PENDING, ASSIGNED, EN_ROUTE, ON_SITE
 	}
 
-	public OutageRevision(int id, int numCustomersAffected,
-			Date estimatedRestoration, final Outage outage, String cause,
-			CrewStatus status) {
-		super(id, numCustomersAffected, estimatedRestoration, outage);
+	public OutageRevision(int numCustomersAffected, Date estimatedRestoration,
+			final Outage outage, String cause, CrewStatus status) {
+		super(numCustomersAffected, estimatedRestoration, outage);
 		setCause(cause);
 		setStatus(status);
 	}

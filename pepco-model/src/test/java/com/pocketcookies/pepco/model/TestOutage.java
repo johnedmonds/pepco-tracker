@@ -25,8 +25,8 @@ public class TestOutage extends TestCase {
 		session.beginTransaction();
 
 		Date now = new Date();
-		Outage outage = new Outage(1, 1, 1, now, now);
-		OutageCluster cluster = new OutageCluster(2, 2, 2, now, now);
+		Outage outage = new Outage(1, 1, now, now);
+		OutageCluster cluster = new OutageCluster(2, 2, now, now);
 		session.save(outage);
 		session.save(cluster);
 		session.getTransaction().commit();
@@ -43,8 +43,8 @@ public class TestOutage extends TestCase {
 		final Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
 		final Date now = new Date();
-		session.save(new OutageCluster(1, 1, 1, now, now));
-		session.save(new Outage(2, 1, 1, now, now));
+		session.save(new OutageCluster(1, 1, now, now));
+		session.save(new Outage(1, 1, now, now));
 		assertEquals(1, session.createQuery("from OutageCluster").list().size());
 		assertEquals(1, session.createQuery("from Outage").list().size());
 	}
@@ -53,22 +53,22 @@ public class TestOutage extends TestCase {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
 		Date now = new Date();
-		Outage o1 = new Outage(1, 1, 1, now, now);
-		Outage o2 = new Outage(2, 1, 1, now, now);
-		OutageCluster c1 = new OutageCluster(3, 1, 1, now, now);
-		OutageCluster c2 = new OutageCluster(4, 1, 1, now, now);
+		Outage o1 = new Outage(1, 1, now, now);
+		Outage o2 = new Outage(1, 1, now, now);
+		OutageCluster c1 = new OutageCluster(1, 1, now, now);
+		OutageCluster c2 = new OutageCluster(1, 1, now, now);
 
 		session.save(o1);
 		session.save(o2);
 		session.save(c1);
 		session.save(c2);
 
-		OutageRevision or1 = new OutageRevision(1, 1, now, o1, "test",
+		OutageRevision or1 = new OutageRevision(1, now, o1, "test",
 				CrewStatus.PENDING);
-		OutageRevision or2 = new OutageRevision(2, 2, now, o2, "test",
+		OutageRevision or2 = new OutageRevision(2, now, o2, "test",
 				CrewStatus.PENDING);
-		OutageClusterRevision cr1 = new OutageClusterRevision(3, 1, now, c1, 1);
-		OutageClusterRevision cr2 = new OutageClusterRevision(4, 2, now, c2, 2);
+		OutageClusterRevision cr1 = new OutageClusterRevision(1, now, c1, 1);
+		OutageClusterRevision cr2 = new OutageClusterRevision(2, now, c2, 2);
 
 		session.save(or1);
 		session.save(or2);
@@ -112,17 +112,17 @@ public class TestOutage extends TestCase {
 
 		final Date now = new Date();
 
-		session.save(new OutageCluster(1, 1, 1, now, now));
-		session.save(new Outage(2, 1, 1, now, now));
+		session.save(new OutageCluster(1, 1, now, now));
+		session.save(new Outage(1, 1, now, now));
 
 		assertNull(dao.getActiveOutage(1, 1, null));
 		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
 		assertNull(dao.getActiveOutage(1, 1, AbstractOutage.class));
 		assertNull(dao.getActiveOutage(1, 1, OutageCluster.class));
 
-		final OutageCluster cluster = new OutageCluster(3, 1, 1, now, null);
+		final OutageCluster cluster = new OutageCluster(1, 1, now, null);
 		session.save(cluster);
-		final AbstractOutage outage = new Outage(4, 1, 1, now, null);
+		final AbstractOutage outage = new Outage(1, 1, now, null);
 		session.save(outage);
 
 		assertEquals(
@@ -142,18 +142,16 @@ public class TestOutage extends TestCase {
 	public void testOutageEquals() {
 		final Date now = new Date();
 		final Date now2 = new Date(now.getTime());
-		assertEquals(new Outage(1, 1, 1, now, now), new Outage(1, 1, 1, now2,
-				now2));
+		assertEquals(new Outage(1, 1, now, now), new Outage(1, 1, now2, now2));
 		// Make sure we don't crash due to nulls
 		// Note that we don't need to test some columns being null because we
 		// set not-null=true on them in Hibernate. I know this doesn't truly
 		// prevent them from being null but I believe it is acceptable to crash
 		// hard if these expectations are broken.
-		assertEquals(new Outage(1, 1, 1, now, null), new Outage(1, 1, 1, now,
-				null));
-		assertFalse(new Outage(1, 1, 1, now, null).equals(new Outage(1, 1, 1,
-				now, now)));
-		assertFalse(new Outage(1, 1, 1, now, now).equals(new Outage(1, 1, 1,
-				now, null)));
+		assertEquals(new Outage(1, 1, now, null), new Outage(1, 1, now, null));
+		assertFalse(new Outage(1, 1, now, null).equals(new Outage(1, 1, now,
+				now)));
+		assertFalse(new Outage(1, 1, now, now).equals(new Outage(1, 1, now,
+				null)));
 	}
 }

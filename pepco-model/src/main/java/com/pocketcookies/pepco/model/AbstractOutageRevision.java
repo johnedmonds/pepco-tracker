@@ -24,10 +24,9 @@ public abstract class AbstractOutageRevision {
 		super();
 	}
 
-	public AbstractOutageRevision(int id, int numCustomersAffected,
+	public AbstractOutageRevision(int numCustomersAffected,
 			Date estimatedRestoration, AbstractOutage outage) {
 		this();
-		setId(id);
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
 		setOutage(outage);
@@ -49,6 +48,7 @@ public abstract class AbstractOutageRevision {
 		return outage;
 	}
 
+	@SuppressWarnings("unused")
 	private void setId(int id) {
 		this.id = id;
 	}

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 9, 2011 8:21:14 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.pocketcookies.pepco.model.OutageRevision" table="OUTAGEREVISION">
+        <id name="id" type="int">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="cause" type="java.lang.String">
+            <column name="CAUSE" />
+        </property>
+        <property name="status">
+            <column name="STATUS" />
+            <type name="org.hibernate.type.EnumType">
+                <param name="type">12</param>
+                <param name="enumClass">com.pocketcookies.pepco.model.OutageRevision$CrewStatus</param>
+            </type>
+        </property>
+        <many-to-one name="outage" class="com.pocketcookies.pepco.model.Outage" fetch="join">
+            <column name="OUTAGE" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

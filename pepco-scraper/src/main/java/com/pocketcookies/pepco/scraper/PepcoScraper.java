@@ -1,6 +1,7 @@
 package com.pocketcookies.pepco.scraper;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -38,10 +39,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.pocketcookies.pepco.model.AbstractOutage;
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
-import com.pocketcookies.pepco.model.OutageCluster;
 import com.pocketcookies.pepco.model.OutageClusterRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
@@ -127,6 +126,7 @@ public class PepcoScraper {
 		private Document makeRequest() throws ClientProtocolException,
 				IOException, IllegalStateException, SAXException,
 				ParserConfigurationException, FactoryConfigurationError {
+			System.out.println("Scraping " + this.spatialIndex);
 			final HttpClient client = new DefaultHttpClient();
 			final HttpGet get = new HttpGet(dataHTMLPrefix + outagesFolder
 					+ "/" + spatialIndex + ".xml");
@@ -196,9 +196,21 @@ public class PepcoScraper {
 						.extractAllNodesThatMatch(
 								new StringFilter("Restoration")).elementAt(0)
 						.getNextSibling().getNextSibling().getText().trim());
-				final AbstractOutage outage;
+
+				// Load the outage.
+				final Outage existingOutage = outageDao.getActiveOutage(lat,
+						lon);
+				final Outage outage;
+				if (existingOutage == null)
+					outage = new Outage(lat, lon, new Timestamp(
+							earliestReport.getTime()), null);
+				else
+					outage = existingOutage;
 				final AbstractOutageRevision revision;
-				// Check if this is an Outage or an OutageCluster.
+				// Check if this is an Outage or an OutageCluster. This will
+				// determine whether we create an OutageClusterRevision or an
+				// Outage revision. Each of these has different fields which we
+				// will need to parse.
 				if (el.getElementsByTagName("title").item(0).getFirstChild()
 						.getNodeValue().contains("outagesclusters")) {
 					final int numOutages;
@@ -209,9 +221,9 @@ public class PepcoScraper {
 													"Number of Outage Orders:"))
 									.elementAt(0).getNextSibling()
 									.getNextSibling().getText().trim());
-					outage = new OutageCluster(lat, lon, earliestReport, null);
 					revision = new OutageClusterRevision(numCustomersAffected,
-							estimatedRestoration, (OutageCluster) outage,
+							new Timestamp(estimatedRestoration.getTime()),
+							new Timestamp(new Date().getTime()), outage,
 							numOutages);
 				} else {
 					final String cause;
@@ -225,33 +237,24 @@ public class PepcoScraper {
 									new StringFilter("Crew Status"))
 							.elementAt(0).getNextSibling().getNextSibling()
 							.getText().trim().replace(' ', '_').toUpperCase());
-					outage = new Outage(lat, lon, earliestReport, null);
 					revision = new OutageRevision(numCustomersAffected,
-							estimatedRestoration, (Outage) outage, cause,
+							new Timestamp(estimatedRestoration.getTime()),
+							new Timestamp(new Date().getTime()), outage, cause,
 							status);
 
 				}
-				final AbstractOutage existingOutage = outageDao
-						.getActiveOutage(outage.getLat(), outage.getLon(),
-								outage.getClass());
-				if (existingOutage == null) {
+				// If the outage already existed, there is no need to save it
+				// again--indeed, that would probably cause a crash.
+				if (outage != existingOutage)
 					sessionFactory.getCurrentSession().save(outage);
+				if (outage.getRevisions().isEmpty()
+						|| !outage.getRevisions().get(0)
+								.equalsIgnoreObservationDate(revision))
 					sessionFactory.getCurrentSession().save(revision);
-				} else {
-					if (existingOutage instanceof Outage
-							&& !((Outage) existingOutage).getRevisions()
-									.contains(revision)) {
-						revision.setOutage(existingOutage);
-						sessionFactory.getCurrentSession().save(revision);
-					} else if (existingOutage instanceof OutageCluster
-							&& !((OutageCluster) existingOutage).getRevisions()
-									.contains(revision)) {
-						revision.setOutage(existingOutage);
-						sessionFactory.getCurrentSession().save(revision);
-					}
-				}
-
-				// If this is a clustered outage, try to take a closer look and
+				sessionFactory.getCurrentSession().getTransaction().commit();
+				sessionFactory.getCurrentSession().beginTransaction();
+				// If this is a clustered outage, try to take a closer look
+				// and
 				// see if we can get the individual outages.
 				for (final String spatialIndex : getSpatialIndicesForPoint(lat,
 						lon, zoom + 1))

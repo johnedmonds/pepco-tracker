@@ -154,4 +154,42 @@ public class TestOutage extends TestCase {
 		assertFalse(new Outage(1, 1, now, now).equals(new Outage(1, 1, now,
 				null)));
 	}
+
+	public void testRevisionEquals() {
+		final Date now = new Date();
+		final Date then = new Date(now.getTime() + 1);
+		final Date now2 = new Date(now.getTime());
+		final OutageRevision or1 = new OutageRevision(1, now, null, "test",
+				CrewStatus.ASSIGNED);
+		final OutageRevision or2 = new OutageRevision(1, now2, null, "test",
+				CrewStatus.ASSIGNED);
+		final OutageClusterRevision cr1 = new OutageClusterRevision(1, now,
+				null, 1);
+		final OutageClusterRevision cr2 = new OutageClusterRevision(1, now2,
+				null, 1);
+		assertEquals(or1, or2);
+		assertEquals(cr1, cr2);
+		assertEquals(or1.hashCode(), or2.hashCode());
+		assertEquals(cr1.hashCode(), cr2.hashCode());
+
+		assertFalse(new OutageRevision(1, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(2, now, null,
+				"test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, null,
+				"test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, null,
+				"test2", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, null,
+				"test", CrewStatus.PENDING)));
+
+		assertFalse(new OutageClusterRevision(1, now, null, 1)
+				.equals(new OutageClusterRevision(2, now, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, null, 1)
+				.equals(new OutageClusterRevision(1, then, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, null, 1)
+				.equals(new OutageClusterRevision(1, now, null, 2)));
+	}
 }

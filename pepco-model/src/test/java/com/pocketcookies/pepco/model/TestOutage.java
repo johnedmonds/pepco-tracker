@@ -63,12 +63,12 @@ public class TestOutage extends TestCase {
 		session.save(c1);
 		session.save(c2);
 
-		OutageRevision or1 = new OutageRevision(1, "test", CrewStatus.PENDING,
-				1, o1);
-		OutageRevision or2 = new OutageRevision(2, "test", CrewStatus.PENDING,
-				1, o2);
-		OutageClusterRevision cr1 = new OutageClusterRevision(1, 1, 1, c1);
-		OutageClusterRevision cr2 = new OutageClusterRevision(2, 2, 2, c2);
+		OutageRevision or1 = new OutageRevision(1, 1, now, o1, "test",
+				CrewStatus.PENDING);
+		OutageRevision or2 = new OutageRevision(2, 2, now, o2, "test",
+				CrewStatus.PENDING);
+		OutageClusterRevision cr1 = new OutageClusterRevision(3, 1, now, c1, 1);
+		OutageClusterRevision cr2 = new OutageClusterRevision(4, 2, now, c2, 2);
 
 		session.save(or1);
 		session.save(or2);
@@ -86,9 +86,9 @@ public class TestOutage extends TestCase {
 		or1 = (OutageRevision) session.load(OutageRevision.class, 1);
 		or2 = (OutageRevision) session.load(OutageRevision.class, 2);
 		cr1 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
-				1);
+				3);
 		cr2 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
-				2);
+				4);
 		assertEquals(1, o1.getRevisions().size());
 		assertEquals(1, o2.getRevisions().size());
 		assertEquals(1, c1.getRevisions().size());

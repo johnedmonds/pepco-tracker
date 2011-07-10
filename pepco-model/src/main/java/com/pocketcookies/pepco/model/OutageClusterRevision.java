@@ -1,26 +1,22 @@
 package com.pocketcookies.pepco.model;
 
-public class OutageClusterRevision {
-	private int id;
+import java.util.Date;
+
+public class OutageClusterRevision extends AbstractOutageRevision {
 	// The number of outages associated with this cluster. We don't currently
 	// have a way of tracking exactly which outages correspond with this
 	// cluster so for now we just keep track of the count.
 	private int numOutages;
-	private int numCustomersAffected;
-	// The parent OutageCluster.
-	private OutageCluster cluster;
 
 	public OutageClusterRevision() {
 		super();
 	}
 
-	public OutageClusterRevision(int id, int numOutages,
-			final int numCustomersAffected, final OutageCluster cluster) {
-		this();
-		setId(id);
+	public OutageClusterRevision(int id, final int numCustomersAffected,
+			final Date estimatedRestoration, final OutageCluster cluster,
+			int numOutages) {
+		super(id, numCustomersAffected, estimatedRestoration, cluster);
 		setNumOutages(numOutages);
-		setCluster(cluster);
-		setNumCustomersAffected(numCustomersAffected);
 	}
 
 	public int getNumOutages() {
@@ -31,27 +27,4 @@ public class OutageClusterRevision {
 		this.numOutages = numOutages;
 	}
 
-	public OutageCluster getCluster() {
-		return cluster;
-	}
-
-	private void setCluster(OutageCluster cluster) {
-		this.cluster = cluster;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	private void setId(int id) {
-		this.id = id;
-	}
-
-	public int getNumCustomersAffected() {
-		return numCustomersAffected;
-	}
-
-	private void setNumCustomersAffected(int numCustomersAffected) {
-		this.numCustomersAffected = numCustomersAffected;
-	}
 }

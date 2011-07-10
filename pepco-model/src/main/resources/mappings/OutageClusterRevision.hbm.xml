@@ -1,21 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 10, 2011 12:36:58 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 10, 2011 1:05:16 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.pocketcookies.pepco.model.OutageClusterRevision" table="OUTAGECLUSTERREVISION">
-        <id name="id" type="int">
-            <column name="ID" />
-            <generator class="assigned" />
-        </id>
+    <subclass name="com.pocketcookies.pepco.model.OutageClusterRevision" extends="com.pocketcookies.pepco.model.AbstractOutageRevision" discriminator-value="OutageClusterRevision"
+    lazy="false">
         <property name="numOutages" type="int">
             <column name="NUMOUTAGES" />
         </property>
-        <property name="numCustomersAffected" type="int">
-            <column name="NUMCUSTOMERSAFFECTED" />
-        </property>
-        <many-to-one name="cluster" class="com.pocketcookies.pepco.model.OutageCluster" fetch="join">
-            <column name="CLUSTER" />
-        </many-to-one>
-    </class>
+    </subclass>
 </hibernate-mapping>

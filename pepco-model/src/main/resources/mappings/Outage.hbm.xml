@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 10, 2011 12:36:58 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 10, 2011 1:05:16 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<subclass name="com.pocketcookies.pepco.model.Outage" extends="com.pocketcookies.pepco.model.AbstractOutage"
 		discriminator-value="Outage" lazy="false">
 		<bag name="revisions" table="OUTAGEREVISION" inverse="false" lazy="true">
-			<key column="OUTAGE"/>
+			<key column="OUTAGE" />
 			<one-to-many class="com.pocketcookies.pepco.model.OutageRevision" />
 		</bag>
 	</subclass>

@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 10, 2011 12:36:58 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 10, 2011 1:05:16 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.pocketcookies.pepco.model.OutageRevision" table="OUTAGEREVISION">
-        <id name="id" type="int">
-            <column name="ID" />
-            <generator class="assigned" />
-        </id>
+    <subclass name="com.pocketcookies.pepco.model.OutageRevision" extends="com.pocketcookies.pepco.model.AbstractOutageRevision" discriminator-value="OutageRevision" lazy="false">
         <property name="cause" type="java.lang.String">
             <column name="CAUSE" />
         </property>
@@ -18,11 +14,5 @@
                 <param name="enumClass">com.pocketcookies.pepco.model.OutageRevision$CrewStatus</param>
             </type>
         </property>
-        <property name="numCustomersAffected" type="int">
-            <column name="NUMCUSTOMERSAFFECTED" />
-        </property>
-        <many-to-one name="outage" class="com.pocketcookies.pepco.model.Outage" fetch="join">
-            <column name="OUTAGE" />
-        </many-to-one>
-    </class>
+    </subclass>
 </hibernate-mapping>

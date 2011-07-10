@@ -79,16 +79,16 @@ public class TestOutage extends TestCase {
 		session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		o1 = (Outage) session.load(Outage.class, 1);
-		o2 = (Outage) session.load(Outage.class, 2);
-		c1 = (OutageCluster) session.load(OutageCluster.class, 3);
-		c2 = (OutageCluster) session.load(OutageCluster.class, 4);
-		or1 = (OutageRevision) session.load(OutageRevision.class, 1);
-		or2 = (OutageRevision) session.load(OutageRevision.class, 2);
+		o1 = (Outage) session.load(Outage.class, o1.getId());
+		o2 = (Outage) session.load(Outage.class, o2.getId());
+		c1 = (OutageCluster) session.load(OutageCluster.class, c1.getId());
+		c2 = (OutageCluster) session.load(OutageCluster.class, c2.getId());
+		or1 = (OutageRevision) session.load(OutageRevision.class, or1.getId());
+		or2 = (OutageRevision) session.load(OutageRevision.class, or2.getId());
 		cr1 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
-				3);
+				cr1.getId());
 		cr2 = (OutageClusterRevision) session.load(OutageClusterRevision.class,
-				4);
+				cr2.getId());
 		assertEquals(1, o1.getRevisions().size());
 		assertEquals(1, o2.getRevisions().size());
 		assertEquals(1, c1.getRevisions().size());

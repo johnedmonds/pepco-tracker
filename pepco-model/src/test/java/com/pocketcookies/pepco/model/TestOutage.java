@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class TestOutage extends TestCase {
 	public void testOutageRevisionDiscriminator() {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
-		final Date now = new Date();
+		final Timestamp now = new Timestamp(new Date().getTime());
 		Outage outage = new Outage(1, 1, now, now);
 		OutageRevision r1 = new OutageRevision(1, now, now, outage, "test",
 				CrewStatus.PENDING);
@@ -47,7 +48,7 @@ public class TestOutage extends TestCase {
 	public void testRevisions() {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
-		Date now = new Date();
+		Timestamp now = new Timestamp(new Date().getTime());
 		Outage o1 = new Outage(1, 1, now, now);
 		Outage o2 = new Outage(1, 1, now, now);
 
@@ -95,7 +96,7 @@ public class TestOutage extends TestCase {
 
 		assertNull(dao.getActiveOutage(1, 1));
 
-		final Date now = new Date();
+		final Timestamp now = new Timestamp(new Date().getTime());
 
 		session.save(new Outage(1, 1, now, now));
 
@@ -110,8 +111,8 @@ public class TestOutage extends TestCase {
 	}
 
 	public void testOutageEquals() {
-		final Date now = new Date();
-		final Date now2 = new Date(now.getTime());
+		final Timestamp now = new Timestamp(new Date().getTime());
+		final Timestamp now2 = new Timestamp(now.getTime());
 		assertEquals(new Outage(1, 1, now, now), new Outage(1, 1, now2, now2));
 		// Make sure we don't crash due to nulls
 		// Note that we don't need to test some columns being null because we
@@ -126,9 +127,9 @@ public class TestOutage extends TestCase {
 	}
 
 	public void testRevisionEquals() {
-		final Date now = new Date();
-		final Date then = new Date(now.getTime() + 1);
-		final Date now2 = new Date(now.getTime());
+		final Timestamp now = new Timestamp(new Date().getTime());
+		final Timestamp then = new Timestamp(now.getTime() + 1);
+		final Timestamp now2 = new Timestamp(now.getTime());
 		final OutageRevision or1 = new OutageRevision(1, now, now, null,
 				"test", CrewStatus.ASSIGNED);
 		final OutageRevision or2 = new OutageRevision(1, now2, now2, null,
@@ -174,8 +175,8 @@ public class TestOutage extends TestCase {
 	public void testRevisionOrdering() {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.beginTransaction();
-		final Date now = new Date();
-		final Date later = new Date(now.getTime() + 1);
+		final Timestamp now = new Timestamp(new Date().getTime());
+		final Timestamp later = new Timestamp(now.getTime() + 1);
 		Outage outage = new Outage(1, 1, now, null);
 		final OutageRevision r2 = new OutageRevision(1, now, later, outage,
 				"test", CrewStatus.PENDING);

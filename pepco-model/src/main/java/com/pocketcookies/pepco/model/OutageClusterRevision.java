@@ -1,6 +1,6 @@
 package com.pocketcookies.pepco.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class OutageClusterRevision extends AbstractOutageRevision {
 	// The number of outages associated with this cluster. We don't currently
@@ -13,8 +13,8 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 	}
 
 	public OutageClusterRevision(final int numCustomersAffected,
-			final Date estimatedRestoration, final Date observationDate,
-			final Outage outage, int numOutages) {
+			final Timestamp estimatedRestoration,
+			final Timestamp observationDate, final Outage outage, int numOutages) {
 		super(numCustomersAffected, estimatedRestoration, observationDate,
 				outage);
 		setNumOutages(numOutages);

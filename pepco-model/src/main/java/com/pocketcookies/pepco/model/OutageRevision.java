@@ -1,6 +1,6 @@
 package com.pocketcookies.pepco.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class OutageRevision extends AbstractOutageRevision {
 	private String cause;
@@ -10,9 +10,9 @@ public class OutageRevision extends AbstractOutageRevision {
 		PENDING, ASSIGNED, EN_ROUTE, ON_SITE
 	}
 
-	public OutageRevision(int numCustomersAffected, Date estimatedRestoration,
-			final Date observationDate, final Outage outage, String cause,
-			CrewStatus status) {
+	public OutageRevision(int numCustomersAffected,
+			Timestamp estimatedRestoration, final Timestamp observationDate,
+			final Outage outage, String cause, CrewStatus status) {
 		super(numCustomersAffected, estimatedRestoration, observationDate,
 				outage);
 		setCause(cause);

@@ -1,6 +1,6 @@
 package com.pocketcookies.pepco.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,13 +13,13 @@ import java.util.List;
 public class Outage {
 	private int id;
 	private double lat, lon;
-	private Date earliestReport;
+	private Timestamp earliestReport;
 
 	/**
 	 * The time we scraped the site and this outage disappeared. This will
 	 * always be later than the actual time.
 	 */
-	private Date observedEnd;
+	private Timestamp observedEnd;
 
 	private List<AbstractOutageRevision> revisions = new LinkedList<AbstractOutageRevision>();
 
@@ -27,7 +27,7 @@ public class Outage {
 		super();
 	}
 
-	public Outage(double lat, double lon, Date earliestReport, Date observedEnd) {
+	public Outage(double lat, double lon, Timestamp earliestReport, Timestamp observedEnd) {
 		super();
 		if (earliestReport == null)
 			throw new IllegalArgumentException("earliestReport cannot be null.");
@@ -62,11 +62,11 @@ public class Outage {
 		return lon;
 	}
 
-	public Date getEarliestReport() {
+	public Timestamp getEarliestReport() {
 		return earliestReport;
 	}
 
-	public Date getObservedEnd() {
+	public Timestamp getObservedEnd() {
 		return observedEnd;
 	}
 
@@ -83,11 +83,11 @@ public class Outage {
 		this.lon = lon;
 	}
 
-	private void setEarliestReport(Date earliestReport) {
+	private void setEarliestReport(Timestamp earliestReport) {
 		this.earliestReport = earliestReport;
 	}
 
-	private void setObservedEnd(Date observedEnd) {
+	private void setObservedEnd(Timestamp observedEnd) {
 		this.observedEnd = observedEnd;
 	}
 

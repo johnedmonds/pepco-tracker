@@ -1,6 +1,6 @@
 package com.pocketcookies.pepco.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * We like to keep track of all the things that happen to a revision over its
@@ -17,16 +17,17 @@ public abstract class AbstractOutageRevision {
 	 * 0 to represent that there are fewer than 5 customers for that outage.
 	 */
 	private int numCustomersAffected;
-	private Date estimatedRestoration;
+	private Timestamp estimatedRestoration;
 	private Outage outage;
-	private Date observationDate;
+	private Timestamp observationDate;
 
 	protected AbstractOutageRevision() {
 		super();
 	}
 
 	public AbstractOutageRevision(int numCustomersAffected,
-			Date estimatedRestoration, final Date observationDate, Outage outage) {
+			Timestamp estimatedRestoration, final Timestamp observationDate,
+			Outage outage) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
@@ -68,7 +69,7 @@ public abstract class AbstractOutageRevision {
 		return numCustomersAffected;
 	}
 
-	public Date getEstimatedRestoration() {
+	public Timestamp getEstimatedRestoration() {
 		return estimatedRestoration;
 	}
 
@@ -85,7 +86,7 @@ public abstract class AbstractOutageRevision {
 		this.numCustomersAffected = numCustomersAffected;
 	}
 
-	private void setEstimatedRestoration(Date estimatedRestoration) {
+	private void setEstimatedRestoration(Timestamp estimatedRestoration) {
 		this.estimatedRestoration = estimatedRestoration;
 	}
 
@@ -93,11 +94,11 @@ public abstract class AbstractOutageRevision {
 		this.outage = outage;
 	}
 
-	public Date getObservationDate() {
+	public Timestamp getObservationDate() {
 		return observationDate;
 	}
 
-	private void setObservationDate(Date observationDate) {
+	private void setObservationDate(Timestamp observationDate) {
 		this.observationDate = observationDate;
 	}
 

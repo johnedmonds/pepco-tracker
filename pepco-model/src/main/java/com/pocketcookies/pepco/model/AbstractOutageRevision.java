@@ -61,7 +61,7 @@ public abstract class AbstractOutageRevision {
 		this.estimatedRestoration = estimatedRestoration;
 	}
 
-	private void setOutage(AbstractOutage outage) {
+	public void setOutage(AbstractOutage outage) {
 		this.outage = outage;
 	}
 

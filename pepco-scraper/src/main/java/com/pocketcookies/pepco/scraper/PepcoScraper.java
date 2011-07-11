@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -59,6 +60,12 @@ public class PepcoScraper {
 	 * them again.
 	 */
 	private final Set<String> scrapedSpatialIndices = new TreeSet<String>();
+	/**
+	 * Once we are done scraping, we want to find out which outages have been
+	 * closed. Therefore, we use this list to keep track of all the outages we
+	 * have discovered so we can close them later.
+	 */
+	private final Set<Integer> discoveredOutageIds = new TreeSet<Integer>();
 
 	public PepcoScraper(final SessionFactory sessionFactory,
 			final OutageDAO outageDao) throws ClientProtocolException,
@@ -115,7 +122,7 @@ public class PepcoScraper {
 						|| scrapedSpatialIndices.contains(this.spatialIndex))
 					return;
 				scrapedSpatialIndices.add(this.spatialIndex);
-				logger.debug("Scraping " + this.spatialIndex);
+				logger.info("Scraping " + this.spatialIndex);
 				parse(makeRequest());
 			} catch (Exception e) {
 				logger.error("Error while attempting to download outage list.",
@@ -126,7 +133,6 @@ public class PepcoScraper {
 		private Document makeRequest() throws ClientProtocolException,
 				IOException, IllegalStateException, SAXException,
 				ParserConfigurationException, FactoryConfigurationError {
-			System.out.println("Scraping " + this.spatialIndex);
 			final HttpClient client = new DefaultHttpClient();
 			final HttpGet get = new HttpGet(dataHTMLPrefix + outagesFolder
 					+ "/" + spatialIndex + ".xml");
@@ -243,10 +249,13 @@ public class PepcoScraper {
 							status);
 
 				}
+				// Record that we have encountered this outage.
+				discoveredOutageIds.add(outage.getId());
 				// If the outage already existed, there is no need to save it
 				// again--indeed, that would probably cause a crash.
-				if (outage != existingOutage)
+				if (outage != existingOutage) {
 					sessionFactory.getCurrentSession().save(outage);
+				}
 				if (outage.getRevisions().isEmpty()
 						|| !outage.getRevisions().get(0)
 								.equalsIgnoreObservationDate(revision))
@@ -309,11 +318,24 @@ public class PepcoScraper {
 		return indexNames;
 	};
 
+	@SuppressWarnings("unchecked")
 	public void scrape() {
 		for (final String spatialIndex : getSpatialIndicesForPoint(
 				38.96000000000001, -77.02999999999999, 7)) {
 			new Scraper(spatialIndex, 38.96000000000001, -77.02999999999999, 7)
 					.run();
+		}
+		// We want to make sure that we record when outages disappear.
+		// Therefore, we will use the list of outages we discovered and check
+		// whether there are any active outages which we did not discover during
+		// this run.
+		for (final Outage o : (List<Outage>) (this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from Outage where id not in (:ids) and observedEnd=null")
+				.setParameterList("ids", discoveredOutageIds).list())) {
+			o.setObservedEnd(new Timestamp(new Date().getTime()));
+			this.sessionFactory.getCurrentSession().save(o);
 		}
 	}
 

@@ -87,7 +87,7 @@ public class Outage {
 		this.earliestReport = earliestReport;
 	}
 
-	private void setObservedEnd(Timestamp observedEnd) {
+	public void setObservedEnd(Timestamp observedEnd) {
 		this.observedEnd = observedEnd;
 	}
 

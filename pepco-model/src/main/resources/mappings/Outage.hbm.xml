@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jul 10, 2011 6:09:15 PM by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated Jul 11, 2011 6:32:33 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="com.pocketcookies.pepco.model.Outage" table="OUTAGE">
+	<class name="com.pocketcookies.pepco.model.Outage" table="OUTAGES">
 		<id name="id" type="int">
 			<column name="ID" />
 			<generator class="increment" />
@@ -14,13 +14,13 @@
 		<property name="lon" type="double">
 			<column name="LON" />
 		</property>
-		<property name="earliestReport" type="java.util.Date">
+		<property name="earliestReport" type="java.sql.Timestamp">
 			<column name="EARLIESTREPORT" />
 		</property>
-		<property name="observedEnd" type="java.util.Date">
+		<property name="observedEnd" type="java.sql.Timestamp">
 			<column name="OBSERVEDEND" />
 		</property>
-		<bag name="revisions" table="ABSTRACTOUTAGEREVISION" inverse="false"
+		<bag name="revisions" inverse="false" table="OUTAGEREVISIONS"
 			lazy="true" order-by="observationDate desc">
 			<key>
 				<column name="OUTAGE" />

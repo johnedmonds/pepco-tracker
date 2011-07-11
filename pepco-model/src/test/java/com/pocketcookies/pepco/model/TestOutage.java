@@ -10,6 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import sun.security.util.PendingException;
+
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
@@ -26,10 +28,10 @@ public class TestOutage extends TestCase {
 		session.beginTransaction();
 		final Timestamp now = new Timestamp(new Date().getTime());
 		Outage outage = new Outage(1, 1, now, now);
-		OutageRevision r1 = new OutageRevision(1, now, now, outage, "test",
-				CrewStatus.PENDING);
+		OutageRevision r1 = new OutageRevision(1, now, now, outage, null,
+				"test", CrewStatus.PENDING);
 		OutageClusterRevision r2 = new OutageClusterRevision(1, now, now,
-				outage, 1);
+				outage, null, 1);
 		session.save(outage);
 		session.save(r1);
 		session.save(r2);
@@ -55,14 +57,14 @@ public class TestOutage extends TestCase {
 		session.save(o1);
 		session.save(o2);
 
-		OutageRevision or1 = new OutageRevision(1, now, now, o1, "test",
+		OutageRevision or1 = new OutageRevision(1, now, now, o1, null, "test",
 				CrewStatus.PENDING);
-		OutageRevision or2 = new OutageRevision(2, now, now, o2, "test",
+		OutageRevision or2 = new OutageRevision(2, now, now, o2, null, "test",
 				CrewStatus.PENDING);
 		OutageClusterRevision cr1 = new OutageClusterRevision(1, now, now, o1,
-				1);
+				null, 1);
 		OutageClusterRevision cr2 = new OutageClusterRevision(2, now, now, o2,
-				2);
+				null, 2);
 
 		session.save(or1);
 		session.save(or2);
@@ -130,46 +132,46 @@ public class TestOutage extends TestCase {
 		final Timestamp now = new Timestamp(new Date().getTime());
 		final Timestamp then = new Timestamp(now.getTime() + 1);
 		final Timestamp now2 = new Timestamp(now.getTime());
-		final OutageRevision or1 = new OutageRevision(1, now, now, null,
+		final OutageRevision or1 = new OutageRevision(1, now, now, null, null,
 				"test", CrewStatus.ASSIGNED);
 		final OutageRevision or2 = new OutageRevision(1, now2, now2, null,
-				"test", CrewStatus.ASSIGNED);
+				null, "test", CrewStatus.ASSIGNED);
 		final OutageClusterRevision cr1 = new OutageClusterRevision(1, now,
-				now, null, 1);
+				now, null, null, 1);
 		final OutageClusterRevision cr2 = new OutageClusterRevision(1, now2,
-				now2, null, 1);
+				now2, null, null, 1);
 		assertEquals(or1, or2);
 		assertEquals(cr1, cr2);
 		assertEquals(or1.hashCode(), or2.hashCode());
 		assertEquals(cr1.hashCode(), cr2.hashCode());
 
-		assertFalse(new OutageRevision(1, now, now, null, "test",
+		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.PENDING).equals(new OutageRevision(1, now, then,
-				null, "test", CrewStatus.PENDING)));
-		assertTrue(new OutageRevision(1, now, now, null, "test",
+				null, null, "test", CrewStatus.PENDING)));
+		assertTrue(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.PENDING)
 				.equalsIgnoreObservationDate(new OutageRevision(1, now, then,
-						null, "test", CrewStatus.PENDING)));
+						null, null, "test", CrewStatus.PENDING)));
 
-		assertFalse(new OutageRevision(1, now, now, null, "test",
+		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(2, now, now,
-				null, "test", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, now, null, "test",
+				null, null, "test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, then,
-				null, "test", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, now, null, "test",
+				null, null, "test", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
-				null, "test2", CrewStatus.ASSIGNED)));
-		assertFalse(new OutageRevision(1, now, now, null, "test",
+				null, null, "test2", CrewStatus.ASSIGNED)));
+		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
-				null, "test", CrewStatus.PENDING)));
+				null, null, "test", CrewStatus.PENDING)));
 
-		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
-				.equals(new OutageClusterRevision(2, now, now, null, 1)));
-		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
-				.equals(new OutageClusterRevision(1, then, then, null, 1)));
-		assertFalse(new OutageClusterRevision(1, now, now, null, 1)
-				.equals(new OutageClusterRevision(1, now, now, null, 2)));
+		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
+				.equals(new OutageClusterRevision(2, now, now, null, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
+				.equals(new OutageClusterRevision(1, then, then, null, null, 1)));
+		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
+				.equals(new OutageClusterRevision(1, now, now, null, null, 2)));
 	}
 
 	public void testRevisionOrdering() {
@@ -179,8 +181,8 @@ public class TestOutage extends TestCase {
 		final Timestamp later = new Timestamp(now.getTime() + 1);
 		Outage outage = new Outage(1, 1, now, null);
 		final OutageRevision r2 = new OutageRevision(1, now, later, outage,
-				"test", CrewStatus.PENDING);
-		final OutageRevision r1 = new OutageRevision(1, now, now, outage,
+				null, "test", CrewStatus.PENDING);
+		final OutageRevision r1 = new OutageRevision(1, now, now, outage, null,
 				"test", CrewStatus.PENDING);
 		session.save(outage);
 		session.save(r1);
@@ -191,5 +193,28 @@ public class TestOutage extends TestCase {
 		outage = (Outage) session.load(Outage.class, outage.getId());
 		assertTrue(outage.getRevisions().get(0).getObservationDate().getTime() > outage
 				.getRevisions().get(1).getObservationDate().getTime());
+	}
+
+	public void testRunRelationship() {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		final Timestamp now = new Timestamp(new Date().getTime());
+		ParserRun run = new ParserRun();
+		OutageRevision or1 = new OutageRevision(1, now, now, null, run, "test",
+				CrewStatus.PENDING);
+		OutageRevision or2 = new OutageRevision(1, now, now, null, run, "test",
+				CrewStatus.PENDING);
+		session.save(run);
+		session.save(or1);
+		session.save(or2);
+		session.getTransaction().commit();
+		session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		run = (ParserRun) session.load(ParserRun.class, run.getId());
+		or1 = (OutageRevision) session.load(OutageRevision.class, or1.getId());
+		or2 = (OutageRevision) session.load(OutageRevision.class, or2.getId());
+		assertEquals(2, run.getRevisions().size());
+		assertTrue(run.getRevisions().contains(or1));
+		assertTrue(run.getRevisions().contains(or2));
 	}
 }

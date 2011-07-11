@@ -12,9 +12,10 @@ public class OutageRevision extends AbstractOutageRevision {
 
 	public OutageRevision(int numCustomersAffected,
 			Timestamp estimatedRestoration, final Timestamp observationDate,
-			final Outage outage, String cause, CrewStatus status) {
+			final Outage outage, final ParserRun run, String cause,
+			CrewStatus status) {
 		super(numCustomersAffected, estimatedRestoration, observationDate,
-				outage);
+				outage, run);
 		setCause(cause);
 		setStatus(status);
 	}

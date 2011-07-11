@@ -17,5 +17,7 @@
 			resource="mappings/OutageRevision.hbm.xml" />
 		<mapping class="com.pocketcookies.pepco.model.AbstractOutageRevision"
 			resource="mappings/AbstractOutageRevision.hbm.xml" />
+		<mapping class="com.pocketcookies.pepco.model.ParserRun"
+			resource="mappings/ParserRun.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

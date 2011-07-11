@@ -45,6 +45,7 @@ import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.OutageClusterRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
+import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
 public class PepcoScraper {
@@ -54,6 +55,7 @@ public class PepcoScraper {
 	private final String outagesFolder;
 	private final SessionFactory sessionFactory;
 	private final OutageDAO outageDao;
+	final ParserRun run;
 
 	/**
 	 * Used to record which indices we have scraped so we don't have to scrape
@@ -74,6 +76,8 @@ public class PepcoScraper {
 		this.outagesFolder = getOutagesFolderName();
 		this.sessionFactory = sessionFactory;
 		this.outageDao = outageDao;
+		this.run = new ParserRun(new Timestamp(new Date().getTime()));
+		sessionFactory.getCurrentSession().save(run);
 	}
 
 	public String getOutagesFolderName() throws ClientProtocolException,
@@ -229,7 +233,7 @@ public class PepcoScraper {
 									.getNextSibling().getText().trim());
 					revision = new OutageClusterRevision(numCustomersAffected,
 							new Timestamp(estimatedRestoration.getTime()),
-							new Timestamp(new Date().getTime()), outage,
+							new Timestamp(new Date().getTime()), outage, run,
 							numOutages);
 				} else {
 					final String cause;
@@ -245,8 +249,8 @@ public class PepcoScraper {
 							.getText().trim().replace(' ', '_').toUpperCase());
 					revision = new OutageRevision(numCustomersAffected,
 							new Timestamp(estimatedRestoration.getTime()),
-							new Timestamp(new Date().getTime()), outage, cause,
-							status);
+							new Timestamp(new Date().getTime()), outage, run,
+							cause, status);
 
 				}
 				// Record that we have encountered this outage.

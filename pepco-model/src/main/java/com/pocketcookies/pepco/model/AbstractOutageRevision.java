@@ -19,7 +19,12 @@ public abstract class AbstractOutageRevision {
 	private int numCustomersAffected;
 	private Timestamp estimatedRestoration;
 	private Outage outage;
+	// The time at which we recorded this revision to the database.
 	private Timestamp observationDate;
+	// The parser run with which this change is associated. This is very similar
+	// to observationDate. It lets us group together a set of changes that don't
+	// occur at exactly the same time.
+	private ParserRun run;
 
 	protected AbstractOutageRevision() {
 		super();
@@ -27,12 +32,13 @@ public abstract class AbstractOutageRevision {
 
 	public AbstractOutageRevision(int numCustomersAffected,
 			Timestamp estimatedRestoration, final Timestamp observationDate,
-			Outage outage) {
+			Outage outage, final ParserRun run) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
 		setOutage(outage);
 		setObservationDate(observationDate);
+		setRun(run);
 	}
 
 	@Override
@@ -100,6 +106,14 @@ public abstract class AbstractOutageRevision {
 
 	private void setObservationDate(Timestamp observationDate) {
 		this.observationDate = observationDate;
+	}
+
+	public ParserRun getRun() {
+		return run;
+	}
+
+	private void setRun(ParserRun run) {
+		this.run = run;
 	}
 
 }

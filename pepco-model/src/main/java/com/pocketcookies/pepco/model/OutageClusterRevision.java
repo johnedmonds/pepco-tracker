@@ -14,9 +14,10 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 
 	public OutageClusterRevision(final int numCustomersAffected,
 			final Timestamp estimatedRestoration,
-			final Timestamp observationDate, final Outage outage, int numOutages) {
+			final Timestamp observationDate, final Outage outage,
+			final ParserRun run, int numOutages) {
 		super(numCustomersAffected, estimatedRestoration, observationDate,
-				outage);
+				outage, run);
 		setNumOutages(numOutages);
 	}
 

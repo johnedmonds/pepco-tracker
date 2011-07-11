@@ -251,8 +251,12 @@ public class PepcoScraper {
 						|| !outage.getRevisions().get(0)
 								.equalsIgnoreObservationDate(revision))
 					sessionFactory.getCurrentSession().save(revision);
-				sessionFactory.getCurrentSession().getTransaction().commit();
-				sessionFactory.getCurrentSession().beginTransaction();
+				sessionFactory.getCurrentSession().flush();
+				// We want to make sure that when we load an outage, it has all
+				// its revisions with it. Evicting the outage forces Hibernate
+				// to re-load it later which means it will have all its
+				// revisions in the proper order.
+				sessionFactory.getCurrentSession().evict(outage);
 				// If this is a clustered outage, try to take a closer look
 				// and
 				// see if we can get the individual outages.

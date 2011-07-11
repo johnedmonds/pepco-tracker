@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +18,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
@@ -164,20 +166,18 @@ public class PepcoScraper {
 			final NodeList list = doc.getElementsByTagName("item");
 			for (int i = 0; i < list.getLength(); i++) {
 				final Element el = (Element) list.item(i);
-				final double lat, lon;
-				// Find lat and lon.
-				// The string containing the unparsed lat lon.
-				final StringTokenizer slatlon;
+				final Polygon location;
+				final PointDouble center;
+				// Find the lat/lon (or polygon).
 				if (el.getElementsByTagName("georss:point").getLength() == 0)
-					slatlon = new StringTokenizer(el
+					location = new Polygon(el
 							.getElementsByTagName("georss:polygon").item(0)
 							.getFirstChild().getNodeValue());
 				else
-					slatlon = new StringTokenizer(el
+					location = new Polygon(el
 							.getElementsByTagName("georss:point").item(0)
 							.getFirstChild().getNodeValue());
-				lat = Double.parseDouble(slatlon.nextToken());
-				lon = Double.parseDouble(slatlon.nextToken());
+				center = location.getCenter();
 
 				// Parse the description.
 				final int numCustomersAffected;
@@ -208,11 +208,11 @@ public class PepcoScraper {
 						.getNextSibling().getNextSibling().getText().trim());
 
 				// Load the outage.
-				final Outage existingOutage = outageDao.getActiveOutage(lat,
-						lon);
+				final Outage existingOutage = outageDao.getActiveOutage(
+						center.lat, center.lon);
 				final Outage outage;
 				if (existingOutage == null)
-					outage = new Outage(lat, lon, new Timestamp(
+					outage = new Outage(center.lat, center.lon, new Timestamp(
 							earliestReport.getTime()), null);
 				else
 					outage = existingOutage;
@@ -273,9 +273,10 @@ public class PepcoScraper {
 				// If this is a clustered outage, try to take a closer look
 				// and
 				// see if we can get the individual outages.
-				for (final String spatialIndex : getSpatialIndicesForPoint(lat,
-						lon, zoom + 1))
-					new Scraper(spatialIndex, lat, lon, zoom + 1).run();
+				for (final String spatialIndex : getSpatialIndicesForPoint(
+						center.lat, center.lon, zoom + 1))
+					new Scraper(spatialIndex, center.lat, center.lon, zoom + 1)
+							.run();
 			}
 		}
 	}
@@ -355,5 +356,71 @@ public class PepcoScraper {
 		sessionFactory.getCurrentSession().getTransaction().commit();
 		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();
+	}
+
+	/**
+	 * Represents a 2D coordinate using double precision.
+	 * 
+	 * @author jack
+	 * 
+	 */
+	private static class PointDouble {
+		public final double lat, lon;
+
+		public PointDouble(double lat, double lon) {
+			super();
+			this.lat = lat;
+			this.lon = lon;
+		}
+
+		/**
+		 * Takes a lat,lon separate by the space character (' ').
+		 * 
+		 * @param s
+		 *            Latitude Longitude separated by the space character (' ').
+		 */
+		public PointDouble(final String s) {
+			final StringTokenizer st = new StringTokenizer(s);
+			this.lat = Double.parseDouble(st.nextToken());
+			this.lon = Double.parseDouble(st.nextToken());
+		}
+
+		@Override
+		public String toString() {
+			return lat + " " + lon;
+		}
+	}
+
+	private static class Polygon {
+		public final Collection<PointDouble> vertices;
+
+		public Polygon(final String s) {
+			final StringTokenizer st = new StringTokenizer(s);
+			if (st.countTokens() % 2 != 0)
+				throw new IllegalArgumentException(
+						"Polygon must be constructed with a list of lat, lon points separated by spaces.  It looks like the last point may be missing a longitude.");
+			vertices = new ArrayList<PointDouble>(st.countTokens() / 2);
+			while (st.hasMoreTokens()) {
+				vertices.add(new PointDouble(
+						Double.parseDouble(st.nextToken()), Double
+								.parseDouble(st.nextToken())));
+			}
+		}
+
+		public PointDouble getCenter() {
+			double lat = 0, lon = 0;
+			for (final PointDouble p : vertices) {
+				lat += p.lat;
+				lon += p.lon;
+			}
+			lat /= vertices.size();
+			lon /= vertices.size();
+			return new PointDouble(lat, lon);
+		}
+
+		@Override
+		public String toString() {
+			return StringUtils.join(vertices, ' ');
+		}
 	}
 }

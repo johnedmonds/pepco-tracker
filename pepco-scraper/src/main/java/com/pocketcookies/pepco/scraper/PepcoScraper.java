@@ -31,6 +31,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -48,6 +49,7 @@ import com.pocketcookies.pepco.model.OutageClusterRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.ParserRun;
+import com.pocketcookies.pepco.model.Summary;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
 public class PepcoScraper {
@@ -57,6 +59,7 @@ public class PepcoScraper {
 	private final String outagesFolder;
 	private final SessionFactory sessionFactory;
 	private final OutageDAO outageDao;
+	private final HttpClient client;
 	final ParserRun run;
 
 	/**
@@ -72,12 +75,14 @@ public class PepcoScraper {
 	private final Set<Integer> discoveredOutageIds = new TreeSet<Integer>();
 
 	public PepcoScraper(final SessionFactory sessionFactory,
-			final OutageDAO outageDao) throws ClientProtocolException,
-			IllegalStateException, IOException, SAXException,
-			ParserConfigurationException, FactoryConfigurationError {
+			final OutageDAO outageDao, final HttpClient client)
+			throws ClientProtocolException, IllegalStateException, IOException,
+			SAXException, ParserConfigurationException,
+			FactoryConfigurationError {
 		this.outagesFolder = getOutagesFolderName();
 		this.sessionFactory = sessionFactory;
 		this.outageDao = outageDao;
+		this.client = client;
 		this.run = new ParserRun(new Timestamp(new Date().getTime()));
 		sessionFactory.getCurrentSession().save(run);
 	}
@@ -139,7 +144,6 @@ public class PepcoScraper {
 		private Document makeRequest() throws ClientProtocolException,
 				IOException, IllegalStateException, SAXException,
 				ParserConfigurationException, FactoryConfigurationError {
-			final HttpClient client = new DefaultHttpClient();
 			final HttpGet get = new HttpGet(dataHTMLPrefix + outagesFolder
 					+ "/" + spatialIndex + ".xml");
 			get.getParams().setLongParameter("timestamp", new Date().getTime());
@@ -161,8 +165,7 @@ public class PepcoScraper {
 		 * @throws ParseException
 		 */
 		private void parse(Document doc) throws ParserException, ParseException {
-			final SimpleDateFormat dateParser = new SimpleDateFormat(
-					"MMM dd, h:mm a");
+			final SimpleDateFormat dateParser = getPepcoDateFormat();
 			final NodeList list = doc.getElementsByTagName("item");
 			for (int i = 0; i < list.getLength(); i++) {
 				final Element el = (Element) list.item(i);
@@ -325,6 +328,7 @@ public class PepcoScraper {
 
 	@SuppressWarnings("unchecked")
 	public void scrape() {
+		scrapeSummary(sessionFactory, run);
 		for (final String spatialIndex : getSpatialIndicesForPoint(
 				38.96000000000001, -77.02999999999999, 7)) {
 			new Scraper(spatialIndex, 38.96000000000001, -77.02999999999999, 7)
@@ -344,6 +348,64 @@ public class PepcoScraper {
 		}
 	}
 
+	private void scrapeSummary(final SessionFactory sessionFactory,
+			final ParserRun run) {
+		final HttpGet get = new HttpGet(
+				"http://www.pepco.com/home/emergency/maps/stormcenter/data/data.xml");
+		get.getParams().setLongParameter("timestamp", new Date().getTime());
+		try {
+			final HttpResponse response = client.execute(get);
+			try {
+				final Document doc = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder()
+						.parse(response.getEntity().getContent());
+				final Timestamp whenGenerated = new Timestamp(
+						getPepcoDateFormat()
+								.parse(doc
+										.getElementsByTagName("date_generated")
+										.item(0).getFirstChild().getNodeValue())
+								.getTime());
+				final NodeList areas = doc.getElementsByTagName("area");
+				final Element dc = (Element) areas.item(0), pg = (Element) areas
+						.item(1), mont = (Element) areas.item(2);
+				// Customers out
+				final int dcOut = getCustomersOut(dc), pgOut = getCustomersOut(pg), montOut = getCustomersOut(mont);
+				// Total customers
+				final int dcTot = getTotalCustomers(dc), pgTot = getTotalCustomers(pg), montTot = getTotalCustomers(mont);
+				final int totalOutages = Integer.parseInt(doc
+						.getElementsByTagName("total_outages").item(0)
+						.getFirstChild().getNodeValue());
+				sessionFactory.getCurrentSession().save(
+						new Summary(totalOutages, dcOut, dcTot, pgOut, pgTot,
+								montOut, montTot, whenGenerated, run));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				// Make sure we release the connection.
+				EntityUtils.consume(response.getEntity());
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int getCustomersOut(Element el) {
+		return Integer.parseInt(el.getElementsByTagName("custs_out").item(0)
+				.getFirstChild().getNodeValue());
+	}
+
+	private int getTotalCustomers(Element el) {
+		return Integer.parseInt(el.getElementsByTagName("total_custs").item(0)
+				.getFirstChild().getNodeValue());
+	}
+
+	private SimpleDateFormat getPepcoDateFormat() {
+		return new SimpleDateFormat("MMM dd, h:mm a");
+	}
+
 	public static void main(final String[] args)
 			throws ClientProtocolException, IOException, IllegalStateException,
 			SAXException, ParserConfigurationException,
@@ -351,8 +413,8 @@ public class PepcoScraper {
 		final SessionFactory sessionFactory = new Configuration().configure()
 				.buildSessionFactory();
 		sessionFactory.getCurrentSession().beginTransaction();
-		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory))
-				.scrape();
+		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory),
+				new DefaultHttpClient()).scrape();
 		sessionFactory.getCurrentSession().getTransaction().commit();
 		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();

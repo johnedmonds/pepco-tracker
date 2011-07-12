@@ -343,7 +343,7 @@ public class PepcoScraper {
 		for (final Outage o : (List<Outage>) (this.sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from Outage where id not in (:ids) and observedEnd=null")
+						"from Outage where id not in (:ids) and observedEnd is null")
 				.setParameterList("ids", discoveredOutageIds).list())) {
 			o.setObservedEnd(new Timestamp(new Date().getTime()));
 			this.sessionFactory.getCurrentSession().save(o);

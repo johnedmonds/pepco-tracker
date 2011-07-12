@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 11, 2011 9:51:09 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.pocketcookies.pepco.model.Summary" table="SUMMARY">
+        <id name="id" type="int">
+            <column name="ID" />
+            <generator class="increment" />
+        </id>
+        <property name="totalOutages" type="int">
+            <column name="TOTALOUTAGES" />
+        </property>
+        <property name="dcAffectedCustomers" type="int">
+            <column name="DCAFFECTEDCUSTOMERS" />
+        </property>
+        <property name="dcTotalCustomers" type="int">
+            <column name="DCTOTALCUSTOMERS" />
+        </property>
+        <property name="pgAffectedCustomers" type="int">
+            <column name="PGAFFECTEDCUSTOMERS" />
+        </property>
+        <property name="pgTotalCustomers" type="int">
+            <column name="PGTOTALCUSTOMERS" />
+        </property>
+        <property name="montAffectedCustomers" type="int">
+            <column name="MONTAFFECTEDCUSTOMERS" />
+        </property>
+        <property name="montTotalCustomers" type="int">
+            <column name="MONTTOTALCUSTOMERS" />
+        </property>
+        <property name="whenGenerated" type="java.sql.Timestamp">
+            <column name="WHENGENERATED" />
+        </property>
+        <many-to-one name="run" class="com.pocketcookies.pepco.model.ParserRun" fetch="join">
+            <column name="RUN" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

@@ -2,21 +2,17 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
                                          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-	<session-factory name="TestHibernate">
-		<property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
-		<property name="hibernate.connection.url">jdbc:hsqldb:file:data/pepco;shutdown=true</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
-		<property name="current_session_context_class">thread</property>
-		<property name="hibernate.hbm2ddl.auto">update</property>
-		<mapping class="com.pocketcookies.pepco.model.Outage"
-			resource="mappings/Outage.hbm.xml" />
-		<mapping class="com.pocketcookies.pepco.model.OutageClusterRevision"
-			resource="mappings/OutageClusterRevision.hbm.xml" />
-		<mapping class="com.pocketcookies.pepco.model.OutageRevision"
-			resource="mappings/OutageRevision.hbm.xml" />
-		<mapping class="com.pocketcookies.pepco.model.AbstractOutageRevision"
-			resource="mappings/AbstractOutageRevision.hbm.xml" />
-		<mapping class="com.pocketcookies.pepco.model.ParserRun"
-			resource="mappings/ParserRun.hbm.xml" />
-	</session-factory>
+ <session-factory name="TestHibernate">
+  <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+  <property name="hibernate.connection.url">jdbc:hsqldb:file:data/pepco;shutdown=true</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+  <property name="current_session_context_class">thread</property>
+  <property name="hibernate.hbm2ddl.auto">update</property>
+  <mapping class="com.pocketcookies.pepco.model.Outage" resource="mappings/Outage.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.OutageClusterRevision" resource="mappings/OutageClusterRevision.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.OutageRevision" resource="mappings/OutageRevision.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.AbstractOutageRevision" resource="mappings/AbstractOutageRevision.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.ParserRun" resource="mappings/ParserRun.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.Summary" resource="mappings/Summary.hbm.xml"/>
+ </session-factory>
 </hibernate-configuration>

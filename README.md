@@ -23,3 +23,7 @@ We don't currently have a very user-friendly way of running the scraper.  The cu
 # Configuration
 
 pepco-scraper takes its database configuration from pepco-model.  You will have to be somewhat familiar with Hibernate if you wish to change the default place in which data is stored (currently pepco-tracker/data/pepco) or database (currently hsqldb).  You can find the database configuration file at (assuming $PEPCO_TRACKER_HOME refers to the path to pepco-tracker) $PEPCO_TRACKER_HOME/pepco-model/src/main/resources/hibernate.cfg.xml.
+
+# Contributing
+
+We welcome anyone who wants to contribute to this project.  Please do not be afraid to contact us for help understanding the code, finding something to work on, or for any other reason you can think of.

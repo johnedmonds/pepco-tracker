@@ -286,6 +286,16 @@ public class PepcoScraper {
 		}
 	}
 
+	/**
+	 * Taken from
+	 * http://www.pepco.com/home/emergency/maps/stormcenter/scripts/ifactor
+	 * /stormcenter.js
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @param zoom
+	 * @return
+	 */
 	public Collection<String> getSpatialIndicesForPoint(double lat, double lon,
 			double zoom) {
 		double minLat = -85.05112878;

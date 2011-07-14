@@ -38,6 +38,9 @@ import org.hibernate.cfg.Configuration;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.StringFilter;
 import org.htmlparser.util.ParserException;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -153,8 +156,11 @@ public class PepcoScraper {
 			cookies.addCookie(new BasicClientCookie("pepscstate",
 					"map_type:r|homepage:" + lat + "," + lon + "," + zoom));
 			final HttpResponse response = client.execute(get);
-			return DocumentBuilderFactory.newInstance().newDocumentBuilder()
+			final Document ret = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder()
 					.parse(response.getEntity().getContent());
+			EntityUtils.consume(response.getEntity());
+			return ret;
 		}
 
 		/**
@@ -165,7 +171,7 @@ public class PepcoScraper {
 		 * @throws ParseException
 		 */
 		private void parse(Document doc) throws ParserException, ParseException {
-			final SimpleDateFormat dateParser = getPepcoDateFormat();
+			final DateTimeFormatter dateParser = getPepcoDateFormat();
 			final NodeList list = doc.getElementsByTagName("item");
 			for (int i = 0; i < list.getLength(); i++) {
 				final Element el = (Element) list.item(i);
@@ -184,8 +190,8 @@ public class PepcoScraper {
 
 				// Parse the description.
 				final int numCustomersAffected;
-				final Date earliestReport;
-				final Date estimatedRestoration;
+				final DateTime earliestReport;
+				final DateTime estimatedRestoration;
 				final org.htmlparser.util.NodeList descList = Parser
 						.createParser(
 								"<body>" // Make sure nodes get a parent.
@@ -201,14 +207,16 @@ public class PepcoScraper {
 				numCustomersAffected = sNumCustomersAffected
 						.equals("Less than 5") ? 0 : Integer
 						.parseInt(sNumCustomersAffected);
-				earliestReport = dateParser.parse(descList
-						.extractAllNodesThatMatch(new StringFilter("Report"))
-						.elementAt(0).getNextSibling().getNextSibling()
-						.getText().trim());
-				estimatedRestoration = dateParser.parse(descList
-						.extractAllNodesThatMatch(
+				earliestReport = dateParser.parseDateTime(
+						descList.extractAllNodesThatMatch(
+								new StringFilter("Report")).elementAt(0)
+								.getNextSibling().getNextSibling().getText()
+								.trim()).withYear(new DateTime().getYear());
+				estimatedRestoration = dateParser.parseDateTime(
+						descList.extractAllNodesThatMatch(
 								new StringFilter("Restoration")).elementAt(0)
-						.getNextSibling().getNextSibling().getText().trim());
+								.getNextSibling().getNextSibling().getText()
+								.trim()).withYear(new DateTime().getYear());
 
 				// Load the outage.
 				final Outage existingOutage = outageDao.getActiveOutage(
@@ -216,7 +224,7 @@ public class PepcoScraper {
 				final Outage outage;
 				if (existingOutage == null)
 					outage = new Outage(center.lat, center.lon, new Timestamp(
-							earliestReport.getTime()), null);
+							earliestReport.getMillis()), null);
 				else
 					outage = existingOutage;
 				final AbstractOutageRevision revision;
@@ -235,7 +243,7 @@ public class PepcoScraper {
 									.elementAt(0).getNextSibling()
 									.getNextSibling().getText().trim());
 					revision = new OutageClusterRevision(numCustomersAffected,
-							new Timestamp(estimatedRestoration.getTime()),
+							new Timestamp(estimatedRestoration.getMillis()),
 							new Timestamp(new Date().getTime()), outage, run,
 							numOutages);
 				} else {
@@ -251,7 +259,7 @@ public class PepcoScraper {
 							.elementAt(0).getNextSibling().getNextSibling()
 							.getText().trim().replace(' ', '_').toUpperCase());
 					revision = new OutageRevision(numCustomersAffected,
-							new Timestamp(estimatedRestoration.getTime()),
+							new Timestamp(estimatedRestoration.getMillis()),
 							new Timestamp(new Date().getTime()), outage, run,
 							cause, status);
 
@@ -373,10 +381,11 @@ public class PepcoScraper {
 						.parse(response.getEntity().getContent());
 				final Timestamp whenGenerated = new Timestamp(
 						getPepcoDateFormat()
-								.parse(doc
-										.getElementsByTagName("date_generated")
-										.item(0).getFirstChild().getNodeValue())
-								.getTime());
+								.parseDateTime(
+										doc.getElementsByTagName(
+												"date_generated").item(0)
+												.getFirstChild().getNodeValue())
+								.withYear(new DateTime().getYear()).getMillis());
 				final NodeList areas = doc.getElementsByTagName("area");
 				final Element dc = (Element) areas.item(0), pg = (Element) areas
 						.item(1), mont = (Element) areas.item(2);
@@ -414,8 +423,8 @@ public class PepcoScraper {
 				.getFirstChild().getNodeValue());
 	}
 
-	private SimpleDateFormat getPepcoDateFormat() {
-		return new SimpleDateFormat("MMM dd, h:mm a");
+	private DateTimeFormatter getPepcoDateFormat() {
+		return DateTimeFormat.forPattern("MMM dd, h:mm a");
 	}
 
 	public static void main(final String[] args)

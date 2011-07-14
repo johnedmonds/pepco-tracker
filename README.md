@@ -14,11 +14,27 @@ You will need to build and install pepco-model before using pepco-scraper.
     cd pepco-model
     mvn install
 
-# Running
+# Components
 
-We don't currently have a very user-friendly way of running the scraper.  The current way to do it is to use Maven:
+pepco-tracker is made of several components:
+
+* pepco-model: Models the data for storage in a relational database.
+* pepco-scraper: Scrapes Pepco's site and stores the data using pepco-model
+* pepco-web: A web interface for viewing the data
+
+# Running the Scraper
+
+We don't currently have a very user-friendly way of running the scraper.  The current way to do it is to cd into pepco-scraper and use Maven:
 
     mvn exec:java -Dexec.mainClass=com.pocketcookies.pepco.scraper.PepcoScraper
+
+# Running the Website
+
+Maven will generate a war file when you cd into pepco-web and do
+
+    mvn package
+
+You can put that war file into any servlet container and it should work.
 
 # Configuration
 

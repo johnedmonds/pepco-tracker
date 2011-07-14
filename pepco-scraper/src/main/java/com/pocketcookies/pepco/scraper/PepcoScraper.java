@@ -144,9 +144,7 @@ public class PepcoScraper {
 			}
 		}
 
-		private Document makeRequest() throws ClientProtocolException,
-				IOException, IllegalStateException, SAXException,
-				ParserConfigurationException, FactoryConfigurationError {
+		private Document makeRequest() throws Exception {
 			final HttpGet get = new HttpGet(dataHTMLPrefix + outagesFolder
 					+ "/" + spatialIndex + ".xml");
 			get.getParams().setLongParameter("timestamp", new Date().getTime());
@@ -155,11 +153,16 @@ public class PepcoScraper {
 			context.setAttribute(ClientContext.COOKIE_STORE, cookies);
 			cookies.addCookie(new BasicClientCookie("pepscstate",
 					"map_type:r|homepage:" + lat + "," + lon + "," + zoom));
+			final Document ret;
 			final HttpResponse response = client.execute(get);
-			final Document ret = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder()
-					.parse(response.getEntity().getContent());
-			EntityUtils.consume(response.getEntity());
+			try {
+				ret = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+						.parse(response.getEntity().getContent());
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				EntityUtils.consume(response.getEntity());
+			}
 			return ret;
 		}
 

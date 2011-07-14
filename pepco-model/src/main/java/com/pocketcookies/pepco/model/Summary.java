@@ -23,6 +23,9 @@ public class Summary {
 	private Timestamp whenGenerated;
 	private ParserRun run;
 
+	protected Summary() {
+	}
+
 	public Summary(int totalOutages, int dcAffectedCustomers,
 			int dcTotalCustomers, int pgAffectedCustomers,
 			int pgTotalCustomers, int montAffectedCustomers,

@@ -1,7 +1,6 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 import junit.framework.TestCase;
 

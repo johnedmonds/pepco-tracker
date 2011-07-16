@@ -1,6 +1,5 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page isELIgnored="false"%>
 <h1>Outage Summary</h1>
 <dl>
 	<dt>Total Outages</dt>

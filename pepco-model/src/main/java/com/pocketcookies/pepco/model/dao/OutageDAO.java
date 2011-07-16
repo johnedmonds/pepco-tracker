@@ -11,10 +11,17 @@ import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.Summary;
 
 public class OutageDAO {
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 
 	public OutageDAO(SessionFactory sessionFactory) {
 		super();
+		this.sessionFactory = sessionFactory;
+	}
+
+	protected  OutageDAO() {
+	}
+
+	private void setSessionFactory(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 

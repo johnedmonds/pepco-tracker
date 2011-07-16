@@ -5,5 +5,10 @@
 <tiles-definitions>
 	<definition name="pepco.homepage"
 		template="/WEB-INF/tiles/jsps/layouts/baseLayout.jsp">
+		<put-attribute name="title" value="Pepco Outage Tracker" />
+		<put-attribute name="header" value="/WEB-INF/tiles/jsps/header.jsp" />
+		<put-attribute name="menu" value="/WEB-INF/tiles/jsps/menu.jsp" />
+		<put-attribute name="body" value="/WEB-INF/tiles/jsps/body.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/tiles/jsps/footer.jsp" />
 	</definition>
 </tiles-definitions>

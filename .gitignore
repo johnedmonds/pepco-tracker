@@ -2,3 +2,5 @@
 .classpath
 target/
 pepco-scraper/data/
+.settings/
+bin/

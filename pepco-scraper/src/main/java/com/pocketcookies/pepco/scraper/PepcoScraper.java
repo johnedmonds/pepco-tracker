@@ -108,9 +108,9 @@ public class PepcoScraper {
 	 * Here is a short description of how scraping will work.
 	 * 
 	 * We request the most zoomed out version of the data. Then we save all
-	 * outages to the database. Then, for each clustered outage, we that that
-	 * clustered outage's lat lon coords and request the next level of detail
-	 * for those coordinates.
+	 * outages to the database. Then, for each clustered outage, we take that
+	 * clustered outage's lat lon coords and request those coordinates at the
+	 * next zoom level.
 	 * 
 	 * @author John Edmonds
 	 */

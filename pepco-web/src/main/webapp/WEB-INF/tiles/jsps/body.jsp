@@ -1,31 +1,28 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <h1>Outage Summary</h1>
-<dl>
-	<dt>Total Outages</dt>
-	<dd>
-		<c:out value="${request}" />
-		<c:out value="${totalOutages}" />
-	</dd>
-	<dt>Affected Customers</dt>
-	<dd>
-		<dl>
-			<dt>DC</dt>
-			<dd>
-				<c:out value="${dcCust}" />
-			</dd>
-			<dt>Prince George</dt>
-			<dd>
-				<c:out value="${pgCust}" />
-			</dd>
-			<dt>Montgomery</dt>
-			<dd>
-				<c:out value="${pgCust}" />
-			</dd>
-			<dt>Total</dt>
-			<dd>
-				<c:out value="${dcCust+pgCust+montCust}" />
-			</dd>
-		</dl>
-	</dd>
-</dl>
+<div id="outageSummary">
+	<table>
+		<tr>
+			<td>Total Outages</td>
+			<td><c:out value="${summary.totalOutages}" />
+			</td>
+		</tr>
+		<tr>
+			<td>Total Affected Customers</td>
+			<td>${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}/${summary.dcTotalCustomers+summary.pgTotalCustomers+summary.montTotalCustomers}</td>
+		</tr>
+		<tr>
+			<td>DC Customers Affected Customers</td>
+			<td>${summary.dcAffectedCustomers}/${summary.dcTotalCustomers}</td>
+		</tr>
+		<tr>
+			<td>Prince George Affected Customers</td>
+			<td>${summary.pgAffectedCustomers}/${summary.pgTotalCustomers}</td>
+		</tr>
+		<tr>
+			<td>Montgomery Affected Customers</td>
+			<td>${summary.montAffectedCustomers}/${summary.montTotalCustomers}</td>
+		</tr>
+	</table>
+</div>

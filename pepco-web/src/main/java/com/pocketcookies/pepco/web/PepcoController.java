@@ -20,17 +20,14 @@ public class PepcoController {
 		this.outageDao = outageDao;
 	}
 
-	@RequestMapping(value = "/")
+	@RequestMapping(value = "/web")
 	public ModelAndView index() {
 		final List<Summary> summaries = this.outageDao.getSummaries(null, null,
 				true, 2);
 		final Summary currentSummary = summaries.get(0);
 		// final Summary previousSummary = summaries.get(1);
 		final ModelAndView mav = new ModelAndView("pepco.homepage");
-		mav.addObject("totalOutages", currentSummary.getTotalOutages());
-		mav.addObject("dcCust", currentSummary.getDcAffectedCustomers());
-		mav.addObject("pgCust", currentSummary.getPgAffectedCustomers());
-		mav.addObject("montCust", currentSummary.getMontAffectedCustomers());
+		mav.addObject("summary", currentSummary);
 		return mav;
 	}
 }

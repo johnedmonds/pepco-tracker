@@ -458,18 +458,6 @@ public class PepcoScraper {
 			this.lon = lon;
 		}
 
-		/**
-		 * Takes a lat,lon separate by the space character (' ').
-		 * 
-		 * @param s
-		 *            Latitude Longitude separated by the space character (' ').
-		 */
-		public PointDouble(final String s) {
-			final StringTokenizer st = new StringTokenizer(s);
-			this.lat = Double.parseDouble(st.nextToken());
-			this.lon = Double.parseDouble(st.nextToken());
-		}
-
 		@Override
 		public String toString() {
 			return lat + " " + lon;

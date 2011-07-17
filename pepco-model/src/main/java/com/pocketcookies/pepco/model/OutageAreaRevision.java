@@ -75,4 +75,8 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 			return this.getId() - o.getId();
 	}
 
+	public boolean equalsIgnoreTime(final OutageAreaRevision r) {
+		return this.getCustomersOut() == r.getCustomersOut();
+	}
+
 }

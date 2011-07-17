@@ -54,6 +54,8 @@
 				<value>mappings/OutageRevision.hbm.xml</value>
 				<value>mappings/ParserRun.hbm.xml</value>
 				<value>mappings/Summary.hbm.xml</value>
+				<value>mappings/OutageArea.hbm.xml</value>
+				<value>mappings/OutageAreaRevision.hbm.xml</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">

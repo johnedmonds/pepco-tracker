@@ -10,7 +10,7 @@ public class OutageArea {
 
 	private SortedSet<OutageAreaRevision> revisions;
 
-	protected OutageArea(final String id) {
+	public OutageArea(final String id) {
 		setId(id);
 		setRevisions(new TreeSet<OutageAreaRevision>());
 	}

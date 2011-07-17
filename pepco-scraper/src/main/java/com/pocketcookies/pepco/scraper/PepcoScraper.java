@@ -16,6 +16,9 @@ import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -47,12 +50,15 @@ import org.xml.sax.SAXException;
 
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
+import com.pocketcookies.pepco.model.OutageArea;
+import com.pocketcookies.pepco.model.OutageAreaRevision;
 import com.pocketcookies.pepco.model.OutageClusterRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.Summary;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
+import com.sun.xml.internal.bind.unmarshaller.DOMScanner;
 
 public class PepcoScraper {
 	private static final String dataHTMLPrefix = "http://www.pepco.com/home/emergency/maps/stormcenter/data/outages/";
@@ -351,6 +357,7 @@ public class PepcoScraper {
 	@SuppressWarnings("unchecked")
 	public void scrape() {
 		scrapeSummary(sessionFactory, run);
+		scrapeThematic(sessionFactory, run);
 		for (final String spatialIndex : getSpatialIndicesForPoint(
 				38.96000000000001, -77.02999999999999, 7)) {
 			new Scraper(spatialIndex, 38.96000000000001, -77.02999999999999, 7)
@@ -425,6 +432,70 @@ public class PepcoScraper {
 				.getFirstChild().getNodeValue());
 	}
 
+	/**
+	 * Scrapes areas by zip code.
+	 * 
+	 * @param sessionFactory
+	 * @param parserRun
+	 */
+	public void scrapeThematic(final SessionFactory sessionFactory,
+			final ParserRun parserRun) {
+		final HttpGet get = new HttpGet(
+				"http://www.pepco.com/home/emergency/maps/stormcenter/data/thematic/current/thematic_areas.xml");
+		get.getParams().setLongParameter("timestamp", new Date().getTime());
+		try {
+			final HttpResponse response = client.execute(get);
+			try {
+				final Document doc = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder()
+						.parse(response.getEntity().getContent());
+				final NodeList areas = doc.getElementsByTagName("item");
+				for (int i = 0; i < areas.getLength(); i++) {
+					final OutageArea current = this.outageDao
+							.getOrCreateArea(((Element) areas.item(i))
+									.getElementsByTagName("title").item(0)
+									.getFirstChild().getNodeValue());
+
+					final String sCustomersOut = Parser
+							.createParser(
+									"<body>" // Make sure nodes get a
+												// parent.
+											+ ((Element) areas.item(i))
+													.getElementsByTagName(
+															"description")
+													.item(0).getFirstChild()
+													.getNodeValue() + "</body>",
+									null)
+							.parse(null)
+							.elementAt(0)
+							.getChildren()
+							.extractAllNodesThatMatch(
+									new StringFilter("Customers Affected"))
+							.elementAt(0).getNextSibling().getNextSibling()
+							.getText().trim();
+					final int customersOut = sCustomersOut
+							.equals("Less than 5") ? 0 : Integer
+							.parseInt(sCustomersOut);
+					final OutageAreaRevision revision = new OutageAreaRevision(
+							current, customersOut, run);
+					if (current.getRevisions().isEmpty()
+							|| !revision.equalsIgnoreTime(current
+									.getRevisions().first()))
+						sessionFactory.getCurrentSession().save(revision);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				// Make sure we release the connection.
+				EntityUtils.consume(response.getEntity());
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private DateTimeFormatter getPepcoDateFormat() {
 		return DateTimeFormat.forPattern("MMM dd, h:mm a");
 	}
@@ -437,7 +508,8 @@ public class PepcoScraper {
 				.buildSessionFactory();
 		sessionFactory.getCurrentSession().beginTransaction();
 		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory),
-				new DefaultHttpClient()).scrape();
+				new DefaultHttpClient()).scrapeThematic(sessionFactory,
+				new ParserRun(new Timestamp(new Date().getTime())));
 		sessionFactory.getCurrentSession().getTransaction().commit();
 		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 16, 2011 7:07:43 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.pocketcookies.pepco.model.OutageAreaRevision" table="OUTAGEAREAREVISION">
+        <id name="id" type="int">
+            <column name="ID" />
+            <generator class="increment" />
+        </id>
+        <many-to-one name="area" class="com.pocketcookies.pepco.model.OutageArea" fetch="join">
+            <column name="AREA" />
+        </many-to-one>
+        <property name="customersOut" type="int">
+            <column name="CUSTOMERSOUT" />
+        </property>
+        <many-to-one name="parserRun" class="com.pocketcookies.pepco.model.ParserRun" fetch="join">
+            <column name="RUN" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

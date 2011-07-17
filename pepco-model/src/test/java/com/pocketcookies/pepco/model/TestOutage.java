@@ -213,8 +213,8 @@ public class TestOutage extends TestCase {
 		run = (ParserRun) session.load(ParserRun.class, run.getId());
 		or1 = (OutageRevision) session.load(OutageRevision.class, or1.getId());
 		or2 = (OutageRevision) session.load(OutageRevision.class, or2.getId());
-		assertEquals(2, run.getRevisions().size());
-		assertTrue(run.getRevisions().contains(or1));
-		assertTrue(run.getRevisions().contains(or2));
+		assertEquals(2, run.getOutageRevisions().size());
+		assertTrue(run.getOutageRevisions().contains(or1));
+		assertTrue(run.getOutageRevisions().contains(or2));
 	}
 }

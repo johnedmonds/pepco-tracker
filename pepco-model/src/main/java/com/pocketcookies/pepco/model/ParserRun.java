@@ -2,27 +2,21 @@ package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.LinkedList;
 
 public class ParserRun {
 	private int id;
 	private Timestamp runTime;
-	private Collection<AbstractOutageRevision> revisions;
+	private Collection<AbstractOutageRevision> outageRevisions;
+	private Collection<OutageAreaRevision> areaRevisions;
 
-	public ParserRun(Timestamp runTime) {
-		super();
+	public ParserRun(final Timestamp runTime) {
 		setRunTime(runTime);
+		setOutageRevisions(new LinkedList<AbstractOutageRevision>());
+		setAreaRevisions(new LinkedList<OutageAreaRevision>());
 	}
 
 	public ParserRun() {
-		super();
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public Timestamp getRunTime() {
-		return runTime;
 	}
 
 	@SuppressWarnings("unused")
@@ -34,13 +28,29 @@ public class ParserRun {
 		this.runTime = runTime;
 	}
 
-	public Collection<AbstractOutageRevision> getRevisions() {
-		return revisions;
+	private void setOutageRevisions(
+			Collection<AbstractOutageRevision> outageRevisions) {
+		this.outageRevisions = outageRevisions;
 	}
 
-	@SuppressWarnings("unused")
-	private void setRevisions(Collection<AbstractOutageRevision> revisions) {
-		this.revisions = revisions;
+	private void setAreaRevisions(Collection<OutageAreaRevision> areaRevisions) {
+		this.areaRevisions = areaRevisions;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public Timestamp getRunTime() {
+		return runTime;
+	}
+
+	public Collection<AbstractOutageRevision> getOutageRevisions() {
+		return outageRevisions;
+	}
+
+	public Collection<OutageAreaRevision> getAreaRevisions() {
+		return areaRevisions;
 	}
 
 }

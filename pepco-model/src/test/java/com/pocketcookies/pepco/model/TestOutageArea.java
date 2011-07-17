@@ -93,10 +93,10 @@ public class TestOutageArea extends TestCase {
 		assertTrue(
 				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L)))
 				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934593L))))< 0);
+				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(17179869184L))))< 0);
 		
 		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934593L)))
+				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(17179869184L)))
 				.compareTo(
 				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L))))> 0);
 		

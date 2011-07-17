@@ -61,15 +61,18 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 
 	@Override
 	public int compareTo(OutageAreaRevision o) {
-		final int timeComparison = (int) (this.getParserRun().getRunTime()
-				.getTime() - o.getParserRun().getRunTime().getTime());
-		// We only use the times for sorting. Since we're actually putting this
-		// stuff in a TreeSet, we don't want to accidentally lose entries just
-		// because they occur at the same time. Thus, we compare by the id to
-		// check whether they are truly equal.
-		if (timeComparison == 0)
+		if (this.getParserRun().getRunTime().getTime() < o.getParserRun()
+				.getRunTime().getTime())
+			return -1;
+		else if (this.getParserRun().getRunTime().getTime() > o.getParserRun()
+				.getRunTime().getTime())
+			return 1;
+		else
+			// We only use the times for sorting. Since we're actually putting
+			// this stuff in a TreeSet, we don't want to accidentally lose
+			// entries just because they occur at the same time. Thus, we
+			// compare by the id to check whether they are truly equal.
 			return this.getId() - o.getId();
-		return timeComparison;
 	}
 
 }

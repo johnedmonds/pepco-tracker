@@ -83,4 +83,20 @@ public class TestOutageDAO extends TestCase {
 
 		assertEquals(2, dao.getSummaries(null, null, true, 2).size());
 	}
+
+	public void testGetOrCreateOutageArea() {
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		Session session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		OutageArea a1 = new OutageArea("00000");
+		session.save(a1);
+		session.getTransaction().commit();
+		session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		a1 = (OutageArea) session.load(a1.getClass(), a1.getId());
+		assertEquals(a1, dao.getOrCreateArea(a1.getId()));
+		assertEquals(1, session.createQuery("from OutageArea").list().size());
+		dao.getOrCreateArea("00001");
+		assertEquals(2, session.createQuery("from OutageArea").list().size());
+	}
 }

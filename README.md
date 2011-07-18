@@ -8,7 +8,7 @@ Java 1.5+
 
 # Getting set up
 
-You will need to build and install pepco-model before using pepco-scraper.
+You will need to build and install pepco-model before using pepco-scraper and pepco-web.
 
     cd </path/to/pepco-tracker>
     cd pepco-model

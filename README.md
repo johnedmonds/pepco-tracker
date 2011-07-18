@@ -36,15 +36,13 @@ Maven will generate a war file when you cd into pepco-web and do
 
 You can put that war file into any servlet container and it should work.
 
+You can also build for other environments (e.g. local, dev, test, prod, etc.).  Sources specific to an environment go in src/env.  For things that should go in WEB-INF put them in /src/env/${build.env}/webapp.  For things that should go in WEB-INF/classes, put them in src/env/${build.env}/resources.  By default, we will build for the "local" environment.  You can switch the environment by specifying a value for build.env like so:
+
+    mvn package -Dbuild.env=prod
+
 # Configuration
 
 pepco-scraper takes its database configuration from pepco-model.  You will have to be somewhat familiar with Hibernate if you wish to change the default place in which data is stored (currently pepco-tracker/data/pepco) or database (currently hsqldb).  You can find the database configuration file at (assuming $PEPCO_TRACKER_HOME refers to the path to pepco-tracker) $PEPCO_TRACKER_HOME/pepco-model/src/main/resources/hibernate.cfg.xml.
-
-# Advanced Building
-
-We can now build for multiple environments (e.g. local, dev, test, prod, etc.).  Sources specific to an environment go in /src/env/${build.env}/webapp (for things to go in WEB-INF) or src/env/${build.env}/resources (for things to go in WEB-INF/classes).  By default, we will build for the "local" environment.  You can switch the environment when you compile by specifying a value for build.env like so:
-
-    mvn package -Dbuild.env=prod
 
 # Contributing
 

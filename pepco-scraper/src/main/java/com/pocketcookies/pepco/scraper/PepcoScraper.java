@@ -91,7 +91,9 @@ public class PepcoScraper {
 		this.sessionFactory = sessionFactory;
 		this.outageDao = outageDao;
 		this.client = client;
-		this.run = new ParserRun(new Timestamp(new Date().getTime()));
+		this.run = new ParserRun(new Timestamp(DateTimeFormat
+				.forPattern("yyyy_MM_dd_HH_mm_ss")
+				.parseDateTime(this.outagesFolder).getMillis()));
 		sessionFactory.getCurrentSession().save(run);
 	}
 

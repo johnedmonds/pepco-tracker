@@ -510,8 +510,7 @@ public class PepcoScraper {
 				.buildSessionFactory();
 		sessionFactory.getCurrentSession().beginTransaction();
 		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory),
-				new DefaultHttpClient()).scrapeThematic(sessionFactory,
-				new ParserRun(new Timestamp(new Date().getTime())));
+				new DefaultHttpClient()).scrape();
 		sessionFactory.getCurrentSession().getTransaction().commit();
 		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();

@@ -36,10 +36,8 @@
 			value="org.springframework.web.servlet.view.tiles2.TilesView" />
 	</bean>
 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource" ref="pepcoDataSource" />
-		<property name="mappingResources">
+	<bean id="mappingsList" class="java.util.ArrayList">
+		<constructor-arg>
 			<list>
 				<value>mappings/AbstractOutageRevision.hbm.xml</value>
 				<value>mappings/Outage.hbm.xml</value>
@@ -50,13 +48,9 @@
 				<value>mappings/OutageArea.hbm.xml</value>
 				<value>mappings/OutageAreaRevision.hbm.xml</value>
 			</list>
-		</property>
-		<property name="hibernateProperties">
-			<value>
-				hibernate.dialect=org.hibernate.dialect.HSQLDialect
-			</value>
-		</property>
+		</constructor-arg>
 	</bean>
+
 	<bean id="txManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />

@@ -145,7 +145,7 @@
 							<filtering>false</filtering>
 						</resource>
 					</webResources>
-					<warName>${project.artifactId}-${build.env}-${project.version}.war</warName>
+					<classifier>${build.env}</classifier>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -16,9 +16,6 @@ import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -58,7 +55,6 @@ import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.Summary;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
-import com.sun.xml.internal.bind.unmarshaller.DOMScanner;
 
 public class PepcoScraper {
 	private static final String dataHTMLPrefix = "http://www.pepco.com/home/emergency/maps/stormcenter/data/outages/";

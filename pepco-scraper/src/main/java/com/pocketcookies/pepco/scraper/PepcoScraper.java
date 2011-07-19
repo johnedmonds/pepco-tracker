@@ -503,7 +503,7 @@ public class PepcoScraper {
 			SAXException, ParserConfigurationException,
 			FactoryConfigurationError, ParserException {
 		final SessionFactory sessionFactory = new Configuration().configure()
-				.buildSessionFactory();
+				.configure("hibernate.ds.cfg.xml").buildSessionFactory();
 		sessionFactory.getCurrentSession().beginTransaction();
 		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory),
 				new DefaultHttpClient()).scrape();

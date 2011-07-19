@@ -5,8 +5,7 @@
 	<table>
 		<tr>
 			<td>Total Outages</td>
-			<td><c:out value="${summary.totalOutages}" />
-			</td>
+			<td><c:out value="${summary.totalOutages}" /></td>
 		</tr>
 		<tr>
 			<td>Total Affected Customers</td>
@@ -25,4 +24,6 @@
 			<td>${summary.montAffectedCustomers}/${summary.montTotalCustomers}</td>
 		</tr>
 	</table>
+	<img alt="Pepco Reliability Statistics"
+		src="<c:url value="/resources/img/generated/reliability.svg"/>">
 </div>

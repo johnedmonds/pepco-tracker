@@ -73,4 +73,7 @@
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="outageDaoOperation" />
 	</aop:config>
 
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+	<mvc:annotation-driven />
+
 </beans>

@@ -20,7 +20,7 @@ public class PepcoController {
 		this.outageDao = outageDao;
 	}
 
-	@RequestMapping(value = "/web")
+	@RequestMapping(value = "/")
 	public ModelAndView index() {
 		final List<Summary> summaries = this.outageDao.getSummaries(null, null,
 				true, 2);

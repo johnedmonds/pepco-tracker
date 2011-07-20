@@ -13,6 +13,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>pepco-web</servlet-name>
-		<url-pattern>/web/</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 </web-app>

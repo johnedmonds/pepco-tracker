@@ -16,4 +16,5 @@ reliability_plot <- reliability_plot + opts(title='Pepco Reliability Statistics'
 #reliability_plot <- reliability_plot + opts(legend.position=c(.5,.5))
 #reliability_plot <- reliability_plot + scale_fill_manual()
 reliability_dpi<-72
-ggsave(reliability_plot,filename='reliability.svg', width=900/reliability_dpi, height=150/reliability_dpi, dpi=reliability_dpi)
+ggsave(reliability_plot,filename=commandArgs(trailingOnly=T)[1],
+    width=900/reliability_dpi, height=150/reliability_dpi, dpi=reliability_dpi)

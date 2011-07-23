@@ -55,6 +55,11 @@ public class OutageAreaDAO {
 	 *         successfully, false otherwise.
 	 */
 	public boolean updateArea(final OutageAreaRevision revision) {
+		// Hibernate doesn't seem to immediately write rows to the database so
+		// that when we call refresh(), we may get an exception if the
+		// OutageArea has not been written to the database. This forces the
+		// OutageArea to get written to the database so we can refresh it later.
+		this.sessionFactory.getCurrentSession().flush();
 		// Usually, we don't add the revision to the area but the association
 		// still exists in the database. We need to reload to check whether the
 		// passed revision has already been added to this area.

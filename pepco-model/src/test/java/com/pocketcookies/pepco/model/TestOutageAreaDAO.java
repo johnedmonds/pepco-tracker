@@ -45,9 +45,7 @@ public class TestOutageAreaDAO extends TestCase {
 		this.sessionFactory.getCurrentSession().save(later);
 		this.sessionFactory.getCurrentSession().save(a1);
 		final OutageAreaRevision r1 = new OutageAreaRevision(a1, 1, now);
-		this.sessionFactory.getCurrentSession().flush();
 		assertTrue(dao.updateArea(r1));
-		this.sessionFactory.getCurrentSession().flush();
 		final OutageAreaRevision r2 = new OutageAreaRevision(a1, 1, later);
 		assertFalse(dao.updateArea(r2));
 		assertEquals(1, a1.getRevisions().size());

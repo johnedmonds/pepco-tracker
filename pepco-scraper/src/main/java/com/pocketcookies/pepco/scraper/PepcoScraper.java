@@ -54,6 +54,7 @@ import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.Summary;
+import com.pocketcookies.pepco.model.dao.OutageAreaDAO;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
 public class PepcoScraper {
@@ -63,6 +64,7 @@ public class PepcoScraper {
 	private final String outagesFolder;
 	private final SessionFactory sessionFactory;
 	private final OutageDAO outageDao;
+	private final OutageAreaDAO areaDao;
 	private final HttpClient client;
 	final ParserRun run;
 
@@ -79,13 +81,14 @@ public class PepcoScraper {
 	private final Set<Integer> discoveredOutageIds = new TreeSet<Integer>();
 
 	public PepcoScraper(final SessionFactory sessionFactory,
-			final OutageDAO outageDao, final HttpClient client)
-			throws ClientProtocolException, IllegalStateException, IOException,
-			SAXException, ParserConfigurationException,
-			FactoryConfigurationError {
+			final OutageDAO outageDao, final OutageAreaDAO areaDao,
+			final HttpClient client) throws ClientProtocolException,
+			IllegalStateException, IOException, SAXException,
+			ParserConfigurationException, FactoryConfigurationError {
 		this.outagesFolder = getOutagesFolderName();
 		this.sessionFactory = sessionFactory;
 		this.outageDao = outageDao;
+		this.areaDao = areaDao;
 		this.client = client;
 		this.run = new ParserRun(new Timestamp(DateTimeFormat
 				.forPattern("yyyy_MM_dd_HH_mm_ss")
@@ -449,7 +452,7 @@ public class PepcoScraper {
 						.parse(response.getEntity().getContent());
 				final NodeList areas = doc.getElementsByTagName("item");
 				for (int i = 0; i < areas.getLength(); i++) {
-					final OutageArea current = this.outageDao
+					final OutageArea current = this.areaDao
 							.getOrCreateArea(((Element) areas.item(i))
 									.getElementsByTagName("title").item(0)
 									.getFirstChild().getNodeValue());
@@ -506,7 +509,8 @@ public class PepcoScraper {
 				.configure("hibernate.ds.cfg.xml").buildSessionFactory();
 		sessionFactory.getCurrentSession().beginTransaction();
 		new PepcoScraper(sessionFactory, new OutageDAO(sessionFactory),
-				new DefaultHttpClient()).scrape();
+				new OutageAreaDAO(sessionFactory), new DefaultHttpClient())
+				.scrape();
 		sessionFactory.getCurrentSession().getTransaction().commit();
 		sessionFactory.getCurrentSession().close();
 		sessionFactory.close();

@@ -8,7 +8,6 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.Outage;
-import com.pocketcookies.pepco.model.OutageArea;
 import com.pocketcookies.pepco.model.Summary;
 
 public class OutageDAO {
@@ -22,6 +21,8 @@ public class OutageDAO {
 	protected OutageDAO() {
 	}
 
+	// Used by Spring
+	@SuppressWarnings("unused")
 	private void setSessionFactory(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
@@ -84,25 +85,5 @@ public class OutageDAO {
 		if (limit > 0)
 			q.setMaxResults(limit);
 		return q.list();
-	}
-
-	/**
-	 * If the outage area with the given zip code(s) exists, we retrieve and
-	 * return that OutageArea. Otherwise, we create a new OutageArea and persist
-	 * it, then return that area.
-	 * 
-	 * @param zip
-	 *            The zip code(s) to use when searching for an OutageArea.
-	 * @return The outage area with the given zip code or a new outage area.
-	 */
-	public OutageArea getOrCreateArea(final String zip) {
-		final OutageArea existing = (OutageArea) sessionFactory.getCurrentSession().get(
-				OutageArea.class, zip);
-		if (existing == null) {
-			final OutageArea ret = new OutageArea(zip);
-			this.sessionFactory.getCurrentSession().save(ret);
-			return ret;
-		}
-		return existing;
 	}
 }

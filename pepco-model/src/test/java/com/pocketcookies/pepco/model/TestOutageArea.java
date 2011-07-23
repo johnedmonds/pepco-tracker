@@ -1,6 +1,7 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import java.util.TreeSet;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -58,57 +59,47 @@ public class TestOutageArea extends TestCase {
 	}
 
 	public void testComparison() {
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(2)))) < 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(2)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))) > 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))) == 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))
-				.compareTo(
-				new OutageAreaRevision(1, null, 0, new ParserRun(new Timestamp(1)))) < 0);
-		
-		assertTrue(
-				new OutageAreaRevision(1, null, 0, new ParserRun(new Timestamp(1)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(1)))) > 0);
-		
-		//Test year 2038 problem by using timestamps >= 2^33.
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L))))== 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(17179869184L))))< 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(17179869184L)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L))))> 0);
-		
-		assertTrue(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L)))
-				.compareTo(
-				new OutageAreaRevision(1, null, 0, new ParserRun(new Timestamp(8589934592L))))< 0);
-		
-		assertTrue(
-				new OutageAreaRevision(1, null, 0, new ParserRun(new Timestamp(8589934592L)))
-				.compareTo(
-				new OutageAreaRevision(0, null, 0, new ParserRun(new Timestamp(8589934592L))))> 0);
-		}
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(1))).compareTo(new OutageAreaRevision(0, null, 0,
+				new ParserRun(new Timestamp(2)))) < 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(2))).compareTo(new OutageAreaRevision(0, null, 0,
+				new ParserRun(new Timestamp(1)))) > 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(1))).compareTo(new OutageAreaRevision(0, null, 0,
+				new ParserRun(new Timestamp(1)))) == 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(1))).compareTo(new OutageAreaRevision(1, null, 0,
+				new ParserRun(new Timestamp(1)))) < 0);
+
+		assertTrue(new OutageAreaRevision(1, null, 0, new ParserRun(
+				new Timestamp(1))).compareTo(new OutageAreaRevision(0, null, 0,
+				new ParserRun(new Timestamp(1)))) > 0);
+
+		// Test year 2038 problem by using timestamps >= 2^33.
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(8589934592L))).compareTo(new OutageAreaRevision(
+				0, null, 0, new ParserRun(new Timestamp(8589934592L)))) == 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(8589934592L))).compareTo(new OutageAreaRevision(
+				0, null, 0, new ParserRun(new Timestamp(17179869184L)))) < 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(17179869184L))).compareTo(new OutageAreaRevision(
+				0, null, 0, new ParserRun(new Timestamp(8589934592L)))) > 0);
+
+		assertTrue(new OutageAreaRevision(0, null, 0, new ParserRun(
+				new Timestamp(8589934592L))).compareTo(new OutageAreaRevision(
+				1, null, 0, new ParserRun(new Timestamp(8589934592L)))) < 0);
+
+		assertTrue(new OutageAreaRevision(1, null, 0, new ParserRun(
+				new Timestamp(8589934592L))).compareTo(new OutageAreaRevision(
+				0, null, 0, new ParserRun(new Timestamp(8589934592L)))) > 0);
+	}
 
 }

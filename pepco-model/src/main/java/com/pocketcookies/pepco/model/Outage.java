@@ -27,7 +27,8 @@ public class Outage {
 		super();
 	}
 
-	public Outage(double lat, double lon, Timestamp earliestReport, Timestamp observedEnd) {
+	public Outage(double lat, double lon, Timestamp earliestReport,
+			Timestamp observedEnd) {
 		super();
 		if (earliestReport == null)
 			throw new IllegalArgumentException("earliestReport cannot be null.");
@@ -39,6 +40,8 @@ public class Outage {
 
 	@Override
 	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
 		final Outage a = (Outage) o;
 		if (this.observedEnd != null) {
 			if (!this.observedEnd.equals(a.observedEnd))

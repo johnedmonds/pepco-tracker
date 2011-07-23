@@ -20,6 +20,7 @@
 		<maven.compiler.target>1.5</maven.compiler.target>
 		<encoding>UTF-8</encoding>
 		<scala.version>2.8.0</scala.version>
+		<build.env>local</build.env>
 	</properties>
 
 	<!-- <repositories> <repository> <id>scala-tools.org</id> <name>Scala-Tools 
@@ -114,6 +115,14 @@
 	<build>
 		<sourceDirectory>src/main/scala</sourceDirectory>
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/env/${build.env}/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.scala-tools</groupId>
@@ -148,6 +157,14 @@
 						<include>**/*Test.*</include>
 						<include>**/*Suite.*</include>
 					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<classifier>${build.env}</classifier>
 				</configuration>
 			</plugin>
 		</plugins>

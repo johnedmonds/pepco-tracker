@@ -31,6 +31,7 @@ import com.pocketcookies.pepco.model.AbstractOutageRevision
 import org.apache.http.impl.client.DefaultHttpClient
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
+import scala.collection.mutable.HashSet
 
 object PepcoScraper {
   val dataHTMLPrefix: String = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
@@ -58,11 +59,11 @@ object PepcoScraper {
     finally { EntityUtils.consume(response.getEntity()) }
   }
   def parseSummary(doc: Elem, run: ParserRun): Summary = {
-    val areas: NodeSeq = doc \\ "areas"
+    val areas: NodeSeq = doc \\ "area"
     val dc = areas(0)
     val pg = areas(1)
     val mont = areas(2)
-    return new Summary(
+    val ret= new Summary(
       Integer.parseInt(doc \\ "total_outages" text),
       Integer.parseInt(dc \\ "custs_out" text),
       Integer.parseInt(dc \\ "total_custs" text),
@@ -72,6 +73,7 @@ object PepcoScraper {
       Integer.parseInt(mont \\ "total_custs" text),
       new Timestamp(getPepcoDateFormat().parseDateTime(doc \\ "date_generated" text).getMillis()),
       run)
+    return ret
   }
   /**
    * Parses the given XML document and returns an Outage.  The returned Outage
@@ -119,12 +121,15 @@ object PepcoScraper {
       .foreach(a => outageAreaDao.updateArea(a));
 
     //Parse outages.
-    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao);
+    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String]());
   }
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO): Unit = {
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String]): Unit = {
     if (zoom > maxZoom) return ;
+    val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
+      .filter(index => !visitedIndices.contains(index))
+    indices.foreach(index => visitedIndices.add(index))
 
-    val outages = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
+    val outages = indices
       .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
       .map(url => loadXMLRequest(client, url))
       .filter(a => a != null) //Remove failed requests.
@@ -138,7 +143,7 @@ object PepcoScraper {
       case _ => false
     })
       //Recurse.
-      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao))
+      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices))
   }
 
   def main(args: Array[String]): Unit = {

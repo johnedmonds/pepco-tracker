@@ -20,6 +20,9 @@
 	<bean id="outageDao" class="com.pocketcookies.pepco.model.dao.OutageDAO">
 		<constructor-arg index="0" ref="sessionFactory" />
 	</bean>
+	<bean id="summaryDao" class="com.pocketcookies.pepco.model.dao.SummaryDAO">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
 
 	<!-- Tiles -->
 	<bean id="tilesConfigurer"
@@ -69,8 +72,13 @@
 		an operation defined by the FooService interface -->
 	<aop:config proxy-target-class="false">
 		<aop:pointcut id="outageDaoOperation"
-			expression="execution(* com.pocketcookies.pepco.model.dao.OutageDAO.*(..))" />
+			expression="execution(* com.pocketcookies.pepco.model.dao.OutageDAO.get*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="outageDaoOperation" />
+	</aop:config>
+	<aop:config proxy-target-class="false">
+		<aop:pointcut id="summaryDaoOperation"
+			expression="execution(* com.pocketcookies.pepco.model.dao.SummaryDAO.get*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="summaryDaoOperation" />
 	</aop:config>
 
 	<mvc:resources location="/resources/" mapping="/resources/**" />

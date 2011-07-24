@@ -72,7 +72,7 @@ object PepcoScraper {
       Integer.parseInt(pg \\ "total_custs" text),
       Integer.parseInt(mont \\ "custs_out" text),
       Integer.parseInt(mont \\ "total_custs" text),
-      new Timestamp(getPepcoDateFormat().parseDateTime(doc \\ "date_generated" text).getMillis()),
+      new Timestamp(getPepcoDateFormat().parseDateTime(doc \\ "date_generated" text).withYear(new DateTime().getYear()).getMillis()),
       run)
     return ret
   }
@@ -85,8 +85,8 @@ object PepcoScraper {
     val doc = Jsoup.parseBodyFragment(item \\ "description" text)
     val sCustomersAffected = doc.select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersAffected = if (sCustomersAffected equals "Less than 5") 0 else Integer.parseInt(sCustomersAffected)
-    val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() })
-    val estimatedRestoration = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() })
+    val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
+    val estimatedRestoration = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
     if ((item \\ "point" size) != 0) {
       val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))
       val numOutages = Integer.parseInt(doc.select(":containsOwn(Number of Outage Orders)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()})

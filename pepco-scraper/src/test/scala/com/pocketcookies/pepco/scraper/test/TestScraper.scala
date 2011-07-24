@@ -34,6 +34,7 @@ class ScraperTest {
     assertEquals(3, s.getMontAffectedCustomers())
     assertEquals(30, s.getMontTotalCustomers())
     assertEquals(run, s.getRun())
+    assertEquals(new DateTime().getYear(), new DateTime(s.getWhenGenerated().getTime()).getYear())
   }
   @Test
   def testParseArea() = {
@@ -55,6 +56,8 @@ class ScraperTest {
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
+    assertEquals(new DateTime().getYear(),new DateTime(revision.getOutage().getEarliestReport().getTime()).getYear())
+    assertEquals(new DateTime().getYear(),new DateTime(revision.getEstimatedRestoration().getTime()).getYear())
     assertEquals(2, revision.getOutage().getLat(), .0001)
     assertEquals(3, revision.getOutage().getLon(), .0001)
     assertEquals("Under Evaluation", revision.getCause())
@@ -67,6 +70,8 @@ class ScraperTest {
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
+    assertEquals(new DateTime().getYear(),new DateTime(revision.getOutage().getEarliestReport().getTime()).getYear())
+    assertEquals(new DateTime().getYear(),new DateTime(revision.getEstimatedRestoration().getTime()).getYear())
     assertEquals(1, revision.getOutage().getLat(), .0001)
     assertEquals(2, revision.getOutage().getLon(), .0001)
     assertEquals(2, revision.getNumOutages())

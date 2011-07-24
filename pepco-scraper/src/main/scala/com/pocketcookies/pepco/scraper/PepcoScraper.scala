@@ -33,6 +33,7 @@ import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import scala.collection.mutable.HashSet
 import org.jsoup.nodes.TextNode
+import collection.JavaConversions._
 
 object PepcoScraper {
   val dataHTMLPrefix: String = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
@@ -122,9 +123,12 @@ object PepcoScraper {
       .foreach(a => outageAreaDao.updateArea(a));
 
     //Parse outages.
-    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String]());
+    val outageIds=new HashSet[Integer]();
+    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String](), outageIds);
+    val temp:java.util.Collection[Integer]=outageIds
+    outageDao.closeMissingOutages(temp, run.getRunTime());
   }
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String]): Unit = {
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
     if (zoom > maxZoom) return ;
     val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
       .filter(index => !visitedIndices.contains(index))
@@ -137,14 +141,14 @@ object PepcoScraper {
       .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
       .flatten //No need to parse each list individually.
       .map(n => parseOutage(n, run))
-    outages.foreach(outageRevision => outageDao.updateOutage(outageRevision))
+    outages.foreach(outageRevision => {outageDao.updateOutage(outageRevision); outageIds.add(outageRevision.getOutage().getId())})
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
     outages.filter(outageRevision => outageRevision match {
       case r: OutageClusterRevision => true
       case _ => false
     })
       //Recurse.
-      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices))
+      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices, outageIds))
   }
 
   def main(args: Array[String]): Unit = {

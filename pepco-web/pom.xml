@@ -123,6 +123,14 @@
 	</dependencies>
 	<build>
 		<finalName>pepco-web</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/env/${build.env}/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -145,7 +153,6 @@
 					<warSourceDirectory>src/main/webapp</warSourceDirectory>
 					<webResources>
 						<resource>
-							<targetPath>WEB-INF</targetPath>
 							<directory>src/env/${build.env}/webapp</directory>
 							<filtering>false</filtering>
 						</resource>

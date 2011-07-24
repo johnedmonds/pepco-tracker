@@ -1,14 +1,14 @@
 library(ggplot2)
 
 reliability <- read.csv('/dev/stdin')
-reliability$observed <- as.Date(reliability$observed, format="%Y-%m-%d %H:%M:%S")
+reliability$observed <- as.POSIXct(reliability$observed, format="%Y-%m-%d %H:%M:%S")
 
 Areas <- factor(reliability$area)
 #Make the plot.
 reliability_plot <- ggplot(reliability, aes(x=observed, y=outages))
 reliability_plot <- reliability_plot + geom_area(aes(fill=Areas))
 #Remove the grey padding.
-reliability_plot <- reliability_plot + scale_x_date('Time', expand=c(0,0))
+reliability_plot <- reliability_plot + scale_x_datetime('Time', expand=c(0,0))
 reliability_plot <- reliability_plot + scale_y_continuous('Customers Without Power', expand=c(0,0))
 
 #Axis/title labeling

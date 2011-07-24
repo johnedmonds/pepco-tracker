@@ -17,6 +17,7 @@ import com.pocketcookies.pepco.model.OutageRevision
 import com.pocketcookies.pepco.model.AbstractOutageRevision
 import org.joda.time.DateTime
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus
+import com.pocketcookies.pepco.model.OutageClusterRevision
 
 @Test
 class ScraperTest {
@@ -50,14 +51,24 @@ class ScraperTest {
   @Test
   def testParseOutage() = {
     val run = new ParserRun(new Timestamp(1))
-    val revision:OutageRevision=PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single.xml")) \\ "item")(0),run)
-      match{case r:OutageRevision=>r case _=>throw new Exception("Wrong type")}
-    assertEquals(10,revision.getNumCustomersAffected())
+    val revision: OutageRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single.xml")) \\ "item")(0), run) match { case r: OutageRevision => r case _ => throw new Exception("Wrong type") }
+    assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
-    assertEquals(2,revision.getOutage().getLat(), .0001)
-    assertEquals(3,revision.getOutage().getLon(), .0001)
+    assertEquals(2, revision.getOutage().getLat(), .0001)
+    assertEquals(3, revision.getOutage().getLon(), .0001)
     assertEquals("Under Evaluation", revision.getCause())
     assertEquals(CrewStatus.PENDING, revision.getStatus())
+  }
+  @Test
+  def testParseOutageCluster() = {
+    val run = new ParserRun(new Timestamp(1))
+    val revision: OutageClusterRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_cluster.xml")) \\ "item")(0), run) match { case r: OutageClusterRevision => r case _ => throw new Exception("Wrong type") }
+    assertEquals(10, revision.getNumCustomersAffected())
+    assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
+    assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
+    assertEquals(1, revision.getOutage().getLat(), .0001)
+    assertEquals(2, revision.getOutage().getLon(), .0001)
+    assertEquals(2, revision.getNumOutages())
   }
 }

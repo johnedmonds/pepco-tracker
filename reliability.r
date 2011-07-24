@@ -1,6 +1,6 @@
 library(ggplot2)
 
-reliability <- read.csv('/dev/stdin')
+reliability <- read.csv(pipe('cat /dev/stdin'))
 reliability$observed <- as.POSIXct(reliability$observed, format="%Y-%m-%d %H:%M:%S")
 
 Areas <- factor(reliability$area)

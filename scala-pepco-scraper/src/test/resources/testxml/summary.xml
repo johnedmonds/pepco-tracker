@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<total_customers>6</total_customers>
+<total_outages>4</total_outages>
+<date_generated>Jan 1, 1:30 PM</date_generated>
+<servlet_interval>600</servlet_interval>
+<curr_custs_aff>
+<areas>
+<area>
+<area_name>District of Columbia</area_name>
+<custs_out>1</custs_out>
+<total_custs>10</total_custs>
+<latitude/>
+<longitude/>
+<etr>Jan 1, 1:30 PM</etr>
+</area>
+<area>
+<area_name>Prince George's</area_name>
+<custs_out>2</custs_out>
+<total_custs>20</total_custs>
+<latitude/>
+<longitude/>
+<etr>Jan 1, 1:30 PM</etr>
+</area>
+<area>
+<area_name>Montgomery</area_name>
+<custs_out>3</custs_out>
+<total_custs>30</total_custs>
+<latitude/>
+<longitude/>
+<etr>Jan 1, 1:30 PM</etr>
+</area>
+</areas>
+</curr_custs_aff>
+</root>

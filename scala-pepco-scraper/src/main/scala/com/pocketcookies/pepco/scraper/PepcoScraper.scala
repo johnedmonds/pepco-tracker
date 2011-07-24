@@ -32,6 +32,7 @@ import org.apache.http.impl.client.DefaultHttpClient
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import scala.collection.mutable.HashSet
+import org.jsoup.nodes.TextNode
 
 object PepcoScraper {
   val dataHTMLPrefix: String = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
@@ -107,7 +108,7 @@ object PepcoScraper {
    * Parses a single thematic area into an OutageAreaRevision.
    */
   def parseThematicArea(area: Node, run: ParserRun): OutageAreaRevision = {
-    val sCustomersOut = Jsoup.parseBodyFragment(area \\ "description" text).select(":contains(Customers Affected)").first().nextElementSibling().nextElementSibling().text().trim()
+    val sCustomersOut = Jsoup.parseBodyFragment(area \\ "description" text).select(":containsOwn(Customers Affected)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()}
     val customersOut = if (sCustomersOut equals "Less than 5") 0 else Integer.parseInt(sCustomersOut)
     new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }

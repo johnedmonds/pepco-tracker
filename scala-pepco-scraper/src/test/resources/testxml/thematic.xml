@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:georss="http://www.w3.org/2003/01/geo/wgs84_pos#">
+	<title>Thematic</title>
+	<link>http://www.ifactorconsulting.com/</link>
+	<description>Thematic</description>
+	<item>
+		<title>00000,00001</title>
+		<description>
+
+			&lt;b&gt;ZIP CODES: &lt;/b&gt;00000, 00001 &lt;br/&gt;&lt;br/&gt;&lt;b&gt;Customers Affected: &lt;/b&gt;10&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;javascript:iFactor.StormCenter.zoomToThematicArea(1,1)&quot;&gt;Go to Outage Locations&lt;/a&gt;&lt;br/&gt;
+
+		</description>
+		<icon>images/thematic_1.ico</icon>
+		<georss:polygon>1, 1, 3, 3 </georss:polygon>
+	</item>
+	<item>
+		<title>00002</title>
+		<description>
+
+			&lt;b&gt;ZIP CODES: &lt;/b&gt;00002 &lt;br/&gt;&lt;br/&gt;&lt;b&gt;Customers Affected: &lt;/b&gt;20&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;javascript:iFactor.StormCenter.zoomToThematicArea(2,2)&quot;&gt;Go to Outage Locations&lt;/a&gt;&lt;br/&gt;
+
+		</description>
+		<icon>images/thematic_1.ico</icon>
+		<georss:polygon>2, 2, 4, 4 </georss:polygon>
+	</item>
+</rss>

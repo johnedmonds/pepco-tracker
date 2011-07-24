@@ -43,7 +43,7 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 		this.id = id;
 	}
 
-	private void setArea(OutageArea area) {
+	public void setArea(OutageArea area) {
 		this.area = area;
 	}
 

@@ -452,10 +452,6 @@ public class PepcoScraper {
 						.parse(response.getEntity().getContent());
 				final NodeList areas = doc.getElementsByTagName("item");
 				for (int i = 0; i < areas.getLength(); i++) {
-					final OutageArea current = this.areaDao
-							.getOrCreateArea(((Element) areas.item(i))
-									.getElementsByTagName("title").item(0)
-									.getFirstChild().getNodeValue());
 
 					final String sCustomersOut = Parser
 							.createParser(
@@ -478,11 +474,11 @@ public class PepcoScraper {
 							.equals("Less than 5") ? 0 : Integer
 							.parseInt(sCustomersOut);
 					final OutageAreaRevision revision = new OutageAreaRevision(
-							current, customersOut, run);
-					if (current.getRevisions().isEmpty()
-							|| !revision.equalsIgnoreTime(current
-									.getRevisions().first()))
-						sessionFactory.getCurrentSession().save(revision);
+							new OutageArea(((Element) areas.item(i))
+									.getElementsByTagName("title").item(0)
+									.getFirstChild().getNodeValue()),
+							customersOut, run);
+					areaDao.updateArea(revision);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -63,7 +63,7 @@ object PepcoScraper {
     val dc = areas(0)
     val pg = areas(1)
     val mont = areas(2)
-    val ret= new Summary(
+    val ret = new Summary(
       Integer.parseInt(doc \\ "total_outages" text),
       Integer.parseInt(dc \\ "custs_out" text),
       Integer.parseInt(dc \\ "total_custs" text),
@@ -106,10 +106,10 @@ object PepcoScraper {
   /**
    * Parses a single thematic area into an OutageAreaRevision.
    */
-  def parseThematicArea(area: Node, currentArea: OutageArea, run: ParserRun): OutageAreaRevision = {
+  def parseThematicArea(area: Node, run: ParserRun): OutageAreaRevision = {
     val sCustomersOut = Jsoup.parseBodyFragment(area \\ "description" text).select(":contains(Customers Affected)").first().nextElementSibling().nextElementSibling().text().trim()
     val customersOut = if (sCustomersOut equals "Less than 5") 0 else Integer.parseInt(sCustomersOut)
-    new OutageAreaRevision(currentArea, customersOut, run)
+    new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }
 
   def scrape(client: HttpClient, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun) = {
@@ -117,7 +117,7 @@ object PepcoScraper {
     summaryDao.saveSummary(parseSummary(loadXMLRequest(client, dataHTMLPrefix + summarySuffix), run))
     //Parse thematic
     (loadXMLRequest(client, dataHTMLPrefix + thematicSuffix) \\ "item")
-      .map(area => parseThematicArea(area, outageAreaDao.getOrCreateArea((area \\ "title" text).trim), run))
+      .map(area => parseThematicArea(area, run))
       .foreach(a => outageAreaDao.updateArea(a));
 
     //Parse outages.

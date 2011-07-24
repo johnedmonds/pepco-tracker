@@ -128,7 +128,7 @@ object PepcoScraper {
     if (zoom > maxZoom) return ;
     val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
       .filter(index => !visitedIndices.contains(index))
-    indices.foreach(index => visitedIndices.add(index))
+    indices.foreach(index => {visitedIndices.add(index); logger.debug("scraping "+index)})
 
     val outages = indices
       .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
@@ -154,6 +154,11 @@ object PepcoScraper {
       .forPattern("yyyy_MM_dd_HH_mm_ss")
       .parseDateTime(outagesFolderName).getMillis()))
     val sessionFactory: SessionFactory = new Configuration().configure().configure("hibernate.ds.cfg.xml").buildSessionFactory()
+    sessionFactory.getCurrentSession().beginTransaction()
+    sessionFactory.getCurrentSession().save(run)
     scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run)
+    sessionFactory.getCurrentSession().getTransaction().commit()
+    sessionFactory.getCurrentSession().close()
+    sessionFactory.close()
   }
 }

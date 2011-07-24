@@ -9,6 +9,6 @@
 <description>&lt;b&gt;Customers Affected:&lt;/b&gt; 10&lt;br/&gt;&lt;b&gt;Outage Reported:&lt;/b&gt; Jan 1, 1:00 PM&lt;br/&gt;&lt;b&gt;Cause:&lt;/b&gt; Under Evaluation&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Crew Status:&lt;/b&gt; Pending&lt;br/&gt;&lt;b&gt;Estimated Restoration:&lt;/b&gt; Jan 1, 2:00 PM&lt;br/&gt;&lt;br/&gt;&lt;a href="javascript:iFactor.StormCenter.zoomIntoIcon(1,1)"&gt;Zoom In&lt;/a&gt;&lt;br/&gt;&lt;br /&gt;&lt;a href='http://www.pepco.com/home/emergency/report/online/ '&gt;Report Your Outage or Check Your Outage Status&lt;/a&gt;</description>
 
 <icon>images/outages_2.gif</icon>
-<georss:polygon>1 1 3 3 </georss:polygon>
+<georss:polygon>1 2 3 4 </georss:polygon>
 </item>
 </rss>

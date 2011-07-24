@@ -16,6 +16,7 @@ import org.jsoup.Jsoup
 import com.pocketcookies.pepco.model.OutageRevision
 import com.pocketcookies.pepco.model.AbstractOutageRevision
 import org.joda.time.DateTime
+import com.pocketcookies.pepco.model.OutageRevision.CrewStatus
 
 @Test
 class ScraperTest {
@@ -54,5 +55,9 @@ class ScraperTest {
     assertEquals(10,revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
+    assertEquals(2,revision.getOutage().getLat(), .0001)
+    assertEquals(3,revision.getOutage().getLon(), .0001)
+    assertEquals("Under Evaluation", revision.getCause())
+    assertEquals(CrewStatus.PENDING, revision.getStatus())
   }
 }

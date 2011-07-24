@@ -2,15 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pocketcookies.pepco.scraper</groupId>
-	<artifactId>scala-pepco-scraper</artifactId>
+	<artifactId>pepco-scraper</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
-	<description>My wonderfull scala app</description>
+	<description>Scrapes Pepco's StormCenter for reliability statistics.</description>
 	<inceptionYear>2010</inceptionYear>
 	<licenses>
 		<license>
 			<name>My License</name>
-			<url>http://....</url>
+			<url>http://pepcotracker.com</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>

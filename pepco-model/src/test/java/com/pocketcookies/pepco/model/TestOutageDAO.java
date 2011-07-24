@@ -1,6 +1,7 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -61,5 +62,26 @@ public class TestOutageDAO extends TestCase {
 				this.sessionFactory.getCurrentSession()
 						.createQuery("from AbstractOutageRevision").list()
 						.size());
+	}
+
+	public void testCloseMissingOutages() {
+		final OutageDAO outageDao = new OutageDAO(sessionFactory);
+		this.sessionFactory.getCurrentSession().beginTransaction();
+		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
+		final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
+		final Outage o3 = new Outage(3, 3, new Timestamp(1), new Timestamp(2));
+		this.sessionFactory.getCurrentSession().save(o1);
+		this.sessionFactory.getCurrentSession().save(o2);
+		this.sessionFactory.getCurrentSession().save(o3);
+		this.sessionFactory.getCurrentSession().flush();
+		outageDao.closeMissingOutages(
+				Arrays.asList(new Integer[] { o1.getId() }), new Timestamp(3));
+		this.sessionFactory.getCurrentSession().flush();
+		this.sessionFactory.getCurrentSession().refresh(o1);
+		this.sessionFactory.getCurrentSession().refresh(o2);
+		this.sessionFactory.getCurrentSession().refresh(o3);
+		assertNull(o1.getObservedEnd());
+		assertEquals(3, o2.getObservedEnd().getTime());
+		assertEquals(2, o3.getObservedEnd().getTime());
 	}
 }

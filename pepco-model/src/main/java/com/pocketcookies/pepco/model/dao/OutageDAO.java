@@ -1,5 +1,7 @@
 package com.pocketcookies.pepco.model.dao;
 
+import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -71,6 +73,23 @@ public class OutageDAO {
 			this.sessionFactory.getCurrentSession().save(revision);
 			return true;
 		}
+	}
 
+	/**
+	 * Any outages with ids missing from the given list of outages will be
+	 * assumed closed with the given close time. If the outage is not in the
+	 * list but is already closed, it will not be updated (i.e. its closing time
+	 * will remain the same).
+	 * 
+	 * @param outages
+	 */
+	public void closeMissingOutages(final Collection<Integer> outages,
+			Timestamp closeTime) {
+		this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"update Outage set observedEnd=:closeTime where id not in (:ids) and observedEnd is null")
+				.setTimestamp("closeTime", closeTime)
+				.setParameterList("ids", outages).executeUpdate();
 	}
 }

@@ -58,6 +58,7 @@ public class OutageDAO {
 		if (!revision.getOutage().equals(existingOutage)) {
 			this.sessionFactory.getCurrentSession().save(revision.getOutage());
 			this.sessionFactory.getCurrentSession().save(revision);
+			this.sessionFactory.getCurrentSession().flush();
 			return true;
 		} else {
 			// Sometimes we load from the database and Hibernate pulls from its

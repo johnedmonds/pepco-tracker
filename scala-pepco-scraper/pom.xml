@@ -165,7 +165,35 @@
 				<version>2.3.1</version>
 				<configuration>
 					<classifier>${build.env}</classifier>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>com.pocketcookies.pepco.scraper.PepcoScraper</mainClass>
+							<classpathPrefix>dependencies/</classpathPrefix>
+						</manifest>
+					</archive>
 				</configuration>
+			</plugin>
+			<!-- Copy the dependencies into target/dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<includeScope>compile</includeScope>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

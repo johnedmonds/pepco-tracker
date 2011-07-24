@@ -39,7 +39,7 @@ class ScraperTest {
 	assertEquals("00000,00001",areas(0).getArea().getId())
 	assertEquals(10, areas(0).getCustomersOut())
 	assertEquals("00002",areas(1).getArea().getId())
-	assertEquals(20, areas(1).getCustomersOut())
+	assertEquals(0, areas(1).getCustomersOut())
 	assertEquals(run, areas(0).getParserRun())
 	assertEquals(run, areas(1).getParserRun())
   }

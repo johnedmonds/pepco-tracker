@@ -17,7 +17,7 @@
 		<title>00002</title>
 		<description>
 
-			&lt;b&gt;ZIP CODES: &lt;/b&gt;00002 &lt;br/&gt;&lt;br/&gt;&lt;b&gt;Customers Affected: &lt;/b&gt;20&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;javascript:iFactor.StormCenter.zoomToThematicArea(2,2)&quot;&gt;Go to Outage Locations&lt;/a&gt;&lt;br/&gt;
+			&lt;b&gt;ZIP CODES: &lt;/b&gt;00002 &lt;br/&gt;&lt;br/&gt;&lt;b&gt;Customers Affected: &lt;/b&gt;Less than 5&lt;br/&gt;&lt;br/&gt;&lt;a href=&quot;javascript:iFactor.StormCenter.zoomToThematicArea(2,2)&quot;&gt;Go to Outage Locations&lt;/a&gt;&lt;br/&gt;
 
 		</description>
 		<icon>images/thematic_1.ico</icon>

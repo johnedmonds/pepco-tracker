@@ -43,7 +43,7 @@ public class OutageAreaDAO {
 		final OutageArea existingArea = (OutageArea) this.sessionFactory
 				.getCurrentSession().get(OutageArea.class,
 						revision.getArea().getId());
-		if (!revision.getArea().equals(existingArea)) {
+		if (existingArea == null) {
 			this.sessionFactory.getCurrentSession().save(revision.getArea());
 			this.sessionFactory.getCurrentSession().save(revision);
 			return true;

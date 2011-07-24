@@ -42,7 +42,7 @@ object PepcoScraper {
   val maxZoom: Int = 15;
   val logger: Logger = Logger.getLogger("PepcoScraper")
   def getPepcoDateFormat(): DateTimeFormatter = {
-    return DateTimeFormat.forPattern("MMM dd, h:mm a");
+    return DateTimeFormat.forPattern("MMM d, h:mm a");
   }
   def getOutagesFolderName(doc: Elem): String = {
     doc \\ "directory" text
@@ -83,21 +83,21 @@ object PepcoScraper {
    */
   def parseOutage(item: Node, run: ParserRun): AbstractOutageRevision = {
     val doc = Jsoup.parseBodyFragment(item \\ "description" text)
-    val sCustomersAffected = doc.select(":contains(Customers Affected)").first().nextElementSibling().nextElementSibling().text().trim()
+    val sCustomersAffected = doc.select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersAffected = if (sCustomersAffected equals "Less than 5") 0 else Integer.parseInt(sCustomersAffected)
-    val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":contains(Report)").first().nextElementSibling().nextElementSibling().text().trim())
-    val estimatedRestoration = getPepcoDateFormat().parseDateTime(doc.select(":contains(Restoration)").first().nextElementSibling().nextElementSibling().text().trim())
-    if ((item \\ "georss:point" size) != 0) {
-      val latLon = new PointDouble(List.fromString((item \\ "georss:point")(0) text, ' '))
-      val numOutages = Integer.parseInt(doc.select(":contains(Number of Outage Orders:)").first().nextElementSibling().nextElementSibling().text.trim())
+    val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() })
+    val estimatedRestoration = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() })
+    if ((item \\ "point" size) != 0) {
+      val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))
+      val numOutages = Integer.parseInt(doc.select(":containsOwn(Number of Outage Orders)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
       val outageRevision = new OutageClusterRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), new Timestamp(new DateTime().getMillis()), outage, run, numOutages)
       outage.getRevisions().add(outageRevision)
       outageRevision
     } else {
-      val latLon: PointDouble = new Polygon(item \\ "georss:polygon" text).getCenter();
-      val cause = doc.select(":contains(Cause)").first().nextElementSibling().nextElementSibling().text().trim()
-      val status = CrewStatus.valueOf(doc.select(":contains(Crew Status)").first().nextElementSibling().nextElementSibling().text().trim().replace(' ', '_').toUpperCase())
+      val latLon: PointDouble = new Polygon(item \\ "polygon" text).getCenter();
+      val cause = doc.select(":containsOwn(Cause)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()}
+      val status = CrewStatus.valueOf(doc.select(":containsOwn(Crew Status)").first().nextSibling() match {case n:TextNode=>n.text().trim().replace(' ', '_').toUpperCase() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
       val outageRevision = new OutageRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), new Timestamp(new DateTime().getMillis()), outage, run, cause, status)
       outage.getRevisions().add(outageRevision)
@@ -108,7 +108,7 @@ object PepcoScraper {
    * Parses a single thematic area into an OutageAreaRevision.
    */
   def parseThematicArea(area: Node, run: ParserRun): OutageAreaRevision = {
-    val sCustomersOut = Jsoup.parseBodyFragment(area \\ "description" text).select(":containsOwn(Customers Affected)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()}
+    val sCustomersOut = Jsoup.parseBodyFragment(area \\ "description" text).select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersOut = if (sCustomersOut equals "Less than 5") 0 else Integer.parseInt(sCustomersOut)
     new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:georss="http://www.w3.org/2003/01/geo/wgs84_pos#">
+<title>0</title>
+<link>http://www.ifactorconsulting.com/</link>
+<description>outages</description>
+<item>
+<title>outagesclusters0</title>
+<description>&lt;b&gt;Number of Customers Affected:&lt;/b&gt; 10&lt;br/&gt;&lt;b&gt;Number of Outage Orders:&lt;/b&gt; 2&lt;br/&gt;&lt;b&gt;Earliest Report:&lt;/b&gt; Jan 1, 1:00 PM&lt;br/&gt;&lt;b&gt;Estimated Restoration:&lt;/b&gt; Jan 1, 2:00 PM&lt;br/&gt;&lt;br/&gt;&lt;a href="javascript:iFactor.StormCenter.zoomIntoIcon(1,1)"&gt;Zoom In&lt;/a&gt;&lt;br/&gt;&lt;br /&gt;&lt;p&gt;The Estimated Restoration Time above is the most conservative for the outages that are grouped at this zoom level.&lt;/p&gt;&lt;br /&gt;&lt;a href='http://www.pepco.com/home/emergency/report/online/ '&gt;Report Your Outage or Check Your Outage Status&lt;/a&gt;</description>
+
+<icon>images/outagesclusters.gif</icon>
+<georss:point>1 1</georss:point>
+</item>
+
+</rss>

@@ -18,6 +18,7 @@
 		<property name="hibernateProperties">
 			<value>
 				hibernate.dialect=org.hibernate.dialect.HSQLDialect
+				hibernate.show_sql=true
 			</value>
 		</property>
 	</bean>

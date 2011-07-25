@@ -82,7 +82,7 @@ object PepcoScraper {
    * will have an OutageRevision as its only revision.  The Outage and
    * OutageRevision are neither loaded from nor persisted to the database.
    */
-  def parseOutage(item: Node, run: ParserRun): AbstractOutageRevision = {
+  def parseOutage(item: Node, observationDate:Timestamp, run: ParserRun): AbstractOutageRevision = {
     val doc = Jsoup.parseBodyFragment(item \\ "description" text)
     val sCustomersAffected = doc.select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersAffected = if (sCustomersAffected equals "Less than 5") 0 else Integer.parseInt(sCustomersAffected)
@@ -92,7 +92,7 @@ object PepcoScraper {
       val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))
       val numOutages = Integer.parseInt(doc.select(":containsOwn(Number of Outage Orders)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
-      val outageRevision = new OutageClusterRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), new Timestamp(new DateTime().getMillis()), outage, run, numOutages)
+      val outageRevision = new OutageClusterRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), observationDate, outage, run, numOutages)
       outage.getRevisions().add(outageRevision)
       outageRevision
     } else {
@@ -100,7 +100,7 @@ object PepcoScraper {
       val cause = doc.select(":containsOwn(Cause)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()}
       val status = CrewStatus.valueOf(doc.select(":containsOwn(Crew Status)").first().nextSibling() match {case n:TextNode=>n.text().trim().replace(' ', '_').toUpperCase() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
-      val outageRevision = new OutageRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), new Timestamp(new DateTime().getMillis()), outage, run, cause, status)
+      val outageRevision = new OutageRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), observationDate, outage, run, cause, status)
       outage.getRevisions().add(outageRevision)
       outageRevision
     }
@@ -130,6 +130,7 @@ object PepcoScraper {
   }
   def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
     if (zoom > maxZoom) return ;
+    val observationDate=new Timestamp(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").parseDateTime(outagesFolderName).getMillis())
     val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
       .filter(index => !visitedIndices.contains(index))
     indices.foreach(index => {visitedIndices.add(index); logger.debug("scraping "+index)})
@@ -140,7 +141,7 @@ object PepcoScraper {
       .filter(a => a != null) //Remove failed requests.
       .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
       .flatten //No need to parse each list individually.
-      .map(n => parseOutage(n, run))
+      .map(n => parseOutage(n, observationDate, run))
     outages.foreach(outageRevision => {outageDao.updateOutage(outageRevision); outageIds.add(outageRevision.getOutage().getId())})
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
     outages.filter(outageRevision => outageRevision match {
@@ -154,9 +155,7 @@ object PepcoScraper {
   def main(args: Array[String]): Unit = {
     val client: HttpClient = new DefaultHttpClient();
     val outagesFolderName = loadXMLRequest(client, dataHTMLPrefix + directorySuffix) \\ "directory" text
-    val run: ParserRun = new ParserRun(new Timestamp(DateTimeFormat
-      .forPattern("yyyy_MM_dd_HH_mm_ss")
-      .parseDateTime(outagesFolderName).getMillis()))
+    val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()))
     val sessionFactory: SessionFactory = new Configuration().configure().configure("hibernate.ds.cfg.xml").buildSessionFactory()
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)

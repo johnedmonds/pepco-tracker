@@ -4,6 +4,7 @@
 <head>
 <title><tiles:getAsString name="title" /></title>
 <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>" />
+<link rel="stylesheet" href="<c:url value="/resources/css/menu.css"/>" />
 </head>
 <body>
 	<div id="header">

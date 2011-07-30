@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.charts;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +51,7 @@ public class SummaryChart {
 				: new PrintStream(new File(args[1]));
 
 		String line;
-		in.readLine();//Skip CSV header.
+		in.readLine();// Skip CSV header.
 		final Map<String, XYSeries> data = new TreeMap<String, XYSeries>();
 		while ((line = in.readLine()) != null) {
 			final String[] splitLine = line.split(",");
@@ -64,9 +65,12 @@ public class SummaryChart {
 			dataset.addSeries(series);
 
 		final StackedXYAreaRenderer renderer = new StackedXYAreaRenderer(
-				XYAreaRenderer.AREA_AND_SHAPES, new StandardXYToolTipGenerator(
+				XYAreaRenderer.AREA, new StandardXYToolTipGenerator(
 						StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
 						sdf, NumberFormat.getInstance()), null);
+		renderer.setSeriesPaint(0, new Color(25, 150, 33));
+		renderer.setSeriesPaint(1, new Color(200, 200, 200));
+		renderer.setSeriesPaint(2, new Color(0, 92, 171));
 		final XYPlot plot = new XYPlot(dataset, new DateAxis(),
 				new NumberAxis(), renderer);
 		final JFreeChart chart = new JFreeChart(plot);

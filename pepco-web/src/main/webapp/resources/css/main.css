@@ -12,7 +12,12 @@
 
 #outageSummary table tr td {
 	text-align: left;
-	font-size: 2em;
+	font-size: 2.3em;
 	font-weight: bold;
 	width: 50%;
+}
+
+.summaryTotal {
+	font-size: .35em;
+	font-weight: normal;
 }

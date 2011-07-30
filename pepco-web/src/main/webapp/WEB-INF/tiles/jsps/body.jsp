@@ -25,5 +25,5 @@
 		</tr>
 	</table>
 	<img alt="Pepco Reliability Statistics"
-		src="<c:url value="/resources/img/generated/reliability.svg"/>">
+		src="<c:url value="/resources/img/generated/reliability.png"/>">
 </div>

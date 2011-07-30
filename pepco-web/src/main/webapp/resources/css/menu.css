@@ -1,0 +1,22 @@
+#menu li {
+	float: left;
+	list-style: none;
+}
+
+#menu li a {
+	padding: 10px;
+	display: block;
+	color: white;
+}
+
+#menu li.selected a,#menu li:hover a {
+	background-color: white;
+	color: black;
+}
+
+#menu {
+	background-color: black;
+	clear: both;
+	overflow: auto;
+	clear: both;
+}

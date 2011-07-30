@@ -21,7 +21,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
+import org.jfree.chart.renderer.xy.StackedXYAreaRenderer2;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -43,6 +43,7 @@ import org.jfree.data.xy.XYSeries;
 public class SummaryChart {
 	public static void main(final String[] args) throws IOException,
 			NumberFormatException, ParseException {
+		System.out.println("Here");
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		final BufferedReader in = new BufferedReader(new InputStreamReader(
 				(InputStream) (args[0].equals("-") ? System.in
@@ -64,16 +65,22 @@ public class SummaryChart {
 		for (final XYSeries series : data.values())
 			dataset.addSeries(series);
 
-		final StackedXYAreaRenderer renderer = new StackedXYAreaRenderer(
-				XYAreaRenderer.AREA, new StandardXYToolTipGenerator(
+		final StackedXYAreaRenderer2 renderer = new StackedXYAreaRenderer2(
+				new StandardXYToolTipGenerator(
 						StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
 						sdf, NumberFormat.getInstance()), null);
 		renderer.setSeriesPaint(0, new Color(25, 150, 33));
-		renderer.setSeriesPaint(1, new Color(200, 200, 200));
+		renderer.setSeriesPaint(1, new Color(100, 100, 100));
 		renderer.setSeriesPaint(2, new Color(0, 92, 171));
-		final XYPlot plot = new XYPlot(dataset, new DateAxis(),
-				new NumberAxis(), renderer);
+		final DateAxis xAxis = new DateAxis(null);
+		xAxis.setLowerMargin(0);
+		xAxis.setUpperMargin(0);
+		final NumberAxis yAxis = new NumberAxis();
+		yAxis.setAutoRangeIncludesZero(true);
+		final XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+		yAxis.configure();
 		final JFreeChart chart = new JFreeChart(plot);
+		chart.setBackgroundPaint(java.awt.Color.WHITE);
 		ImageIO.write(chart.createBufferedImage(1000, 500), "png", out);
 	}
 }

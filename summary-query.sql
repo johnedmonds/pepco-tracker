@@ -1,3 +1,3 @@
-select whengenerated as observed, dcaffectedcustomers as outages, 'DC' as area from summary UNION
-select whengenerated as observed, pgaffectedcustomers as outages, 'Prince George' as area from summary UNION
-select whengenerated as observed, montaffectedcustomers as outages, 'Montgomery' as area from summary
+select 'DC' as area, whengenerated as observed, dcaffectedcustomers as outages from summary UNION
+select 'Prince George' as area, whengenerated as observed, pgaffectedcustomers as outages from summary UNION
+select 'Montgomery' as area, whengenerated as observed, montaffectedcustomers as outages from summary

@@ -25,4 +25,9 @@
 		<put-attribute name="about.selected" value="class=&quot;selected&quot;"
 			cascade="true" />
 	</definition>
+	<definition name="pepco.contact" extends="base">
+		<put-attribute name="body" value="/WEB-INF/tiles/jsps/contact.jsp" />
+		<put-attribute name="contact.selected" value="class=&quot;selected&quot;"
+			cascade="true" />
+	</definition>
 </tiles-definitions>

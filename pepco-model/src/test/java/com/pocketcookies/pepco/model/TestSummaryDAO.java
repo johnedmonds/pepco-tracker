@@ -101,4 +101,17 @@ public class TestSummaryDAO extends TestCase {
 		assertEquals(s1, dao.getSummaries(null, null, false, 0).get(0));
 		assertEquals(s3, dao.getSummaries(null, null, false, 0).get(2));
 	}
+
+	public void testGetFirstSummary() {
+		final SummaryDAO dao = new SummaryDAO(this.sessionFactory);
+		Session session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		Summary s1 = new Summary(1, 1, 1, 1, 1, 1, 1, new Timestamp(1), null);
+		Summary s2 = new Summary(1, 1, 1, 1, 1, 1, 1, new Timestamp(2), null);
+		assertEquals(null, dao.getMostRecentSummary());
+		session.save(s1);
+		assertEquals(s1, dao.getMostRecentSummary());
+		session.save(s2);
+		assertEquals(s2, dao.getMostRecentSummary());
+	}
 }

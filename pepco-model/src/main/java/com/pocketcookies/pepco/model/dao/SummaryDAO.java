@@ -77,4 +77,17 @@ public class SummaryDAO {
 		return q.list();
 	}
 
+	public Summary getMostRecentSummary() {
+		@SuppressWarnings("unchecked")
+		final List<Summary> ret = (List<Summary>) this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from Summary where whenGenerated = (select max(whenGenerated) from Summary)")
+				.list();
+		assert ret.size() <= 1;
+		if (ret.size() == 0)
+			return null;
+		return ret.get(0);
+	}
+
 }

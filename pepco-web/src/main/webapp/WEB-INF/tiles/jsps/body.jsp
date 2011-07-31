@@ -27,11 +27,11 @@
 </script>
 <div id="outageSummary">
 	<h1>Outage Summary</h1>
-	As of
-	<fmt:formatDate value="${summary.whenGenerated}"
-		pattern="yyyy-MM-dd h:mm a" />
-	there are: <br />
 	<p>
+		As of
+		<fmt:formatDate value="${summary.whenGenerated}"
+			pattern="yyyy-MM-dd h:mm a" />
+		there are:
 		<emph class="summaryCount"> <fmt:formatNumber
 			value="${summary.totalOutages}" /></emph>
 		total outages in Pepco's service area affecting
@@ -46,7 +46,7 @@
 		are in DC,
 		<emph class="summaryCount"> <fmt:formatNumber
 			value="${summary.pgAffectedCustomers}" /></emph>
-		are in Prince George County , and
+		are in Prince George County, and
 		<emph class="summaryCount"> <fmt:formatNumber
 			value="${summary.montAffectedCustomers}" /></emph>
 		are in Montgomery County.
@@ -61,4 +61,3 @@
 	</noscript>
 	<div id="reliability-chart-placeholder"
 		style="width: 1000px; height: 200px;"></div>
-</div>

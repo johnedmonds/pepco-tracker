@@ -8,11 +8,9 @@ Java 1.5+
 
 # Getting set up
 
-You will need to build and install pepco-model before using pepco-scraper and pepco-web.
+There is a setup.sh script in the root directory of Pepco Tracker.  Simply cd into the root directory and run
 
-    cd </path/to/pepco-tracker>
-    cd pepco-model
-    mvn install
+    ./setup.sh
 
 # Components
 

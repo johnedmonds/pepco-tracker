@@ -24,7 +24,7 @@ pepco-tracker is made of several components:
 
 # Running the Scraper
 
-cd into the pepco-scraper dir and run
+cd into the pepco-scraper directory and run
 
     java -jar target/pepco-scraper-1.0-SNAPSHOT-local.jar
 

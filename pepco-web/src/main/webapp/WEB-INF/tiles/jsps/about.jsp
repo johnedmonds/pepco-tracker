@@ -13,3 +13,4 @@
 	source code for this site as well as our statistics-gathering tool at <a
 		href="https://github.com/johnedmonds/pepco-tracker">GitHub</a>.
 </p>
+<p>Pepco Tracker is in no way affiliated with Pepco.</p>

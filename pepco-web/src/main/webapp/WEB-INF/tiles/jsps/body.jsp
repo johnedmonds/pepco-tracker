@@ -27,47 +27,31 @@
 </script>
 <div id="outageSummary">
 	<h1>Outage Summary</h1>
-	<span id="asOf">As of <fmt:formatDate value="${summary.whenGenerated}" pattern="yyyy-MM-dd hh:mm:ss a"/></span>
-	<table id="outageSummaryTable">
-		<tr>
-			<td><emph class="summaryCount"> <fmt:formatNumber
-					value="${summary.totalOutages}" /></emph></td>
-			<td>Total outages in Pepco's service area.</td>
-		</tr>
-		<tr>
-			<td><emph class="summaryCount"> <fmt:formatNumber
-					value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" /></emph>
-			</td>
-			<td>Pepco customers that are affected out of <fmt:formatNumber
-					value="${summary.dcTotalCustomers+summary.pgTotalCustomers+summary.montTotalCustomers}" />
-				total customers.</span>
-			</td>
-		</tr>
-		<tr>
-			<td><div style="height: 20px;"></div></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><emph class="summaryCount"> <fmt:formatNumber
-					value="${summary.dcAffectedCustomers}" /></emph></td>
-			<td>DC Customers affected out of <fmt:formatNumber
-					value="${summary.dcTotalCustomers}" /> total DC customers.</td>
-		</tr>
-		<tr>
-			<td><emph class="summaryCount"> <fmt:formatNumber
-					value="${summary.pgAffectedCustomers}" /></emph></td>
-			<td>Prince George customers affected out of <fmt:formatNumber
-					value="${summary.pgTotalCustomers}" /> total Prince George
-				customers.</td>
-		</tr>
-		<tr>
-			<td><emph class="summaryCount">
-				<fmt:formatNumber value="${summary.montAffectedCustomers}" /></emph></td>
-			<td>Montgomery customers affected out of <fmt:formatNumber
-					value="${summary.montTotalCustomers}" /> total Montgomery
-				customers.</td>
-		</tr>
-	</table>
+	As of
+	<fmt:formatDate value="${summary.whenGenerated}"
+		pattern="yyyy-MM-dd h:mm a" />
+	there are: <br />
+	<p>
+		<emph class="summaryCount"> <fmt:formatNumber
+			value="${summary.totalOutages}" /></emph>
+		total outages in Pepco's service area affecting
+		<emph class="summaryCount"> <fmt:formatNumber
+			value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" /></emph>
+		customers. Of those
+		<fmt:formatNumber
+			value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" />
+		customers,
+		<emph class="summaryCount"> <fmt:formatNumber
+			value="${summary.dcAffectedCustomers}" /></emph>
+		are in DC,
+		<emph class="summaryCount"> <fmt:formatNumber
+			value="${summary.pgAffectedCustomers}" /></emph>
+		are in Prince George County , and
+		<emph class="summaryCount"> <fmt:formatNumber
+			value="${summary.montAffectedCustomers}" /></emph>
+		are in Montgomery County.
+	</p>
+
 </div>
 <div id="reliability-chart">
 	<h2>Customer Outages Over Time By Area</h2>

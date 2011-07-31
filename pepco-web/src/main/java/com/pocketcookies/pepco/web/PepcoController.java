@@ -27,12 +27,10 @@ public class PepcoController {
 
 	@RequestMapping(value = "/")
 	public ModelAndView index() {
-		final List<Summary> summaries = this.summaryDao.getSummaries(null,
-				null, true, 2);
-		final Summary currentSummary = summaries.get(0);
+		final Summary summary= this.summaryDao.getMostRecentSummary();
 		// final Summary previousSummary = summaries.get(1);
 		final ModelAndView mav = new ModelAndView("pepco.homepage");
-		mav.addObject("summary", currentSummary);
+		mav.addObject("summary", summary);
 		return mav;
 	}
 

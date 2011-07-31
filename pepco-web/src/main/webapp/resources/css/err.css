@@ -1,0 +1,33 @@
+body {
+	background-color: black;
+	color: white;
+}
+
+#logo a {
+	color: white;
+	text-decoration: none;
+}
+
+#menu li {
+	float: left;
+	list-style: none;
+}
+
+#menu li a {
+	padding: 10px;
+	display: block;
+	color: black;
+	text-decoration: none;
+}
+
+#menu li.selected a,#menu li:hover a {
+	background-color: black;
+	color: white;
+}
+
+#menu {
+	background-color: white;
+	clear: both;
+	overflow: auto;
+	clear: both;
+}

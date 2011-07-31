@@ -1,5 +1,6 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <script type="text/javascript"
 	src="<c:url value="/resources/js/excanvas.js"/>"></script>
 <script type="text/javascript"
@@ -26,32 +27,45 @@
 </script>
 <div id="outageSummary">
 	<h1>Outage Summary</h1>
+	<span id="asOf">As of <fmt:formatDate value="${summary.whenGenerated}" pattern="yyyy-MM-dd hh:mm:ss a"/></span>
 	<table id="outageSummaryTable">
 		<tr>
-			<td>Total Outages</td>
-			<td><c:out value="${summary.totalOutages}" /></td>
+			<td><emph class="summaryCount"> <fmt:formatNumber
+					value="${summary.totalOutages}" /></emph></td>
+			<td>Total outages in Pepco's service area.</td>
 		</tr>
 		<tr>
-			<td>Total Affected Customers</td>
-			<td>${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}<span
-				class="summaryTotal"> /
-					${summary.dcTotalCustomers+summary.pgTotalCustomers+summary.montTotalCustomers}</span>
+			<td><emph class="summaryCount"> <fmt:formatNumber
+					value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" /></emph>
+			</td>
+			<td>Pepco customers that are affected out of <fmt:formatNumber
+					value="${summary.dcTotalCustomers+summary.pgTotalCustomers+summary.montTotalCustomers}" />
+				total customers.</span>
 			</td>
 		</tr>
 		<tr>
-			<td>DC Customers Affected Customers</td>
-			<td>${summary.dcAffectedCustomers}<span class="summaryTotal">
-					/ ${summary.dcTotalCustomers}</span></td>
+			<td><div style="height: 20px;"></div></td>
+			<td></td>
 		</tr>
 		<tr>
-			<td>Prince George Affected Customers</td>
-			<td>${summary.pgAffectedCustomers}<span class="summaryTotal">
-					/ ${summary.pgTotalCustomers}</span></td>
+			<td><emph class="summaryCount"> <fmt:formatNumber
+					value="${summary.dcAffectedCustomers}" /></emph></td>
+			<td>DC Customers affected out of <fmt:formatNumber
+					value="${summary.dcTotalCustomers}" /> total DC customers.</td>
 		</tr>
 		<tr>
-			<td>Montgomery Affected Customers</td>
-			<td>${summary.montAffectedCustomers}<span class="summaryTotal">
-					/ ${summary.montTotalCustomers}</span></td>
+			<td><emph class="summaryCount"> <fmt:formatNumber
+					value="${summary.pgAffectedCustomers}" /></emph></td>
+			<td>Prince George customers affected out of <fmt:formatNumber
+					value="${summary.pgTotalCustomers}" /> total Prince George
+				customers.</td>
+		</tr>
+		<tr>
+			<td><emph class="summaryCount">
+				<fmt:formatNumber value="${summary.montAffectedCustomers}" /></emph></td>
+			<td>Montgomery customers affected out of <fmt:formatNumber
+					value="${summary.montTotalCustomers}" /> total Montgomery
+				customers.</td>
 		</tr>
 	</table>
 </div>

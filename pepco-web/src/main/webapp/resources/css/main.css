@@ -14,21 +14,27 @@
 #outageSummaryTable tr td:FIRST-CHILD {
 	text-align: right;
 	padding-right: 1em;
-	font-size: 1.5em;
-	font-weight: normal;
 	width: 50%;
 }
 
 #outageSummaryTable tr td {
 	text-align: left;
-	font-size: 2.3em;
-	font-weight: bold;
 	width: 50%;
 }
 
-.summaryTotal {
-	font-size: .35em;
+.summaryDesc {
+	font-size: .7em;
 	font-weight: normal;
+}
+
+emph.summaryDesc {
+	font-size: 1.5em;
+	font-weight: normal;
+}
+
+emph.summaryCount {
+	font-size: 2.3em;
+	font-weight: bold;
 }
 
 #reliability-chart h2 {

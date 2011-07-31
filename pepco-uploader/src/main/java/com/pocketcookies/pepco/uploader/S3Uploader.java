@@ -23,15 +23,17 @@ public class S3Uploader {
 		this.websiteRoot = websiteRoot;
 	}
 
-	public void upload(String url) throws IOException {
-		URL urlToDownload = new URL(websiteRoot + "/" + url);
+	public void upload(final String fromFile, final String toFile)
+			throws IOException {
+		URL urlToDownload = new URL(websiteRoot + "/" + fromFile);
 		URLConnection conn = urlToDownload.openConnection();
 		InputStream is = urlToDownload.openStream();
 
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(conn.getContentLength());
 		metadata.setContentType(conn.getContentType());
-		PutObjectRequest req = new PutObjectRequest(bucket, url, is, metadata);
+		PutObjectRequest req = new PutObjectRequest(bucket, toFile, is,
+				metadata);
 		req.setCannedAcl(CannedAccessControlList.PublicRead);
 		s3Client.putObject(req);
 	}
@@ -44,7 +46,7 @@ public class S3Uploader {
 		S3Uploader s3Uploader = new S3Uploader(new AmazonS3Client(
 				new BasicAWSCredentials(accessKeyID, secretKeyID)),
 				"pepco-web", websiteRoot);
-		s3Uploader.upload("summary-data");
-		s3Uploader.upload("index.html");
+		s3Uploader.upload("summary-data", "summary-data");
+		s3Uploader.upload("", "index.html");
 	}
 }

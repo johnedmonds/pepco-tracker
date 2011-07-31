@@ -31,6 +31,16 @@
 	font-weight: normal;
 }
 
-#reliability-chart {
+#reliability-chart h2 {
+	text-align: center;
+	margin-top: 50px;
+}
+
+#reliability-chart-placeholder {
 	margin: 0 auto;
+}
+
+.xAxisLabel {
+	text-align: center;
+	font-size: 1.5em;
 }

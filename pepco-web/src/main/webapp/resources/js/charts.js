@@ -1,5 +1,5 @@
 function makeChart(dataset) {
-	$.plot($("#reliability-chart"), dataset, {
+	$.plot($("#reliability-chart-placeholder"), dataset, {
 		series : {
 			stack : true,
 			lines : {
@@ -12,5 +12,5 @@ function makeChart(dataset) {
 			timeformat : "%y-%m-%d"
 		}
 	});
+	$(".tickLabels").append("<div class=\"tickLabel xAxisLabel\">Time</div>");
 }
-

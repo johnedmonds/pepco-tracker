@@ -5,10 +5,6 @@
 <title><tiles:getAsString name="title" /></title>
 <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>" />
 <link rel="stylesheet" href="<c:url value="/resources/css/menu.css"/>" />
-<script type="text/javascript" src="<c:url value="/resources/js/excanvas.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/resources/js/jquery.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/resources/js/jquery.flot.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/resources/js/jquery.flot.stack.js"/>"></script>
 </head>
 <body>
 	<div id="header">

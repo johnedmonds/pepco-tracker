@@ -24,9 +24,9 @@ pepco-tracker is made of several components:
 
 # Running the Scraper
 
-We don't currently have a very user-friendly way of running the scraper.  The current way to do it is to cd into pepco-scraper and use Maven:
+cd into the pepco-scraper directory and run
 
-    mvn exec:java -Dexec.mainClass=com.pocketcookies.pepco.scraper.PepcoScraper
+    java -jar target/pepco-scraper-1.0-SNAPSHOT-local.jar
 
 # Running the Website
 

@@ -53,11 +53,12 @@
 	</p>
 
 </div>
-<div id="reliability-chart">
+<div id="reliability-chart" style="width: 1000px; height: 200px;">
 	<h2>Customer Outages Over Time By Area</h2>
 	<noscript>
 		<img id="reliability-chart-img" alt="Pepco Reliability Statistics"
 			src="<c:url value="/resources/img/generated/reliability.png"/>">
 	</noscript>
 	<div id="reliability-chart-placeholder"
-		style="width: 1000px; height: 200px;"></div>
+		style="width: 900px; height: 200px; float:left;"></div>
+</div>

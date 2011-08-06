@@ -29,5 +29,6 @@ function makeChart(dataset) {
 			tickFormatter : addCommas
 		}
 	});
-	$(".tickLabels").append("<div class=\"tickLabel xAxisLabel\">Time</div>");
+	$("#reliability-chart-placeholder").before($('<div id="yAxisLabel" class="axisLabel" style="width: 100px; height: 200px; float:left;position:relative;"><p style="position:absolute;top:25%;">Customers Affected</p></div>'));
+	$(".tickLabels").append("<div class=\"tickLabel axisLabel\" id=\"xAxisLabel\">Time</div>");
 }

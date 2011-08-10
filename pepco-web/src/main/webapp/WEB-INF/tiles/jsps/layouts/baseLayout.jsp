@@ -4,6 +4,7 @@
    "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
+<meta name="Description" content="Pepco Tracker gathers and makes available reliability statistics about the power company, Pepco.">
 <title><tiles:getAsString name="title" />
 </title>
 <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>" >

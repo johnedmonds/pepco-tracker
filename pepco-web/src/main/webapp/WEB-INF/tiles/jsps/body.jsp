@@ -31,34 +31,32 @@
 		As of
 		<fmt:formatDate value="${summary.whenGenerated}"
 			pattern="yyyy-MM-dd h:mm a" />
-		there are:
-		<emph class="summaryCount"> <fmt:formatNumber
-			value="${summary.totalOutages}" /></emph>
-		total outages in Pepco's service area affecting
-		<emph class="summaryCount"> <fmt:formatNumber
-			value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" /></emph>
-		customers. Of those
+		there are: <em class="summaryCount"> <fmt:formatNumber
+				value="${summary.totalOutages}" />
+		</em> total outages in Pepco's service area affecting <em
+			class="summaryCount"> <fmt:formatNumber
+				value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" />
+		</em> customers. Of those
 		<fmt:formatNumber
 			value="${summary.dcAffectedCustomers+summary.pgAffectedCustomers+summary.montAffectedCustomers}" />
-		customers,
-		<emph class="summaryCount"> <fmt:formatNumber
-			value="${summary.dcAffectedCustomers}" /></emph>
-		are in DC,
-		<emph class="summaryCount"> <fmt:formatNumber
-			value="${summary.pgAffectedCustomers}" /></emph>
-		are in Prince George County, and
-		<emph class="summaryCount"> <fmt:formatNumber
-			value="${summary.montAffectedCustomers}" /></emph>
-		are in Montgomery County.
+		customers, <em class="summaryCount"> <fmt:formatNumber
+				value="${summary.dcAffectedCustomers}" />
+		</em> are in DC, <em class="summaryCount"> <fmt:formatNumber
+				value="${summary.pgAffectedCustomers}" />
+		</em> are in Prince George County, and <em class="summaryCount"> <fmt:formatNumber
+				value="${summary.montAffectedCustomers}" />
+		</em> are in Montgomery County.
 	</p>
 
 </div>
 <div id="reliability-chart" style="width: 1000px; height: 200px;">
 	<h2>Customer Outages Over Time By Area</h2>
 	<noscript>
-		<img id="reliability-chart-img" alt="Pepco Reliability Statistics"
-			src="<c:url value="/resources/img/generated/reliability.png"/>">
+		<div>
+			<img id="reliability-chart-img" alt="Pepco Reliability Statistics"
+				src="<c:url value="/resources/img/generated/reliability.png"/>">
+		</div>
 	</noscript>
 	<div id="reliability-chart-placeholder"
-		style="width: 900px; height: 200px; float:left;"></div>
+		style="width: 900px; height: 200px; float: left;"></div>
 </div>

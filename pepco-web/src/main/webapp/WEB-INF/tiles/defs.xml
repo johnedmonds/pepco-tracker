@@ -4,7 +4,8 @@
        "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
 	<!-- Errors -->
-	<definition name="err-base" template="/WEB-INF/tiles/jsps/err/layouts/errBase.jsp">
+	<definition name="err-base"
+		template="/WEB-INF/tiles/jsps/err/layouts/errBase.jsp">
 		<put-attribute name="title" value="Pepco Tracker - Error" />
 		<put-attribute name="header" value="/WEB-INF/tiles/jsps/header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/body.jsp" />
@@ -18,7 +19,7 @@
 	<definition name="pepco.404" extends="err-base">
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/err/404.jsp" />
 	</definition>
-	
+
 	<definition name="base"
 		template="/WEB-INF/tiles/jsps/layouts/baseLayout.jsp">
 		<put-attribute name="title" value="Pepco Tracker" />
@@ -37,11 +38,13 @@
 			cascade="true" />
 	</definition>
 	<definition name="pepco.about" extends="base">
+		<put-attribute name="title" value="Pepco Tracker - About" />
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/about.jsp" />
 		<put-attribute name="about.selected" value="class=&quot;selected&quot;"
 			cascade="true" />
 	</definition>
 	<definition name="pepco.contact" extends="base">
+		<put-attribute name="title" value="Pepco Tracker - Contact" />
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/contact.jsp" />
 		<put-attribute name="contact.selected" value="class=&quot;selected&quot;"
 			cascade="true" />

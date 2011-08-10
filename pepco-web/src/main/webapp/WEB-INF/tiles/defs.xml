@@ -5,7 +5,7 @@
 <tiles-definitions>
 	<!-- Errors -->
 	<definition name="err-base" template="/WEB-INF/tiles/jsps/err/layouts/errBase.jsp">
-		<put-attribute name="title" value="Error" />
+		<put-attribute name="title" value="Pepco Tracker - Error" />
 		<put-attribute name="header" value="/WEB-INF/tiles/jsps/header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/body.jsp" />
 		<put-attribute name="menu" value="/WEB-INF/tiles/jsps/menu.jsp" />

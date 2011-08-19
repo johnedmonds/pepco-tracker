@@ -8,9 +8,9 @@ Java 1.5+
 
 # Getting set up
 
-There is a setup.sh script in the root directory of Pepco Tracker.  Simply cd into the root directory and run
+Simply go to the root directory and execute
 
-    ./setup.sh
+    mvn install
 
 # Components
 
@@ -19,6 +19,8 @@ pepco-tracker is made of several components:
 * pepco-model: Models the data for storage in a relational database.
 * pepco-scraper: Scrapes Pepco's site and stores the data using pepco-model
 * pepco-web: A web interface for viewing the data
+* pepco-charts: Generates the summary chart image for when you can't use R.
+* pepco-uploader: Scrapes the site and uploads the content to S3.  Since we know the site will only be updated on a cron job, it's all essentially static content anyway.
 
 # Running the Scraper
 

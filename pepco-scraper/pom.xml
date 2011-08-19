@@ -3,7 +3,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pocketcookies.pepco.scraper</groupId>
 	<artifactId>pepco-scraper</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
 	<description>Scrapes Pepco's StormCenter for reliability statistics.</description>
 	<inceptionYear>2010</inceptionYear>
@@ -197,4 +196,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	<parent>
+		<groupId>com.pocketcookies</groupId>
+		<artifactId>pepco</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 </project>

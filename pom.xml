@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.pocketcookies</groupId>
+  <artifactId>pepco</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>pepco</name>
+  <modules>
+  	<module>pepco-charts</module>
+  	<module>pepco-uploader</module>
+  	<module>pepco-web</module>
+  	<module>pepco-scraper</module>
+  	
+  	<module>pepco-model</module>
+  </modules>
+</project>

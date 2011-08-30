@@ -87,7 +87,12 @@ object PepcoScraper {
     val sCustomersAffected = doc.select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersAffected = if (sCustomersAffected equals "Less than 5") 0 else Integer.parseInt(sCustomersAffected)
     val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
-    val estimatedRestoration = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
+    val estimatedRestoration = try {
+      val sEstimatedRestoration = doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() } 
+      //We use 0 to represent a pending estimated restoration.
+      if (sEstimatedRestoration equals "Pending") new DateTime(0)
+      else getPepcoDateFormat().parseDateTime(sEstimatedRestoration).withYear(new DateTime().getYear())
+    } catch { case e:IllegalArgumentException => {logger.warn("Error parsing estimated restoration.", e); new DateTime(0)}}
     if ((item \\ "point" size) != 0) {
       val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))
       val numOutages = Integer.parseInt(doc.select(":containsOwn(Number of Outage Orders)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()})

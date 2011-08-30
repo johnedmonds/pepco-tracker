@@ -4,21 +4,26 @@
 <!-- Generated Jul 11, 2011 6:32:33 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="com.pocketcookies.pepco.model.Outage" table="OUTAGES">
+
 		<id name="id" type="int">
 			<column name="ID" />
 			<generator class="increment" />
 		</id>
-		<property name="lat" type="double">
-			<column name="LAT" />
-		</property>
-		<property name="lon" type="double">
-			<column name="LON" />
-		</property>
+		<properties name="candidate_key_lat_lon_observedend"
+			unique="true">
+			<property name="lat" type="double">
+				<column name="LAT" />
+			</property>
+			<property name="lon" type="double">
+				<column name="LON" />
+			</property>
+			<property name="observedEnd" type="java.sql.Timestamp"
+				index="idx_observed_end" unique="false">
+				<column name="OBSERVEDEND" />
+			</property>
+		</properties>
 		<property name="earliestReport" type="java.sql.Timestamp">
 			<column name="EARLIESTREPORT" />
-		</property>
-		<property name="observedEnd" type="java.sql.Timestamp">
-			<column name="OBSERVEDEND" />
 		</property>
 		<bag name="revisions" inverse="false" table="OUTAGEREVISIONS"
 			lazy="true" order-by="observationDate desc">
@@ -27,5 +32,6 @@
 			</key>
 			<one-to-many class="com.pocketcookies.pepco.model.AbstractOutageRevision" />
 		</bag>
+
 	</class>
 </hibernate-mapping>

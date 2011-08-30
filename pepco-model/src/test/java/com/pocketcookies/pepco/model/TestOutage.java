@@ -52,7 +52,7 @@ public class TestOutage extends TestCase {
 		session.beginTransaction();
 		Timestamp now = new Timestamp(new Date().getTime());
 		Outage o1 = new Outage(1, 1, now, now);
-		Outage o2 = new Outage(1, 1, now, now);
+		Outage o2 = new Outage(2, 2, now, now);
 
 		session.save(o1);
 		session.save(o2);

@@ -10,8 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import sun.security.util.PendingException;
-
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
@@ -216,5 +214,37 @@ public class TestOutage extends TestCase {
 		assertEquals(2, run.getOutageRevisions().size());
 		assertTrue(run.getOutageRevisions().contains(or1));
 		assertTrue(run.getOutageRevisions().contains(or2));
+	}
+
+	public void testNullRestoration() {
+		assertEquals(new OutageRevision(1, null, new Timestamp(0), null, null,
+				"test", CrewStatus.PENDING), new OutageRevision(1, null,
+				new Timestamp(0), null, null, "test", CrewStatus.PENDING));
+		assertEquals(new OutageRevision(1, new Timestamp(0), new Timestamp(0),
+				null, null, "test", CrewStatus.PENDING), new OutageRevision(1,
+				new Timestamp(0), new Timestamp(0), null, null, "test",
+				CrewStatus.PENDING));
+		assertFalse(new OutageRevision(1, null, new Timestamp(0), null, null,
+				"test", CrewStatus.PENDING).equals(new OutageRevision(1,
+				new Timestamp(0), new Timestamp(0), null, null, "test",
+				CrewStatus.PENDING)));
+		assertFalse(new OutageRevision(1, new Timestamp(0), new Timestamp(0),
+				null, null, "test", CrewStatus.PENDING)
+				.equals(new OutageRevision(1, null, new Timestamp(0), null,
+						null, "test", CrewStatus.PENDING)));
+
+		assertEquals(new OutageClusterRevision(1, null, new Timestamp(0), null,
+				null, 1), new OutageClusterRevision(1, null, new Timestamp(0),
+				null, null, 1));
+		assertEquals(new OutageClusterRevision(1, new Timestamp(0),
+				new Timestamp(0), null, null, 1), new OutageClusterRevision(1,
+				new Timestamp(0), new Timestamp(0), null, null, 1));
+		assertFalse(new OutageClusterRevision(1, null, new Timestamp(0), null,
+				null, 1).equals(new OutageClusterRevision(1, new Timestamp(0),
+				new Timestamp(0), null, null, 1)));
+		assertFalse(new OutageClusterRevision(1, new Timestamp(0),
+				new Timestamp(0), null, null, 1)
+				.equals(new OutageClusterRevision(1, null, new Timestamp(0),
+						null, null, 1)));
 	}
 }

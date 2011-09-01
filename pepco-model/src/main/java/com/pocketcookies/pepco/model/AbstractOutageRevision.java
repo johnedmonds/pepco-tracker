@@ -56,9 +56,14 @@ public abstract class AbstractOutageRevision {
 	}
 
 	public boolean equalsIgnoreObservationDate(AbstractOutageRevision revision) {
-		return this.numCustomersAffected == revision.numCustomersAffected
-				&& this.estimatedRestoration
-						.equals(revision.estimatedRestoration);
+		if (this.estimatedRestoration != revision.estimatedRestoration) {
+			if (this.estimatedRestoration == null)
+				return false;
+			else if (!this.estimatedRestoration
+					.equals(revision.estimatedRestoration))
+				return false;
+		}
+		return this.numCustomersAffected == revision.numCustomersAffected;
 	}
 
 	@Override

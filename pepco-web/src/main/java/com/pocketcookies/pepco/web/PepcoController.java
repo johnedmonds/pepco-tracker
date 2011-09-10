@@ -61,7 +61,7 @@ public class PepcoController {
 		return new JSONArray().put(dc).put(pg).put(mont).toString();
 	}
 
-	@RequestMapping(value = "/summary-csv", method = RequestMethod.GET)
+	@RequestMapping(value = "/summary.csv", method = RequestMethod.GET)
 	public void summaryCsv(final HttpServletResponse response)
 			throws IOException {
 		response.setContentType("text/csv");

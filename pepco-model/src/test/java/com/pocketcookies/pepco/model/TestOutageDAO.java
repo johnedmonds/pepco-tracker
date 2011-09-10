@@ -84,4 +84,28 @@ public class TestOutageDAO extends TestCase {
 		assertEquals(3, o2.getObservedEnd().getTime());
 		assertEquals(2, o3.getObservedEnd().getTime());
 	}
+
+	public void testUpdateNullExpectedRestoration() {
+		this.sessionFactory.getCurrentSession().beginTransaction();
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
+		final OutageRevision or1 = new OutageRevision(1, null,
+				new Timestamp(1), o1, null, null, null);
+		final OutageRevision or2 = new OutageRevision(2, null,
+				new Timestamp(2), o1, null, null, null);
+		dao.updateOutage(or1);
+		final OutageRevision retrievedor1 = (OutageRevision) this.sessionFactory
+				.getCurrentSession().createQuery("from AbstractOutageRevision")
+				.list().get(0);
+		assertEquals(1, retrievedor1.getNumCustomersAffected());
+		assertEquals(null, retrievedor1.getEstimatedRestoration());
+		dao.updateOutage(or2);
+		final OutageRevision retrievedor2 = (OutageRevision) this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from AbstractOutageRevision order by observationDate desc")
+				.list().get(0);
+		assertEquals(2, retrievedor2.getNumCustomersAffected());
+		assertEquals(null, retrievedor2.getEstimatedRestoration());
+	}
 }

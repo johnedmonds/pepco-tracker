@@ -60,3 +60,4 @@
 	<div id="reliability-chart-placeholder"
 		style="width: 900px; height: 200px; float: left;"></div>
 </div>
+<a href="<c:url value="/summary.csv"/>" id="summary-csv-link">Chart Source Data (csv)</a>

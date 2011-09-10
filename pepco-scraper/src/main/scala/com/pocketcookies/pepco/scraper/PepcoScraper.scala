@@ -89,15 +89,14 @@ object PepcoScraper {
     val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
     val estimatedRestoration = try {
       val sEstimatedRestoration = doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() } 
-      //We use 0 to represent a pending estimated restoration.
-      if (sEstimatedRestoration equals "Pending") new DateTime(0)
-      else getPepcoDateFormat().parseDateTime(sEstimatedRestoration).withYear(new DateTime().getYear())
-    } catch { case e:IllegalArgumentException => {logger.warn("Error parsing estimated restoration.", e); new DateTime(0)}}
+      if (sEstimatedRestoration equals "Pending") null
+      else new Timestamp(getPepcoDateFormat().parseDateTime(sEstimatedRestoration).withYear(new DateTime().getYear()).getMillis())
+    } catch { case e:IllegalArgumentException => {logger.warn("Error parsing estimated restoration.", e); null}}
     if ((item \\ "point" size) != 0) {
       val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))
       val numOutages = Integer.parseInt(doc.select(":containsOwn(Number of Outage Orders)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
-      val outageRevision = new OutageClusterRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), observationDate, outage, run, numOutages)
+      val outageRevision = new OutageClusterRevision(customersAffected, estimatedRestoration, observationDate, outage, run, numOutages)
       outage.getRevisions().add(outageRevision)
       outageRevision
     } else {
@@ -105,7 +104,7 @@ object PepcoScraper {
       val cause = doc.select(":containsOwn(Cause)").first().nextSibling() match {case n:TextNode=>n.text().trim() case _=>throw new ClassCastException()}
       val status = CrewStatus.valueOf(doc.select(":containsOwn(Crew Status)").first().nextSibling() match {case n:TextNode=>n.text().trim().replace(' ', '_').toUpperCase() case _=>throw new ClassCastException()})
       val outage = new Outage(latLon.lat, latLon.lon, new Timestamp(earliestReport.getMillis()), null)
-      val outageRevision = new OutageRevision(customersAffected, new Timestamp(estimatedRestoration.getMillis()), observationDate, outage, run, cause, status)
+      val outageRevision = new OutageRevision(customersAffected, estimatedRestoration, observationDate, outage, run, cause, status)
       outage.getRevisions().add(outageRevision)
       outageRevision
     }

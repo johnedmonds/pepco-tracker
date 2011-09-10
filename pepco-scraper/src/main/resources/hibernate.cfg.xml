@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
                                          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
- <session-factory name="PepcoSessionFactory">
+ <session-factory>
   <mapping class="com.pocketcookies.pepco.model.Outage" resource="mappings/Outage.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.OutageClusterRevision" resource="mappings/OutageClusterRevision.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.OutageRevision" resource="mappings/OutageRevision.hbm.xml"/>

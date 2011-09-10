@@ -30,4 +30,6 @@ body {
 	clear: both;
 	overflow: auto;
 	clear: both;
+	margin: 0;
+	padding-left:40px;
 }

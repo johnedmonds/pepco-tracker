@@ -93,4 +93,17 @@ public class OutageDAO {
 				.setTimestamp("closeTime", closeTime)
 				.setParameterList("ids", outages).executeUpdate();
 	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<AbstractOutageRevision> getOutagesAsOf(
+			final Timestamp asof) {
+		return this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from AbstractOutageRevision aor "
+								+ "where aor.outage.earliestReport <= :asof and "
+								+ "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
+								+ "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)")
+				.setTimestamp("asof", asof).list();
+	}
 }

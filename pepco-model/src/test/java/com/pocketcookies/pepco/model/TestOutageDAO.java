@@ -2,12 +2,14 @@ package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
 public class TestOutageDAO extends TestCase {
@@ -107,5 +109,79 @@ public class TestOutageDAO extends TestCase {
 				.list().get(0);
 		assertEquals(2, retrievedor2.getNumCustomersAffected());
 		assertEquals(null, retrievedor2.getEstimatedRestoration());
+	}
+
+	public void testOutagesAsOf() {
+		this.sessionFactory.getCurrentSession().beginTransaction();
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		final Outage previousOutage = new Outage(1, 1, new Timestamp(1),
+				new Timestamp(2));
+		final OutageRevision previousOutageRevision = new OutageRevision(1,
+				null, new Timestamp(4), previousOutage, null, "cause",
+				CrewStatus.PENDING);
+		final Outage currentOutage = new Outage(2, 2, new Timestamp(3), null);
+		final OutageRevision currentOutageRevision = new OutageRevision(1,
+				null, new Timestamp(4), currentOutage, null, "cause",
+				CrewStatus.PENDING);
+		final Outage futureOutage = new Outage(3, 3, new Timestamp(6), null);
+		final OutageRevision futureOutageRevision = new OutageRevision(1, null,
+				new Timestamp(4), futureOutage, null, "cause",
+				CrewStatus.PENDING);
+		final Outage closedOutage = new Outage(4, 4, new Timestamp(4),
+				new Timestamp(5));
+		final OutageRevision closedOutageRevision = new OutageRevision(1, null,
+				new Timestamp(4), closedOutage, null, "cause",
+				CrewStatus.PENDING);
+		this.sessionFactory.getCurrentSession().save(previousOutage);
+		this.sessionFactory.getCurrentSession().save(currentOutage);
+		this.sessionFactory.getCurrentSession().save(futureOutage);
+		this.sessionFactory.getCurrentSession().save(closedOutage);
+		this.sessionFactory.getCurrentSession().save(previousOutageRevision);
+		this.sessionFactory.getCurrentSession().save(currentOutageRevision);
+		this.sessionFactory.getCurrentSession().save(futureOutageRevision);
+		this.sessionFactory.getCurrentSession().save(closedOutageRevision);
+		this.sessionFactory.getCurrentSession().flush();
+
+		final Collection<AbstractOutageRevision> revisions = dao
+				.getOutagesAsOf(new Timestamp(4));
+
+		assertEquals(2, revisions.size());
+		assertTrue(revisions.contains(currentOutageRevision));
+		assertTrue(revisions.contains(closedOutageRevision));
+
+	}
+
+	public void testOutageRevisionsAsOf() {
+		this.sessionFactory.getCurrentSession().beginTransaction();
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		final Outage currentOutage = new Outage(1, 1, new Timestamp(1),
+				new Timestamp(3));
+		final OutageRevision r1 = new OutageRevision(1, null, new Timestamp(1),
+				currentOutage, null, "cause", CrewStatus.PENDING);
+		final OutageRevision r2 = new OutageRevision(1, null, new Timestamp(2),
+				currentOutage, null, "cause", CrewStatus.PENDING);
+		final OutageRevision r3 = new OutageRevision(1, null, new Timestamp(3),
+				currentOutage, null, "cause", CrewStatus.PENDING);
+
+		final Outage futureOutage = new Outage(2, 2, new Timestamp(4), null);
+		final OutageRevision pastOutageRevision = new OutageRevision(1, null,
+				new Timestamp(2), futureOutage, null, "Cause",
+				CrewStatus.PENDING);
+		final OutageRevision futureOutageRevision = new OutageRevision(1, null,
+				new Timestamp(4), futureOutage, null, "Cause",
+				CrewStatus.PENDING);
+
+		this.sessionFactory.getCurrentSession().save(currentOutage);
+		this.sessionFactory.getCurrentSession().save(futureOutage);
+		this.sessionFactory.getCurrentSession().save(r1);
+		this.sessionFactory.getCurrentSession().save(r2);
+		this.sessionFactory.getCurrentSession().save(r3);
+		this.sessionFactory.getCurrentSession().save(pastOutageRevision);
+		this.sessionFactory.getCurrentSession().save(futureOutageRevision);
+
+		final Collection<AbstractOutageRevision> revisions = dao
+				.getOutagesAsOf(new Timestamp(2));
+		assertEquals(1, revisions.size());
+		assertTrue(revisions.contains(r2));
 	}
 }

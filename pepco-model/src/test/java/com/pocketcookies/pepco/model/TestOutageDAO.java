@@ -18,10 +18,10 @@ public class TestOutageDAO extends TestCase {
 	public void setUp() {
 		this.sessionFactory = new Configuration().configure()
 				.buildSessionFactory();
+		this.sessionFactory.getCurrentSession().beginTransaction();
 	}
 
 	public void testUpdateOutage() {
-		this.sessionFactory.getCurrentSession().beginTransaction();
 		final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
 		// Saved
 		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
@@ -68,7 +68,6 @@ public class TestOutageDAO extends TestCase {
 
 	public void testCloseMissingOutages() {
 		final OutageDAO outageDao = new OutageDAO(sessionFactory);
-		this.sessionFactory.getCurrentSession().beginTransaction();
 		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
 		final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
 		final Outage o3 = new Outage(3, 3, new Timestamp(1), new Timestamp(2));
@@ -88,7 +87,6 @@ public class TestOutageDAO extends TestCase {
 	}
 
 	public void testUpdateNullExpectedRestoration() {
-		this.sessionFactory.getCurrentSession().beginTransaction();
 		final OutageDAO dao = new OutageDAO(sessionFactory);
 		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
 		final OutageRevision or1 = new OutageRevision(1, null,
@@ -112,7 +110,6 @@ public class TestOutageDAO extends TestCase {
 	}
 
 	public void testOutagesAsOf() {
-		this.sessionFactory.getCurrentSession().beginTransaction();
 		final OutageDAO dao = new OutageDAO(sessionFactory);
 		final Outage previousOutage = new Outage(1, 1, new Timestamp(1),
 				new Timestamp(2));
@@ -143,7 +140,7 @@ public class TestOutageDAO extends TestCase {
 		this.sessionFactory.getCurrentSession().flush();
 
 		final Collection<AbstractOutageRevision> revisions = dao
-				.getOutagesAsOf(new Timestamp(4));
+				.getOutagesAsOf(new Timestamp(4), AbstractOutageRevision.class);
 
 		assertEquals(2, revisions.size());
 		assertTrue(revisions.contains(currentOutageRevision));
@@ -152,7 +149,6 @@ public class TestOutageDAO extends TestCase {
 	}
 
 	public void testOutageRevisionsAsOf() {
-		this.sessionFactory.getCurrentSession().beginTransaction();
 		final OutageDAO dao = new OutageDAO(sessionFactory);
 		final Outage currentOutage = new Outage(1, 1, new Timestamp(1),
 				new Timestamp(3));
@@ -180,7 +176,7 @@ public class TestOutageDAO extends TestCase {
 		this.sessionFactory.getCurrentSession().save(futureOutageRevision);
 
 		final Collection<AbstractOutageRevision> revisions = dao
-				.getOutagesAsOf(new Timestamp(2));
+				.getOutagesAsOf(new Timestamp(2), AbstractOutageRevision.class);
 		assertEquals(1, revisions.size());
 		assertTrue(revisions.contains(r2));
 	}

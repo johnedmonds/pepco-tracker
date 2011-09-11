@@ -103,6 +103,7 @@ public class OutageDAO {
 				.getCurrentSession()
 				.createQuery(
 						"from AbstractOutageRevision aor "
+								+ "left outer join fetch aor.outage "
 								+ "where aor.outage.earliestReport <= :asof and "
 								+ "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
 								+ "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)"

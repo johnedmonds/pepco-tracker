@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
@@ -96,14 +97,20 @@ public class OutageDAO {
 
 	@SuppressWarnings("unchecked")
 	public Collection<AbstractOutageRevision> getOutagesAsOf(
-			final Timestamp asof) {
-		return this.sessionFactory
+			final Timestamp asof,
+			final Class<? extends AbstractOutageRevision> clazz) {
+		final Query q = this.sessionFactory
 				.getCurrentSession()
 				.createQuery(
 						"from AbstractOutageRevision aor "
 								+ "where aor.outage.earliestReport <= :asof and "
 								+ "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
-								+ "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)")
-				.setTimestamp("asof", asof).list();
+								+ "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)"
+								+ (clazz.equals(AbstractOutageRevision.class) ? ""
+										: "    and aor.class = :clazz"))
+				.setTimestamp("asof", asof);
+		if (!clazz.equals(AbstractOutageRevision.class))
+			q.setString("clazz", clazz.getSimpleName());
+		return q.list();
 	}
 }

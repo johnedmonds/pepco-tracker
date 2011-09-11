@@ -180,4 +180,33 @@ public class TestOutageDAO extends TestCase {
 		assertEquals(1, revisions.size());
 		assertTrue(revisions.contains(r2));
 	}
+
+	public void testOutageRevisionsAsOfDiscriminator() {
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		final Outage o1 = new Outage(1, 1, new Timestamp(1), new Timestamp(3));
+		final OutageRevision r1 = new OutageRevision(1, null, new Timestamp(1),
+				o1, null, "cause", CrewStatus.PENDING);
+		final OutageClusterRevision cr1 = new OutageClusterRevision(1, null,
+				new Timestamp(1), o1, null, 1);
+		this.sessionFactory.getCurrentSession().save(o1);
+		this.sessionFactory.getCurrentSession().save(r1);
+		this.sessionFactory.getCurrentSession().save(cr1);
+
+		final Collection<AbstractOutageRevision> outages = dao.getOutagesAsOf(
+				new Timestamp(2), OutageRevision.class);
+		assertEquals(1, outages.size());
+		assertTrue(outages.contains(r1));
+
+		final Collection<AbstractOutageRevision> outageClusters = dao
+				.getOutagesAsOf(new Timestamp(2), OutageClusterRevision.class);
+		assertEquals(1, outageClusters.size());
+		assertTrue(outageClusters.contains(cr1));
+
+		final Collection<AbstractOutageRevision> allOutages = dao
+				.getOutagesAsOf(new Timestamp(2), AbstractOutageRevision.class);
+		assertEquals(2, allOutages.size());
+		assertTrue(allOutages.contains(r1));
+		assertTrue(allOutages.contains(cr1));
+	}
+
 }

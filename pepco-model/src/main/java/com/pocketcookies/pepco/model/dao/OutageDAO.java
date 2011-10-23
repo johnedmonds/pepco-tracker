@@ -47,7 +47,9 @@ public class OutageDAO {
 	 * database. If the revision is different from the most recent revision for
 	 * the outage, we save the revision and return true. Otherwise, we do
 	 * nothing and return false.
-	 * 
+         * 
+         * We also add all zoom levels from the revision's outage to the existing outage's list of zoom levels.
+         * 
 	 * @param revision
 	 * @return True if the revision is new and is successfully added to the
 	 *         database, false otherwise.
@@ -56,6 +58,7 @@ public class OutageDAO {
 		this.sessionFactory.getCurrentSession().flush();
 		final Outage existingOutage = getActiveOutage(revision.getOutage()
 				.getLat(), revision.getOutage().getLon());
+                //Check whether this is a new outage (existingOutage should be null).
 		if (!revision.getOutage().equals(existingOutage)) {
 			this.sessionFactory.getCurrentSession().save(revision.getOutage());
 			this.sessionFactory.getCurrentSession().save(revision);
@@ -67,8 +70,11 @@ public class OutageDAO {
 			// this could very well be out of date. We need the most up-to-date
 			// version for when we are checking whether the revision is
 			// different from the current revision.
+                    
 			this.sessionFactory.getCurrentSession().refresh(existingOutage);
+                        existingOutage.getZoomLevels().addAll(revision.getOutage().getZoomLevels());
 			revision.setOutage(existingOutage);
+                        //Test that no updates need to be made to the revision.
 			if (revision.getOutage().getRevisions().get(0)
 					.equalsIgnoreObservationDate(revision))
 				return false;

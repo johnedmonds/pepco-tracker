@@ -208,5 +208,36 @@ public class TestOutageDAO extends TestCase {
 		assertTrue(allOutages.contains(r1));
 		assertTrue(allOutages.contains(cr1));
 	}
+    
+    //Test that updating an outage adds zoom levels to the existing outage in the database.
+    public void testUpdateZoomLevels() {
+        final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
+        // Saved
+        final Outage storedOutage = new Outage(1, 1, new Timestamp(1), null);
+        storedOutage.getZoomLevels().add(1);
+        final OutageClusterRevision storedRevision=new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), storedOutage, null, 1);
+        
+        //We need the outage to be in the database with a revision.
+        outageDao.updateOutage(storedRevision);
+        
+        //Check that there is exactly one zoom level for this outage.
+        assertEquals(1,((Outage)this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().size());
+        //Check that the only zoom level is 1.
+        assertEquals(1,(int)((Outage)this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().iterator().next());
 
+        //Craft the outage revision with the new zoom level.
+        final Outage dummyOutage=new Outage(1,1,new Timestamp(1), null);
+        dummyOutage.getZoomLevels().add(2);
+        final OutageClusterRevision revision = new OutageClusterRevision(1,
+                new Timestamp(1), new Timestamp(1), dummyOutage, null, 1);
+        
+        outageDao.updateOutage(revision);
+        
+        //Test that this has added zoom levels.
+        //Check that there are exactly 2 zoom levels for this outage.
+        assertEquals(2,((Outage)this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().size());
+        //Check that the only zoom level is 1.
+        assertTrue(((Outage)this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().contains(1));
+        assertTrue(((Outage)this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().contains(2));
+    }
 }

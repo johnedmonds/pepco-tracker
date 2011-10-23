@@ -12,6 +12,7 @@ import org.hibernate.cfg.Configuration;
 
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
+import java.util.Arrays;
 
 public class TestOutage extends TestCase {
 	private SessionFactory sessionFactory;
@@ -263,4 +264,20 @@ public class TestOutage extends TestCase {
 				.equals(new OutageClusterRevision(1, null, new Timestamp(0),
 						null, null, 1)));
 	}
+        
+        //Test that zoom levels are saved and controlled by the Outage.
+        public void testSaveZoomLevel(){
+            Session session = this.sessionFactory.getCurrentSession();
+            session.beginTransaction();
+            final Timestamp now = new Timestamp(1);
+            Outage o = new Outage(1, 1, now, now);
+            o.getZoomLevels().addAll(Arrays.asList(new Integer[]{1, 2, 4, 5}));
+            session.save(o);
+            session.getTransaction().commit();
+
+            session = this.sessionFactory.getCurrentSession();
+            session.beginTransaction();
+            o = (Outage) session.get(Outage.class, o.getId());
+            assertTrue(o.getZoomLevels().containsAll(Arrays.asList(new Integer[]{1, 2, 4, 5})));
+        }
 }

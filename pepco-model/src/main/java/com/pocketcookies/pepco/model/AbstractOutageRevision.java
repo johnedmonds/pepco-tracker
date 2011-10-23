@@ -41,12 +41,13 @@ public abstract class AbstractOutageRevision {
 		setRun(run);
 	}
 
+        /**
+         * Checks whether this object is the same as o.
+         * 
+         * @param o The object to compare against.
+         * @return True if this object and o are equal.
+         */
 	@Override
-	/**
-	 * Checks whether this object is the same as o.
-	 * 
-	 * Note that we do not check observationDate.  Thus, use care when storing collections of AbstractOutageRevision in sets. 
-	 */
 	public boolean equals(final Object o) {
 		if (!(o instanceof AbstractOutageRevision))
 			return false;
@@ -55,6 +56,11 @@ public abstract class AbstractOutageRevision {
 				&& this.observationDate.equals(revision.observationDate);
 	}
 
+        /**
+         * Checks that these two objects are the same except for the observationDate which is disregarded.
+         * @param revision The revision to compare against.
+         * @return True of the objects are the same ignoring the observationDate.
+         */
 	public boolean equalsIgnoreObservationDate(AbstractOutageRevision revision) {
 		if (this.estimatedRestoration != revision.estimatedRestoration) {
 			if (this.estimatedRestoration == null)

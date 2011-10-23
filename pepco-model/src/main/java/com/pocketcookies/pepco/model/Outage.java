@@ -1,6 +1,7 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class Outage {
 	private int id;
 	private double lat, lon;
 	private Timestamp earliestReport;
+        //The zoom levels on which this outage appears.
+        private Collection<Integer> zoomLevels;
 
 	/**
 	 * The time we scraped the site and this outage disappeared. This will
@@ -36,6 +39,7 @@ public class Outage {
 		setLon(lon);
 		setEarliestReport(earliestReport);
 		setObservedEnd(observedEnd);
+                setZoomLevels(new LinkedList<Integer>());
 	}
 
 	@Override
@@ -103,4 +107,6 @@ public class Outage {
 		this.revisions = revisions;
 	}
 
+        public Collection<Integer>getZoomLevels(){return this.zoomLevels;}
+        public void setZoomLevels(final Collection<Integer>zoomLevels){this.zoomLevels=zoomLevels;}
 }

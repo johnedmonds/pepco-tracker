@@ -32,6 +32,9 @@
 			</key>
 			<one-to-many class="com.pocketcookies.pepco.model.AbstractOutageRevision" />
 		</bag>
-
+                <bag name="zoomLevels" table="ZOOMLEVELS">
+                    <key/>
+                    <element column="ZOOMLEVEL" type="integer"/>
+                </bag>
 	</class>
 </hibernate-mapping>

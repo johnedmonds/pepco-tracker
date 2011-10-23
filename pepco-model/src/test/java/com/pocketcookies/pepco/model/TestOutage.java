@@ -143,31 +143,47 @@ public class TestOutage extends TestCase {
 		assertEquals(or1.hashCode(), or2.hashCode());
 		assertEquals(cr1.hashCode(), cr2.hashCode());
 
+                //Test observation date is used in equality check.
 		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.PENDING).equals(new OutageRevision(1, now, then,
 				null, null, "test", CrewStatus.PENDING)));
+                //Test observation date is ignored in equalsIgnoreObservationDate.
 		assertTrue(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.PENDING)
 				.equalsIgnoreObservationDate(new OutageRevision(1, now, then,
 						null, null, "test", CrewStatus.PENDING)));
 
+                //customersAffected causes revisions to be not equal.
 		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(2, now, now,
 				null, null, "test", CrewStatus.ASSIGNED)));
+                //observationDate and estimatedRestoration cause revisions to be unequal.
 		assertFalse(new OutageRevision(1, now, now, null, null, "test",
-				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, then,
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, then, now,
 				null, null, "test", CrewStatus.ASSIGNED)));
+                assertFalse(new OutageRevision(1, now, now, null, null, "test",
+				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, then,
+				null, null, "test", CrewStatus.ASSIGNED)));
+                //Different causes cause inequality.
 		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
 				null, null, "test2", CrewStatus.ASSIGNED)));
+                //Different statuses cause inequality.
 		assertFalse(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.ASSIGNED).equals(new OutageRevision(1, now, now,
 				null, null, "test", CrewStatus.PENDING)));
 
-		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
+                //Testing clusters.
+                
+                //customersAffected is included in equality check.
+                assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
 				.equals(new OutageClusterRevision(2, now, now, null, null, 1)));
+                //Different observation dates and estimated restorations cause revisions to be different.
 		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
-				.equals(new OutageClusterRevision(1, then, then, null, null, 1)));
+				.equals(new OutageClusterRevision(1, now, then, null, null, 1)));
+                assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
+				.equals(new OutageClusterRevision(1, then, now, null, null, 1)));
+                //Different number of outages causes revision to be different.
 		assertFalse(new OutageClusterRevision(1, now, now, null, null, 1)
 				.equals(new OutageClusterRevision(1, now, now, null, null, 2)));
 	}

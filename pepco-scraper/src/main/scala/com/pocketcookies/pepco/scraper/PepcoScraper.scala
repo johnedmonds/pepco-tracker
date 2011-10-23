@@ -142,10 +142,12 @@ object PepcoScraper {
     val outages = indices
       .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
       .map(url => loadXMLRequest(client, url))
-      .filter(a => a != null) //Remove failed requests.
+      .filter(a => a != null) //Remove failed requests.  Usually requests can fail because they were made for data outside of Pepco's service area.
       .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
       .flatten //No need to parse each list individually.
       .map(n => parseOutage(n, observationDate, run))
+    //Add the current zoom level to all the outages.
+    outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
     outages.foreach(outageRevision => {outageDao.updateOutage(outageRevision); outageIds.add(outageRevision.getOutage().getId())})
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
     outages.filter(outageRevision => outageRevision match {

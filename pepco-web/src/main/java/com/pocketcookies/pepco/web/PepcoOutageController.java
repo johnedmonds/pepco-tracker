@@ -29,6 +29,9 @@ public class PepcoOutageController {
 		this.outageDao = outageDao;
 	}
 
+        /**
+         * Wraps a regular outage so that it can be serialized by Jackson.
+         */
 	public static class OutageRevisionWrapper {
 		public final double lat, lon;
 		public final long earliestReport;

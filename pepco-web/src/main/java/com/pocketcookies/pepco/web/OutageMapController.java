@@ -9,9 +9,10 @@ import org.springframework.web.servlet.ModelAndView;
  * @author jack
  */
 @Controller
+@RequestMapping(value="/outage-map")
 public class OutageMapController {
 
-    @RequestMapping(value = "/outage-map")
+    @RequestMapping(value = "")
     public ModelAndView index() {
         return new ModelAndView("pepco.outage.map");
     }

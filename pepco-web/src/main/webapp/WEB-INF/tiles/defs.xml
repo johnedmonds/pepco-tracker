@@ -15,6 +15,8 @@
 		<put-attribute name="home.selected" value="" cascade="true" />
 		<put-attribute name="about.selected" value="" cascade="true" />
 		<put-attribute name="contact.selected" value="" cascade="true" />
+		<put-attribute name="outage.maps.selected" value=""
+			cascade="true" />
 	</definition>
 	<definition name="pepco.404" extends="err-base">
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/err/404.jsp" />
@@ -32,6 +34,7 @@
 		<put-attribute name="home.selected" value="" cascade="true" />
 		<put-attribute name="about.selected" value="" cascade="true" />
 		<put-attribute name="contact.selected" value="" cascade="true" />
+                <put-attribute name="outage.map.selected" value="" cascade="true" />
 	</definition>
 	<definition name="pepco.homepage" extends="base">
 		<put-attribute name="home.selected" value="class=&quot;selected&quot;"
@@ -47,6 +50,13 @@
 		<put-attribute name="title" value="Pepco Tracker - Contact" />
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/contact.jsp" />
 		<put-attribute name="contact.selected" value="class=&quot;selected&quot;"
+			cascade="true" />
+	</definition>
+	<definition name="pepco.outage.map" extends="base">
+		<put-attribute name="title" value="Pepco Tracker - Outage Map" />
+		<put-attribute name="body"
+			value="/WEB-INF/tiles/jsps/outage-map.jsp" />
+		<put-attribute name="outage.map.selected" value="class=&quot;selected&quot;"
 			cascade="true" />
 	</definition>
 </tiles-definitions>

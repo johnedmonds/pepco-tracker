@@ -97,6 +97,9 @@ public class OutageDAO {
 
     /**
      * Retrieves a collection of outages as of the give date of the given type.
+     * 
+     * Important: Outages are returned that existed at the as-of date.  Nothing is done to the states of the outages.
+     * That means changes to the outage (such as # of customers affected, estimated restoration, cause, etc.) will be included in the outage even if they happened after the as-of date.
      * @param asof The as-of date for the collection of outages to retrieve.
      * @param clazz The type of outage to retrieve.  If the type is AbstractOutageRevision, the type will be disregarded (outages of all types will be returned).
      * @return A list of outages of the specified type as of the specified time.

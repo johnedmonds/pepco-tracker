@@ -75,7 +75,7 @@ public class Outage {
         @Override
         public int hashCode()
         {
-            return id;
+            return (int)(getLat()+getLon())+getEarliestReport().hashCode()+getObservedEnd().hashCode();
         }
 
 	@Id

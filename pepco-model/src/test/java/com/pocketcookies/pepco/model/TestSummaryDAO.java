@@ -6,16 +6,16 @@ import junit.framework.TestCase;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.pocketcookies.pepco.model.dao.SummaryDAO;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestSummaryDAO extends TestCase {
 
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new Configuration().configure()
+		this.sessionFactory = new AnnotationConfiguration().configure()
 				.buildSessionFactory();
 	}
 

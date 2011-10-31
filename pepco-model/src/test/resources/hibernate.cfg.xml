@@ -9,7 +9,7 @@
   <property name="current_session_context_class">thread</property>
   <property name="hibernate.hbm2ddl.auto">create-drop</property>
   <property name="hibernate.show_sql">true</property>
-  <mapping class="com.pocketcookies.pepco.model.Outage" resource="mappings/Outage.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.Outage" />
   <mapping class="com.pocketcookies.pepco.model.OutageClusterRevision" resource="mappings/OutageClusterRevision.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.OutageRevision" resource="mappings/OutageRevision.hbm.xml"/>
   <mapping class="com.pocketcookies.pepco.model.AbstractOutageRevision" resource="mappings/AbstractOutageRevision.hbm.xml"/>

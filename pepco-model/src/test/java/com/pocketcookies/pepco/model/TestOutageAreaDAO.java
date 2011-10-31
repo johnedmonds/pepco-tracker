@@ -5,16 +5,16 @@ import java.sql.Timestamp;
 import junit.framework.TestCase;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.pocketcookies.pepco.model.dao.OutageAreaDAO;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutageAreaDAO extends TestCase {
 
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new Configuration().configure()
+		this.sessionFactory = new AnnotationConfiguration().configure()
 				.buildSessionFactory();
 	}
 

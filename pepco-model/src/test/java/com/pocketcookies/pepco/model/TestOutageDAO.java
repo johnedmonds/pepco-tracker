@@ -7,16 +7,16 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutageDAO extends TestCase {
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new Configuration().configure()
+		this.sessionFactory = new AnnotationConfiguration().configure()
 				.buildSessionFactory();
 		this.sessionFactory.getCurrentSession().beginTransaction();
 	}

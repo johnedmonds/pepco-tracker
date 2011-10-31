@@ -8,17 +8,17 @@ import junit.framework.TestCase;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import java.util.Arrays;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutage extends TestCase {
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new Configuration().configure()
+		this.sessionFactory = new AnnotationConfiguration().configure()
 				.buildSessionFactory();
 	}
 

@@ -5,6 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * Represents a single outage over its lifetime.
@@ -12,9 +24,12 @@ import java.util.TreeSet;
  * @author John Edmonds
  * 
  */
+@Entity
+@Table(name="OUTAGES")
 public class Outage {
 	private int id;
-	private double lat, lon;
+	private double lat;
+        private double lon;
 	private Timestamp earliestReport;
         //The zoom levels on which this outage appears.
         private Set<Integer> zoomLevels;
@@ -23,6 +38,7 @@ public class Outage {
 	 * The time we scraped the site and this outage disappeared. This will
 	 * always be later than the actual time.
 	 */
+        @Column(name="OBSERVEDEND")
 	private Timestamp observedEnd;
 
 	private List<AbstractOutageRevision> revisions = new LinkedList<AbstractOutageRevision>();
@@ -58,22 +74,28 @@ public class Outage {
 				&& a.earliestReport.equals(this.earliestReport);
 	}
 
-	public int getId() {
+	@Id
+	@GeneratedValue
+        public int getId() {
 		return id;
 	}
 
+        @Column(name="LAT")
 	public double getLat() {
 		return lat;
 	}
 
+        @Column(name="LON")
 	public double getLon() {
 		return lon;
 	}
 
+        @Column(name="EARLIESTREPORT")
 	public Timestamp getEarliestReport() {
 		return earliestReport;
 	}
 
+        @Column(name="OBSERVEDEND")
 	public Timestamp getObservedEnd() {
 		return observedEnd;
 	}
@@ -98,7 +120,9 @@ public class Outage {
 	public void setObservedEnd(Timestamp observedEnd) {
 		this.observedEnd = observedEnd;
 	}
-
+        
+        @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="outage")
+        @OrderBy(value="observationDate desc")
 	public List<AbstractOutageRevision> getRevisions() {
 		return revisions;
 	}
@@ -108,6 +132,8 @@ public class Outage {
 		this.revisions = revisions;
 	}
 
+        @ElementCollection
+        @CollectionTable(name="ZOOMLEVELS", joinColumns={@JoinColumn(name="OUTAGE")})
         public Set<Integer>getZoomLevels(){return this.zoomLevels;}
         public void setZoomLevels(final Set<Integer>zoomLevels){this.zoomLevels=zoomLevels;}
 }

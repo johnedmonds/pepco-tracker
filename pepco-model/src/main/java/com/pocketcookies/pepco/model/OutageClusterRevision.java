@@ -1,7 +1,10 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
+@Entity
 public class OutageClusterRevision extends AbstractOutageRevision {
 	// The number of outages associated with this cluster. We don't currently
 	// have a way of tracking exactly which outages correspond with this
@@ -26,14 +29,15 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 		if (!(o instanceof OutageClusterRevision))
 			return false;
 		final OutageClusterRevision revision = (OutageClusterRevision) o;
-		return super.equals(o) && revision.numOutages == this.numOutages;
+		return super.equals(o) && revision.getNumOutages() == this.getNumOutages();
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() + numOutages;
+		return super.hashCode() + getNumOutages();
 	}
 
+        @Column(name="NUMOUTAGES")
 	public int getNumOutages() {
 		return numOutages;
 	}

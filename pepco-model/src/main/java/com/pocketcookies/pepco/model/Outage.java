@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -13,7 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -38,7 +37,6 @@ public class Outage {
 	 * The time we scraped the site and this outage disappeared. This will
 	 * always be later than the actual time.
 	 */
-        @Column(name="OBSERVEDEND")
 	private Timestamp observedEnd;
 
 	private List<AbstractOutageRevision> revisions = new LinkedList<AbstractOutageRevision>();
@@ -64,15 +62,21 @@ public class Outage {
 		if (o == null)
 			return false;
 		final Outage a = (Outage) o;
-		if (this.observedEnd != null) {
-			if (!this.observedEnd.equals(a.observedEnd))
+		if (this.getObservedEnd() != null) {
+			if (!this.getObservedEnd().equals(a.getObservedEnd()))
 				return false;
-		} else if (a.observedEnd != null)
+		} else if (a.getObservedEnd() != null)
 			return false;
-		return o.getClass().equals(this.getClass()) && a.lat == this.lat
-				&& a.lon == this.lon
-				&& a.earliestReport.equals(this.earliestReport);
+		return o instanceof Outage && a.getLat() == this.getLat()
+				&& a.getLon() == this.getLon()
+				&& a.getEarliestReport().equals(this.getEarliestReport());
 	}
+        
+        @Override
+        public int hashCode()
+        {
+            return id;
+        }
 
 	@Id
 	@GeneratedValue

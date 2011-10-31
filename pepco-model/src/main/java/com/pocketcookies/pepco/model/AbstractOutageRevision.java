@@ -1,6 +1,17 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * We like to keep track of all the things that happen to a revision over its
@@ -9,6 +20,10 @@ import java.sql.Timestamp;
  * @author jack
  * 
  */
+@Entity
+@Table(name="OUTAGEREVISIONS")
+@Inheritance(strategy= InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="OUTAGETYPE")
 public abstract class AbstractOutageRevision {
 	private int id;
 	/**
@@ -50,10 +65,12 @@ public abstract class AbstractOutageRevision {
 	@Override
 	public boolean equals(final Object o) {
 		if (!(o instanceof AbstractOutageRevision))
+                {
 			return false;
+                }
 		final AbstractOutageRevision revision = (AbstractOutageRevision) o;
 		return equalsIgnoreObservationDate(revision)
-				&& this.observationDate.equals(revision.observationDate);
+				&& this.getObservationDate().equals(revision.getObservationDate());
 	}
 
         /**
@@ -62,34 +79,40 @@ public abstract class AbstractOutageRevision {
          * @return True of the objects are the same ignoring the observationDate.
          */
 	public boolean equalsIgnoreObservationDate(AbstractOutageRevision revision) {
-		if (this.estimatedRestoration != revision.estimatedRestoration) {
-			if (this.estimatedRestoration == null)
+		if (this.getEstimatedRestoration() != revision.getEstimatedRestoration()) {
+			if (this.getEstimatedRestoration() == null)
 				return false;
-			else if (!this.estimatedRestoration
-					.equals(revision.estimatedRestoration))
+			else if (!this.getEstimatedRestoration()
+					.equals(revision.getEstimatedRestoration()))
 				return false;
 		}
-		return this.numCustomersAffected == revision.numCustomersAffected;
+		return this.getNumCustomersAffected() == revision.getNumCustomersAffected();
 	}
 
 	@Override
 	public int hashCode() {
-		return (int) (numCustomersAffected + estimatedRestoration.getTime() + observationDate
+		return (int) (getNumCustomersAffected() + getEstimatedRestoration().getTime() + getObservationDate()
 				.getTime());
 	}
 
+        @Id
+        @GeneratedValue
 	public int getId() {
 		return id;
 	}
 
+        @Column(name="NUMCUSTOMERSAFFECTED")
 	public int getNumCustomersAffected() {
 		return numCustomersAffected;
 	}
 
+        @Column(name="ESTIMATEDRESTORATION")
 	public Timestamp getEstimatedRestoration() {
 		return estimatedRestoration;
 	}
 
+        @ManyToOne
+        @JoinColumn(name="OUTAGE")
 	public Outage getOutage() {
 		return outage;
 	}
@@ -111,6 +134,7 @@ public abstract class AbstractOutageRevision {
 		this.outage = outage;
 	}
 
+        @Column(name="OBSERVATIONDATE")
 	public Timestamp getObservationDate() {
 		return observationDate;
 	}
@@ -119,6 +143,7 @@ public abstract class AbstractOutageRevision {
 		this.observationDate = observationDate;
 	}
 
+        @ManyToOne
 	public ParserRun getRun() {
 		return run;
 	}

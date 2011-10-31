@@ -1,7 +1,12 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
+@Entity
 public class OutageRevision extends AbstractOutageRevision {
 	private String cause;
 	private CrewStatus status;
@@ -25,19 +30,20 @@ public class OutageRevision extends AbstractOutageRevision {
 		if (!(o instanceof OutageRevision))
 			return false;
 		final OutageRevision revision = (OutageRevision) o;
-		return super.equals(revision) && revision.cause.equals(this.cause)
-				&& revision.status.equals(this.status);
+		return super.equals(revision) && revision.getCause().equals(this.getCause())
+				&& revision.getStatus().equals(this.getStatus());
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() + cause.hashCode() + status.hashCode();
+		return super.hashCode() + getCause().hashCode() + getStatus().hashCode();
 	}
 
 	public OutageRevision() {
 		super();
 	}
 
+        @Column(name="CAUSE")
 	public String getCause() {
 		return cause;
 	}
@@ -46,6 +52,8 @@ public class OutageRevision extends AbstractOutageRevision {
 		this.cause = cause;
 	}
 
+        @Column(name="STATUS")
+        @Enumerated(EnumType.STRING)
 	public CrewStatus getStatus() {
 		return status;
 	}

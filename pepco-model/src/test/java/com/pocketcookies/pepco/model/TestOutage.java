@@ -84,6 +84,10 @@ public class TestOutage extends TestCase {
 				cr2.getId());
 		assertEquals(2, o1.getRevisions().size());
 		assertEquals(2, o2.getRevisions().size());
+                assertEquals(o1, or1.getOutage());
+                assertEquals(o2, or2.getOutage());
+                assertEquals(o1, cr1.getOutage());
+                assertEquals(o2, cr2.getOutage());
 		assertTrue(o1.getRevisions().contains(or1));
 		assertTrue(o1.getRevisions().contains(cr1));
 		assertTrue(o2.getRevisions().contains(or2));

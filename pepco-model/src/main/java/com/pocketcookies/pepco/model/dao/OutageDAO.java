@@ -96,7 +96,7 @@ public class OutageDAO {
     }
 
     /**
-     * Retrieves a collection of outages as of the give date of the given type.
+     * Retrieves a collection of outages as of the given date of the given type.
      * 
      * Important: Outages are returned that existed at the as-of date.  Nothing is done to the states of the outages.
      * That means changes to the outage (such as # of customers affected, estimated restoration, cause, etc.) will be included in the outage even if they happened after the as-of date.

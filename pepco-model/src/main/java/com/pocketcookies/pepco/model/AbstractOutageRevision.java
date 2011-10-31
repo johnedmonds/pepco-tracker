@@ -144,6 +144,7 @@ public abstract class AbstractOutageRevision {
 	}
 
         @ManyToOne
+        @JoinColumn(name="RUN")
 	public ParserRun getRun() {
 		return run;
 	}

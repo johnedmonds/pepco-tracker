@@ -13,9 +13,9 @@
   <mapping class="com.pocketcookies.pepco.model.OutageClusterRevision"/>
   <mapping class="com.pocketcookies.pepco.model.OutageRevision"/>
   <mapping class="com.pocketcookies.pepco.model.AbstractOutageRevision"/>
-  <mapping class="com.pocketcookies.pepco.model.ParserRun" resource="mappings/ParserRun.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.ParserRun"/>
   <mapping class="com.pocketcookies.pepco.model.Summary" resource="mappings/Summary.hbm.xml"/>
-  <mapping class="com.pocketcookies.pepco.model.OutageArea" resource="mappings/OutageArea.hbm.xml"/>
-  <mapping class="com.pocketcookies.pepco.model.OutageAreaRevision" resource="mappings/OutageAreaRevision.hbm.xml"/>
+  <mapping class="com.pocketcookies.pepco.model.OutageArea"/>
+  <mapping class="com.pocketcookies.pepco.model.OutageAreaRevision"/>
  </session-factory>
 </hibernate-configuration>

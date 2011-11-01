@@ -1,5 +1,15 @@
 package com.pocketcookies.pepco.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="OUTAGEAREAREVISION")
 public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 	private int id;
 	private OutageArea area;
@@ -27,14 +37,19 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 	public OutageAreaRevision() {
 	}
 
+        @Id
+        @GeneratedValue
 	public int getId() {
 		return id;
 	}
 
+        @ManyToOne
+        @JoinColumn(name="AREA")
 	public OutageArea getArea() {
 		return area;
 	}
 
+        @Column(name="CUSTOMERSOUT")
 	public int getCustomersOut() {
 		return customersOut;
 	}
@@ -51,6 +66,8 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 		this.customersOut = customersOut;
 	}
 
+        @ManyToOne
+        @JoinColumn(name="PARSERRUN")
 	public ParserRun getParserRun() {
 		return parserRun;
 	}

@@ -3,7 +3,15 @@ package com.pocketcookies.pepco.model;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="PARSERRUN")
 public class ParserRun {
 	private int id;
 	private Timestamp runTime;
@@ -37,18 +45,23 @@ public class ParserRun {
 		this.areaRevisions = areaRevisions;
 	}
 
+        @Id
+        @GeneratedValue
 	public int getId() {
 		return id;
 	}
 
+        @Column(name="RUNTIME")
 	public Timestamp getRunTime() {
 		return runTime;
 	}
 
+        @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="run")
 	public Collection<AbstractOutageRevision> getOutageRevisions() {
 		return outageRevisions;
 	}
 
+        @OneToMany(targetEntity=OutageAreaRevision.class,mappedBy="parserRun")
 	public Collection<OutageAreaRevision> getAreaRevisions() {
 		return areaRevisions;
 	}

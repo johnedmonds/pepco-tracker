@@ -28,7 +28,6 @@ public class OutageArea {
 	}
 
         @Id
-        @GeneratedValue
 	public String getId() {
 		return id;
 	}

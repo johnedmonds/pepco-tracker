@@ -5,6 +5,7 @@ import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -70,7 +71,7 @@ public class OutageMapController {
 
                 final Element point = doc.createElement("Point");
                 final Element coordinates = doc.createElement("coordinates");
-                coordinates.setTextContent(revision.getOutage().getLat() + "," + revision.getOutage().getLon());
+                coordinates.setTextContent(revision.getOutage().getLon() + "," + revision.getOutage().getLat());
 
                 point.appendChild(coordinates);
                 placemark.appendChild(point);

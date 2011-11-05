@@ -84,7 +84,11 @@ public class OutageMapController {
                 placemark.appendChild(name);
                 document.appendChild(placemark);
             }
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(response.getOutputStream()));
+            final ZipOutputStream zos=new ZipOutputStream(response.getOutputStream());
+            zos.putNextEntry(new ZipEntry("outages.kml"));
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(zos));
+            zos.closeEntry();
+            zos.close();
         } catch (Exception e) {
             logger.error(e);
         }

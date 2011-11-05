@@ -68,7 +68,7 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 	}
 
         @ManyToOne
-        @JoinColumn(name="PARSERRUN")
+        @JoinColumn(name="RUN")
 	public ParserRun getParserRun() {
 		return parserRun;
 	}

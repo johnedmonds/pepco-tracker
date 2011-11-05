@@ -139,6 +139,7 @@ public class Outage {
 
         @ElementCollection
         @CollectionTable(name="ZOOMLEVELS", joinColumns={@JoinColumn(name="ID")})
+        @Column(name="ZOOMLEVEL")
         public Set<Integer>getZoomLevels(){return this.zoomLevels;}
         public void setZoomLevels(final Set<Integer>zoomLevels){this.zoomLevels=zoomLevels;}
 }

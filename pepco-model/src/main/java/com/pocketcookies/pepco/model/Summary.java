@@ -1,6 +1,13 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Pepco provides summaries. This represents one summary.
@@ -8,19 +15,33 @@ import java.sql.Timestamp;
  * @author jack
  * 
  */
+@Entity
+@Table(name="SUMMARY")
 public class Summary {
+    @Id
+    @GeneratedValue
 	private int id;
 	// The number of outages (not customers).
+    @Column(name="TOTALOUTAGES")
 	private int totalOutages;
+        @Column(name="DCAFFECTEDCUSTOMERS")
 	private int dcAffectedCustomers;
+        @Column(name="DCTOTALCUSTOMERS")
 	private int dcTotalCustomers;
+        @Column(name="PGAFFECTEDCUSTOMERS")
 	private int pgAffectedCustomers;
+        @Column(name="PGTOTALCUSTOMERS")
 	private int pgTotalCustomers;
 	// Montgomery county
+        @Column(name="MONTAFFECTEDCUSTOMERS")
 	private int montAffectedCustomers;
+        @Column(name="MONTTOTALCUSTOMERS")
 	private int montTotalCustomers;
 	// Pepco says when it was generated in the metadata.
+        @Column(name="WHENGENERATED")
 	private Timestamp whenGenerated;
+        @ManyToOne(targetEntity=ParserRun.class)
+        @JoinColumn(name="RUN")
 	private ParserRun run;
 
 	protected Summary() {

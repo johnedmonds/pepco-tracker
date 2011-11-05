@@ -55,6 +55,11 @@ public class OutageMapController {
         try {
             final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             final Element kml = doc.createElement("kml");
+            final Element document=doc.createElement("Document");
+            final Element documentName=doc.createElement("name");
+            documentName.setTextContent("outages.kml");
+            document.appendChild(documentName);
+            kml.appendChild(document);
             doc.appendChild(kml);
             for (final AbstractOutageRevision revision : this.outageDao.getOutagesAsOf(new Timestamp(dateTime.getTime()), AbstractOutageRevision.class)) {
                 final Element placemark = doc.createElement("Placemark");
@@ -77,7 +82,7 @@ public class OutageMapController {
                 placemark.appendChild(point);
                 placemark.appendChild(description);
                 placemark.appendChild(name);
-                kml.appendChild(placemark);
+                document.appendChild(placemark);
             }
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(response.getOutputStream()));
         } catch (Exception e) {

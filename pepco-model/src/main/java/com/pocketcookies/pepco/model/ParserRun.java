@@ -47,6 +47,7 @@ public class ParserRun {
 
         @Id
         @GeneratedValue
+        @Column(name="ID")
 	public int getId() {
 		return id;
 	}

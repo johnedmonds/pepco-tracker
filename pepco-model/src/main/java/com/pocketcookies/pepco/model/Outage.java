@@ -80,6 +80,7 @@ public class Outage {
 
 	@Id
 	@GeneratedValue
+        @Column(name="ID")
         public int getId() {
 		return id;
 	}

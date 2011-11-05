@@ -39,6 +39,7 @@ public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
 
         @Id
         @GeneratedValue
+        @Column(name="ID")
 	public int getId() {
 		return id;
 	}

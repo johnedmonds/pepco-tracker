@@ -20,6 +20,7 @@ import javax.persistence.Table;
 public class Summary {
     @Id
     @GeneratedValue
+    @Column(name="ID")
 	private int id;
 	// The number of outages (not customers).
     @Column(name="TOTALOUTAGES")

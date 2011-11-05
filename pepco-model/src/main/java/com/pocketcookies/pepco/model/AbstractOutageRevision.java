@@ -97,6 +97,7 @@ public abstract class AbstractOutageRevision {
 
         @Id
         @GeneratedValue
+        @Column(name="ID")
 	public int getId() {
 		return id;
 	}

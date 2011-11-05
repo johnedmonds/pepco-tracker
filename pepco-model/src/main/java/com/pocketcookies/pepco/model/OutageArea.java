@@ -2,8 +2,8 @@ package com.pocketcookies.pepco.model;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -28,6 +28,7 @@ public class OutageArea {
 	}
 
         @Id
+        @Column(name="ID")
 	public String getId() {
 		return id;
 	}

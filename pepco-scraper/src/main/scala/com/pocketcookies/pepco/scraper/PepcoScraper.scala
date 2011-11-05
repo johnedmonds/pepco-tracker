@@ -30,7 +30,7 @@ import scala.xml.Node
 import com.pocketcookies.pepco.model.AbstractOutageRevision
 import org.apache.http.impl.client.DefaultHttpClient
 import org.hibernate.SessionFactory
-import org.hibernate.cfg.Configuration
+import org.hibernate.cfg.AnnotationConfiguration
 import scala.collection.mutable.HashSet
 import org.jsoup.nodes.TextNode
 import collection.JavaConversions._
@@ -162,7 +162,7 @@ object PepcoScraper {
     val client: HttpClient = new DefaultHttpClient();
     val outagesFolderName = loadXMLRequest(client, dataHTMLPrefix + directorySuffix) \\ "directory" text
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()))
-    val sessionFactory: SessionFactory = new Configuration().configure().configure("hibernate.ds.cfg.xml").buildSessionFactory()
+    val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)
     scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run)

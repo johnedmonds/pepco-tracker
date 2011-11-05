@@ -39,21 +39,6 @@
 			value="org.springframework.web.servlet.view.tiles2.TilesView" />
 	</bean>
 
-	<bean id="mappingsList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>mappings/AbstractOutageRevision.hbm.xml</value>
-				<value>mappings/Outage.hbm.xml</value>
-				<value>mappings/OutageClusterRevision.hbm.xml</value>
-				<value>mappings/OutageRevision.hbm.xml</value>
-				<value>mappings/ParserRun.hbm.xml</value>
-				<value>mappings/Summary.hbm.xml</value>
-				<value>mappings/OutageArea.hbm.xml</value>
-				<value>mappings/OutageAreaRevision.hbm.xml</value>
-			</list>
-		</constructor-arg>
-	</bean>
-
 	<bean id="txManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />

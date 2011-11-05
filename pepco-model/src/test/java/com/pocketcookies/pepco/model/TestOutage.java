@@ -12,14 +12,12 @@ import org.hibernate.SessionFactory;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import java.util.Arrays;
-import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutage extends TestCase {
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new AnnotationConfiguration().configure()
-				.buildSessionFactory();
+		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	}
 
 	public void testOutageRevisionDiscriminator() {

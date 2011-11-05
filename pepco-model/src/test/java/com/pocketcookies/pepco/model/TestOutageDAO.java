@@ -16,8 +16,7 @@ public class TestOutageDAO extends TestCase {
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new AnnotationConfiguration().configure()
-				.buildSessionFactory();
+		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 		this.sessionFactory.getCurrentSession().beginTransaction();
 	}
 

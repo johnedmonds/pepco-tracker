@@ -12,8 +12,7 @@ public class TestOutageArea extends TestCase {
 	private SessionFactory sessionFactory;
 
 	public void setUp() {
-		this.sessionFactory = new AnnotationConfiguration().configure()
-				.buildSessionFactory();
+		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	}
 
 	public void testAreaRelationship() {

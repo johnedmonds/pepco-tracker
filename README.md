@@ -30,6 +30,14 @@ cd into the pepco-scraper directory and run
 
 # Running the Website
 
+## For Development
+
+If you're doing development on pepco-web, you can `cd` into the `pepco-web` folder and run
+
+    mvn jetty:run
+
+## For Deployment
+
 Maven will generate a war file when you cd into pepco-web and do
 
     mvn package

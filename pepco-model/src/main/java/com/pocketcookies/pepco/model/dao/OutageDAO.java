@@ -105,8 +105,9 @@ public class OutageDAO {
      * @return A list of outages of the specified type as of the specified time.
      */
     @SuppressWarnings("unchecked")
-    public Collection<AbstractOutageRevision> getOutagesAsOf(
+    public Collection<AbstractOutageRevision> getOutagesAtZoomLevelAsOf(
             final Timestamp asof,
+            final Integer zoomLevel,
             final Class<? extends AbstractOutageRevision> clazz) {
         final Query q = this.sessionFactory.getCurrentSession().createQuery(
                 "from AbstractOutageRevision aor "
@@ -114,10 +115,14 @@ public class OutageDAO {
                 + "where aor.outage.earliestReport <= :asof and "
                 + "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
                 + "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)"
+                + (zoomLevel == null ? "" : "    and :zoomLevel in elements(aor.outage.zoomLevels)")
                 + (clazz.equals(AbstractOutageRevision.class) ? ""
                 : "    and aor.class = :clazz")).setTimestamp("asof", asof);
         if (!clazz.equals(AbstractOutageRevision.class)) {
             q.setString("clazz", clazz.getSimpleName());
+        }
+        if (zoomLevel != null) {
+            q.setInteger("zoomLevel", zoomLevel);
         }
         return q.list();
     }

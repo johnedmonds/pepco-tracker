@@ -55,13 +55,13 @@ public class OutageMapController {
         try {
             final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             final Element kml = doc.createElement("kml");
-            final Element document=doc.createElement("Document");
-            final Element documentName=doc.createElement("name");
+            final Element document = doc.createElement("Document");
+            final Element documentName = doc.createElement("name");
             documentName.setTextContent("outages.kml");
             document.appendChild(documentName);
             kml.appendChild(document);
             doc.appendChild(kml);
-            for (final AbstractOutageRevision revision : this.outageDao.getOutagesAsOf(new Timestamp(dateTime.getTime()), AbstractOutageRevision.class)) {
+            for (final AbstractOutageRevision revision : this.outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(dateTime.getTime()), null, AbstractOutageRevision.class)) {
                 final Element placemark = doc.createElement("Placemark");
 
                 final Element name = doc.createElement("name");
@@ -84,7 +84,7 @@ public class OutageMapController {
                 placemark.appendChild(name);
                 document.appendChild(placemark);
             }
-            final ZipOutputStream zos=new ZipOutputStream(response.getOutputStream());
+            final ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
             zos.putNextEntry(new ZipEntry("outages.kml"));
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(zos));
             zos.closeEntry();
@@ -92,5 +92,11 @@ public class OutageMapController {
         } catch (Exception e) {
             logger.error(e);
         }
+    }
+
+    @RequestMapping(value = "/{dateTime}/{zoomLevel}/outages.json")
+    public void outageJson(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyymmdd.HHmmss") final Date dateTime, @PathVariable(value="zoomLevel") final int zoomLevel) {
+        response.setContentType("application/json");
+        
     }
 }

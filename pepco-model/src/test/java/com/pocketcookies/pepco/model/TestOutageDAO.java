@@ -208,7 +208,35 @@ public class TestOutageDAO extends TestCase {
         assertEquals(1, outages.size());
         assertEquals(or1,outages.iterator().next());
     }
+    
+    public void testOutagesAsOfZoomLevelWithDiscriminator() {
+        final OutageDAO dao = new OutageDAO(sessionFactory);
+        final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
+        o1.getZoomLevels().add(1);
+        final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
+        o2.getZoomLevels().add(2);
+        final OutageRevision or1 = new OutageRevision(1, new Timestamp(1), new Timestamp(1), o1, null, "test", CrewStatus.PENDING);
+        final OutageClusterRevision or2 = new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), o2, null, 1);
+        this.sessionFactory.getCurrentSession().save(o1);
+        this.sessionFactory.getCurrentSession().save(o2);
+        this.sessionFactory.getCurrentSession().save(or1);
+        this.sessionFactory.getCurrentSession().save(or2);
 
+        Collection<AbstractOutageRevision> outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1, OutageRevision.class);
+        assertEquals(1, outages.size());
+        assertEquals(or1,outages.iterator().next());
+        
+        outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1, OutageClusterRevision.class);
+        assertEquals(0, outages.size());
+        
+        outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 2, OutageRevision.class);
+        assertEquals(0, outages.size());
+        
+        outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 2, OutageClusterRevision.class);
+        assertEquals(1, outages.size());
+        assertEquals(or2,outages.iterator().next());
+    }
+    
     //Test that updating an outage adds zoom levels to the existing outage in the database.
     public void testUpdateZoomLevels() {
         final OutageDAO outageDao = new OutageDAO(this.sessionFactory);

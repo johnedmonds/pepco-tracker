@@ -9,19 +9,21 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,7 +51,7 @@ public class OutageMapController {
     }
 
     @RequestMapping(value = "outages-{dateTime}.kmz")
-    public void outageKml(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyymmdd.HHmmss") final Date dateTime) throws TransformerConfigurationException {
+    public void outageKml(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws TransformerConfigurationException {
         response.setContentType("application/vnd.google-earth.kmz");
 
         try {
@@ -94,9 +96,24 @@ public class OutageMapController {
         }
     }
 
-    @RequestMapping(value = "/{dateTime}/{zoomLevel}/outages.json")
-    public void outageJson(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyymmdd.HHmmss") final Date dateTime, @PathVariable(value="zoomLevel") final int zoomLevel) {
+    @RequestMapping(value = "/{dateTime}/outages.json")
+    @ResponseBody
+    public String outageJson(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws JSONException {
         response.setContentType("application/json");
-        
+        final JSONArray outages = new JSONArray();
+        for (final AbstractOutageRevision r : outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(dateTime.getTime()), null, OutageRevision.class)) {
+            final OutageRevision or = (OutageRevision) r;
+            final JSONObject outage = new JSONObject();
+            outage.put("lat", or.getOutage().getLat());
+            outage.put("lon", or.getOutage().getLon());
+            outage.put("numCustomersOut", or.getNumCustomersAffected());
+            outage.put("estimatedRestoration", or.getEstimatedRestoration());
+            outage.put("cause", or.getCause());
+            outage.put("status", or.getStatus());
+            outages.put(outage);
+        }
+        final JSONObject ret = new JSONObject();
+        ret.put("outages", outages);
+        return ret.toString();
     }
 }

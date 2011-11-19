@@ -6,3 +6,4 @@ pepco-scraper/data/
 bin/
 pepco-web/src/main/webapp/resources/img/generated
 notes
+/pepco-scraper/logs/

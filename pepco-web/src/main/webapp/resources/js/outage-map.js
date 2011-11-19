@@ -4,7 +4,13 @@ $(document).ready(function(){
         center:new google.maps.LatLng(38.96, -77.03),
         mapTypeId:google.maps.MapTypeId.ROADMAP
     });
-    $.get(new Date().toString("yyyyMMdd.HHmmss")+"/outages.json",
+    
+    var outagesUrl=new Date().toString("yyyyMMdd.HHmmss")+"/outages.json";
+    if(window.location.toString().substr(window.location.toString().length-1)!="/")
+        outagesUrl=window.location.toString()+"/"+outagesUrl;
+    else
+        outagesUrl=window.location.toString()+outagesUrl;
+    $.get(outagesUrl,
     {},
         function(data){
             for (i in data.outages){

@@ -114,7 +114,7 @@ public class OutageDAO {
                 + "left outer join fetch aor.outage "
                 + "where aor.outage.earliestReport <= :asof and "
                 + "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
-                + "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof)"
+                + "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof and aor2.outage = aor.outage)"
                 + (zoomLevel == null ? "" : "    and :zoomLevel in elements(aor.outage.zoomLevels)")
                 + (clazz.equals(AbstractOutageRevision.class) ? ""
                 : "    and aor.class = :clazz")).setTimestamp("asof", asof);

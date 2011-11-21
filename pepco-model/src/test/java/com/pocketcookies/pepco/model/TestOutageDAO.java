@@ -268,4 +268,27 @@ public class TestOutageDAO extends TestCase {
         assertTrue(((Outage) this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().contains(1));
         assertTrue(((Outage) this.sessionFactory.getCurrentSession().createQuery("from Outage").list().get(0)).getZoomLevels().contains(2));
     }
+    
+    /**
+     * Test that revisions collected during a different parser run are still
+     * fetched by getOutagesAtZoomLevelAsOf.
+     */
+    public void testPreviouslyCollectedRevisions()
+    {
+        final OutageDAO dao = new OutageDAO(this.sessionFactory);
+        final Outage oldOutage = new Outage(1, 1, new Timestamp(1), null);
+        final Outage newOutage = new Outage(1, 1, new Timestamp(2), null);
+        final OutageRevision oldRevision = new OutageRevision(1, new Timestamp(10), new Timestamp(1), oldOutage, null, "test", CrewStatus.PENDING);
+        final OutageRevision newRevision = new OutageRevision(1, new Timestamp(10), new Timestamp(2), newOutage, null, "test", CrewStatus.PENDING);
+        this.sessionFactory.getCurrentSession().save(oldOutage);
+        this.sessionFactory.getCurrentSession().save(newOutage);
+        this.sessionFactory.getCurrentSession().save(oldRevision);
+        this.sessionFactory.getCurrentSession().save(newRevision);
+        this.sessionFactory.getCurrentSession().flush();
+        
+        final Collection<AbstractOutageRevision> revisions = dao.getOutagesAtZoomLevelAsOf(new Timestamp(3), null, OutageRevision.class);
+        assertEquals(2, revisions.size());
+        assertTrue(revisions.contains(oldRevision));
+        assertTrue(revisions.contains(newRevision));
+    }
 }

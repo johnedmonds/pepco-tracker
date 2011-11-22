@@ -4,11 +4,12 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
+import java.util.ArrayList;
 
 public class OutageDAO {
 
@@ -109,21 +110,32 @@ public class OutageDAO {
             final Timestamp asof,
             final Integer zoomLevel,
             final Class<? extends AbstractOutageRevision> clazz) {
-        final Query q = this.sessionFactory.getCurrentSession().createQuery(
-                "from AbstractOutageRevision aor "
-                + "left outer join fetch aor.outage "
-                + "where aor.outage.earliestReport <= :asof and "
-                + "    (aor.outage.observedEnd is null or aor.outage.observedEnd >= :asof)"
-                + "    and aor.observationDate = (select max(observationDate) from AbstractOutageRevision aor2 where aor2.observationDate <= :asof and aor2.outage = aor.outage)"
-                + (zoomLevel == null ? "" : "    and :zoomLevel in elements(aor.outage.zoomLevels)")
+        int parameterIndex = 0;
+        final SQLQuery q = this.sessionFactory.getCurrentSession().createSQLQuery(
+                "select orev.*, o.* "
+                + "from outagerevisions orev "
+                + "join outages o on orev.outage = o.id "
+                + "join (select max(observationdate) as observationdate, outage from outagerevisions orev2 where orev2.observationdate <= ? group by outage) sq "
+                + "on orev.outage = sq.outage and orev.observationdate = sq.observationdate "
+                + "where o.earliestReport <= ? and "
+                + "    (o.observedEnd is null or o.observedEnd >= ?)"
+                + (zoomLevel == null ? "" : "    and ? in (select zoomLevel from zoomlevels where id = orev.outage)")
                 + (clazz.equals(AbstractOutageRevision.class) ? ""
-                : "    and aor.class = :clazz")).setTimestamp("asof", asof);
-        if (!clazz.equals(AbstractOutageRevision.class)) {
-            q.setString("clazz", clazz.getSimpleName());
-        }
+                : "    and orev.outagetype = ?"));
+        q.setTimestamp(parameterIndex++, asof).setTimestamp(parameterIndex++, asof).setTimestamp(parameterIndex++, asof);
         if (zoomLevel != null) {
-            q.setInteger("zoomLevel", zoomLevel);
+            q.setInteger(parameterIndex++, zoomLevel);
         }
-        return q.list();
+        if (!clazz.equals(AbstractOutageRevision.class)) {
+            q.setString(parameterIndex++, clazz.getSimpleName());
+        }
+        q.addEntity("outagerevision", AbstractOutageRevision.class);
+        q.addJoin("outage", "outagerevision.outage");
+        final Collection<Object[]> temp=q.list();
+        final Collection<AbstractOutageRevision> ret = new ArrayList<AbstractOutageRevision>(temp.size());
+        for(final Object[] o : temp){
+            ret.add((AbstractOutageRevision) o[0]);
+        }
+        return ret;
     }
 }

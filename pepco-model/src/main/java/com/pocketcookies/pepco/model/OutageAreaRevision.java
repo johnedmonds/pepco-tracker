@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="OUTAGEAREAREVISION")
-public class OutageAreaRevision implements Comparable<OutageAreaRevision> {
+public class OutageAreaRevision implements Comparable<OutageAreaRevision>, Serializable {
 	private int id;
 	private OutageArea area;
 	private int customersOut;

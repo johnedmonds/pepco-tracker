@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="SUMMARY")
-public class Summary {
+public class Summary implements Serializable {
     @Id
     @GeneratedValue
     @Column(name="ID")

@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.Column;
@@ -12,7 +13,7 @@ import org.hibernate.annotations.SortType;
 
 @Entity
 @Table(name="OUTAGEAREA")
-public class OutageArea {
+public class OutageArea implements Serializable {
 	// The zip code(s) that represent this area. There may be more than one zip
 	// code because Pepco sometimes combines them.
 	private String id;

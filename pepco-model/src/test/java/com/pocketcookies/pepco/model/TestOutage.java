@@ -306,4 +306,59 @@ public class TestOutage extends TestCase {
             assertEquals(1, o2.getZoomLevels().size());
             assertTrue(o2.getZoomLevels().contains(2));
         }
+	/**
+	 * Tests that equals and equalsIgnoreObservationDate works even when
+	 * used on child classes.
+	 */
+	public void testRevisionChildClassEquality(){
+	    //Different causes
+	    assertFalse(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equals(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test2", CrewStatus.PENDING)));
+	    //Different statuses.
+	    assertFalse(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equals(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.EN_ROUTE)));
+	    //Different cause (ignore observation date)
+	    assertFalse(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equalsIgnoreObservationDate(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test2", CrewStatus.PENDING)));
+	    //Different status (ignore observation date)
+	    assertFalse(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equalsIgnoreObservationDate(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.EN_ROUTE)));
+	    //Make sure equals is still working
+	    assertTrue(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equals(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING)));
+	    //Make sure equals is still working (ignore observation date).
+	    assertTrue(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equalsIgnoreObservationDate(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING)));
+	    //Make sure observationDate is still ignored.
+	    assertTrue(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING).equalsIgnoreObservationDate(
+		    new OutageRevision(1, new Timestamp(1), new Timestamp(2), null, new ParserRun(new Timestamp(1)), "test", CrewStatus.PENDING)));
+	    
+	    //Different number of outages.
+	    assertFalse(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1).equals(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 2)));
+	    //Different number of outages (ignore observation date).
+	    assertFalse(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1).equalsIgnoreObservationDate(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 2)));
+	    //Make sure equals is still working
+	    assertTrue(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1).equals(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1)));
+	    //Make sure equals is still working (ignore observation date).
+	    assertTrue(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1).equalsIgnoreObservationDate(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1)));
+	    //Make sure observationDate is still ignored.
+	    assertTrue(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(1), null, new ParserRun(new Timestamp(1)), 1).equalsIgnoreObservationDate(
+		    new OutageClusterRevision(1, new Timestamp(1), new Timestamp(2), null, new ParserRun(new Timestamp(1)), 1)));
+	}
 }

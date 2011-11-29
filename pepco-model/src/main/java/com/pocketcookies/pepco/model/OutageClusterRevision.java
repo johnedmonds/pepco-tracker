@@ -31,6 +31,16 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 		final OutageClusterRevision revision = (OutageClusterRevision) o;
 		return super.equals(o) && revision.getNumOutages() == this.getNumOutages();
 	}
+	
+	@Override
+	public boolean equalsIgnoreObservationDate(final AbstractOutageRevision o){
+	    if(!(o instanceof OutageClusterRevision))
+	    {
+		return false;
+	    }
+	    final OutageClusterRevision r = (OutageClusterRevision) o;
+	    return super.equalsIgnoreObservationDate(o)&&getNumOutages()==r.getNumOutages();
+	}
 
 	@Override
 	public int hashCode() {

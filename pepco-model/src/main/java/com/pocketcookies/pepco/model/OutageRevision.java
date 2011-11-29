@@ -33,6 +33,14 @@ public class OutageRevision extends AbstractOutageRevision {
 		return super.equals(revision) && revision.getCause().equals(this.getCause())
 				&& revision.getStatus().equals(this.getStatus());
 	}
+        @Override
+	public boolean equalsIgnoreObservationDate(final AbstractOutageRevision o) {
+		if (!(o instanceof OutageRevision)) {
+			return false;
+		}
+		final OutageRevision r = (OutageRevision) o;
+		return super.equalsIgnoreObservationDate(o) && getCause().equals(r.getCause()) && getStatus().equals(r.getStatus());
+        }
 
 	@Override
 	public int hashCode() {

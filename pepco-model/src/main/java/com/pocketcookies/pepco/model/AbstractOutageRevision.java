@@ -35,11 +35,9 @@ public abstract class AbstractOutageRevision implements Serializable {
 	private int numCustomersAffected;
 	private Timestamp estimatedRestoration;
 	private Outage outage;
-	// The time at which we recorded this revision to the database.
-	private Timestamp observationDate;
-	// The parser run with which this change is associated. This is very similar
-	// to observationDate. It lets us group together a set of changes that don't
-	// occur at exactly the same time.
+	// The parser run with which this revision is associated.  This lets us
+        // group together outages so that we can know the state of all the
+        // outages at a particular time.
 	private ParserRun run;
 
 	protected AbstractOutageRevision() {
@@ -47,13 +45,12 @@ public abstract class AbstractOutageRevision implements Serializable {
 	}
 
 	public AbstractOutageRevision(int numCustomersAffected,
-			Timestamp estimatedRestoration, final Timestamp observationDate,
-			Outage outage, final ParserRun run) {
+            Timestamp estimatedRestoration,
+            Outage outage, final ParserRun run) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
 		setOutage(outage);
-		setObservationDate(observationDate);
 		setRun(run);
 	}
 
@@ -70,8 +67,8 @@ public abstract class AbstractOutageRevision implements Serializable {
 			return false;
                 }
 		final AbstractOutageRevision revision = (AbstractOutageRevision) o;
-		return equalsIgnoreObservationDate(revision)
-				&& this.getObservationDate().equals(revision.getObservationDate());
+		return equalsIgnoreRun(revision)
+				&& this.getRun().getAsof().equals(revision.getRun().getAsof());
 	}
 
         /**
@@ -79,7 +76,7 @@ public abstract class AbstractOutageRevision implements Serializable {
          * @param revision The revision to compare against.
          * @return True of the objects are the same ignoring the observationDate.
          */
-	public boolean equalsIgnoreObservationDate(AbstractOutageRevision revision) {
+	public boolean equalsIgnoreRun(AbstractOutageRevision revision) {
 		if (this.getEstimatedRestoration() != revision.getEstimatedRestoration()) {
 			if (this.getEstimatedRestoration() == null)
 				return false;
@@ -92,7 +89,7 @@ public abstract class AbstractOutageRevision implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return (int) (getNumCustomersAffected() + getEstimatedRestoration().getTime() + getObservationDate()
+		return (int) (getNumCustomersAffected() + getEstimatedRestoration().getTime() + getRun().getAsof()
 				.getTime());
 	}
 
@@ -134,15 +131,6 @@ public abstract class AbstractOutageRevision implements Serializable {
 
 	public void setOutage(Outage outage) {
 		this.outage = outage;
-	}
-
-        @Column(name="OBSERVATIONDATE")
-	public Timestamp getObservationDate() {
-		return observationDate;
-	}
-
-	private void setObservationDate(Timestamp observationDate) {
-		this.observationDate = observationDate;
 	}
 
         @ManyToOne

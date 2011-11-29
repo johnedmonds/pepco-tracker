@@ -153,7 +153,7 @@ public class TestOutage extends TestCase {
                 //Test observation date is ignored in equalsIgnoreObservationDate.
 		assertTrue(new OutageRevision(1, now, now, null, null, "test",
 				CrewStatus.PENDING)
-				.equalsIgnoreObservationDate(new OutageRevision(1, now, then,
+				.equalsIgnoreRun(new OutageRevision(1, now, then,
 						null, null, "test", CrewStatus.PENDING)));
 
                 //customersAffected causes revisions to be not equal.

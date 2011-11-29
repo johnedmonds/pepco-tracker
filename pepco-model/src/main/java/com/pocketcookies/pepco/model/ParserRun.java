@@ -12,63 +12,78 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="PARSERRUN")
+@Table(name = "PARSERRUN")
 public class ParserRun implements Serializable {
-	private int id;
-        /**
-         * The time at which the parser was actually run.
-         */
-	private Timestamp runTime;
-	private Collection<AbstractOutageRevision> outageRevisions;
-	private Collection<OutageAreaRevision> areaRevisions;
 
-	public ParserRun(final Timestamp runTime) {
-		setRunTime(runTime);
-		setOutageRevisions(new LinkedList<AbstractOutageRevision>());
-		setAreaRevisions(new LinkedList<OutageAreaRevision>());
-	}
+    private int id;
+    /**
+     * The time at which the parser was actually run.
+     */
+    private Timestamp runTime;
+    /**
+     * Pepco provides a what seems to be a way to request the state of the
+     * outage map as-of a certain time.  This is the "As-of" time we requested.
+     */
+    private Timestamp asof;
+    private Collection<AbstractOutageRevision> outageRevisions;
+    private Collection<OutageAreaRevision> areaRevisions;
 
-	public ParserRun() {
-	}
+    public ParserRun(final Timestamp runTime, final Timestamp asof) {
+        setRunTime(runTime);
+        setAsof(asof);
+        setOutageRevisions(new LinkedList<AbstractOutageRevision>());
+        setAreaRevisions(new LinkedList<OutageAreaRevision>());
+    }
 
-	@SuppressWarnings("unused")
-	private void setId(int id) {
-		this.id = id;
-	}
+    public ParserRun() {
+    }
 
-	private void setRunTime(Timestamp runTime) {
-		this.runTime = runTime;
-	}
+    @SuppressWarnings("unused")
+    private void setId(int id) {
+        this.id = id;
+    }
 
-	private void setOutageRevisions(
-			Collection<AbstractOutageRevision> outageRevisions) {
-		this.outageRevisions = outageRevisions;
-	}
+    private void setRunTime(Timestamp runTime) {
+        this.runTime = runTime;
+    }
 
-	private void setAreaRevisions(Collection<OutageAreaRevision> areaRevisions) {
-		this.areaRevisions = areaRevisions;
-	}
+    private void setOutageRevisions(
+            Collection<AbstractOutageRevision> outageRevisions) {
+        this.outageRevisions = outageRevisions;
+    }
 
-        @Id
-        @GeneratedValue
-        @Column(name="ID")
-	public int getId() {
-		return id;
-	}
+    private void setAreaRevisions(Collection<OutageAreaRevision> areaRevisions) {
+        this.areaRevisions = areaRevisions;
+    }
 
-        @Column(name="RUNTIME")
-	public Timestamp getRunTime() {
-		return runTime;
-	}
+    private void setAsof(final Timestamp asof) {
+        this.asof = asof;
+    }
 
-        @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="run")
-	public Collection<AbstractOutageRevision> getOutageRevisions() {
-		return outageRevisions;
-	}
+    @Id
+    @GeneratedValue
+    @Column(name = "ID")
+    public int getId() {
+        return id;
+    }
 
-        @OneToMany(targetEntity=OutageAreaRevision.class,mappedBy="parserRun")
-	public Collection<OutageAreaRevision> getAreaRevisions() {
-		return areaRevisions;
-	}
+    @Column(name = "RUNTIME")
+    public Timestamp getRunTime() {
+        return runTime;
+    }
 
+    @OneToMany(targetEntity = AbstractOutageRevision.class, mappedBy = "run")
+    public Collection<AbstractOutageRevision> getOutageRevisions() {
+        return outageRevisions;
+    }
+
+    @OneToMany(targetEntity = OutageAreaRevision.class, mappedBy = "parserRun")
+    public Collection<OutageAreaRevision> getAreaRevisions() {
+        return areaRevisions;
+    }
+
+    @Column(name = "ASOF")
+    public Timestamp getAsof() {
+        return this.asof;
+    }
 }

@@ -23,14 +23,16 @@ public class TestOutageDAO extends TestCase {
 
     public void testUpdateOutage() {
 	final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
+	final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 	// Saved
 	final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
 	// Gets saved
-	final OutageClusterRevision r1 = new OutageClusterRevision(1, new Timestamp(1), o1, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageClusterRevision r1 = new OutageClusterRevision(1, new Timestamp(1), o1, run, 1);
 	// Gets saved
-	final OutageClusterRevision r2 = new OutageClusterRevision(2, new Timestamp(2), o1, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageClusterRevision r2 = new OutageClusterRevision(2, new Timestamp(2), o1, run, 1);
 	// Not saved
-	final OutageClusterRevision r3 = new OutageClusterRevision(1, new Timestamp(1), o1, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageClusterRevision r3 = new OutageClusterRevision(1, new Timestamp(1), o1, run, 1);
+	this.sessionFactory.getCurrentSession().save(run);
 	outageDao.updateOutage(r1);
 	assertEquals(
 		1,
@@ -79,6 +81,8 @@ public class TestOutageDAO extends TestCase {
 	final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
 	final OutageRevision or1 = new OutageRevision(1, null, o1, new ParserRun(new Timestamp(1), new Timestamp(1)), null, null);
 	final OutageRevision or2 = new OutageRevision(2, null, o1, new ParserRun(new Timestamp(2), new Timestamp(2)), null, null);
+	this.sessionFactory.getCurrentSession().save(or1.getRun());
+	this.sessionFactory.getCurrentSession().save(or2.getRun());
 	dao.updateOutage(or1);
 	final OutageRevision retrievedor1 = (OutageRevision) this.sessionFactory.getCurrentSession().createQuery("from AbstractOutageRevision").list().get(0);
 	assertEquals(1, retrievedor1.getNumCustomersAffected());
@@ -92,15 +96,17 @@ public class TestOutageDAO extends TestCase {
 
     public void testOutagesAsOf() {
 	final OutageDAO dao = new OutageDAO(sessionFactory);
+	final ParserRun run = new ParserRun(new Timestamp(4),new Timestamp(4));
 	final Outage previousOutage = new Outage(1, 1, new Timestamp(1),
 		new Timestamp(2));
-	final OutageRevision previousOutageRevision = new OutageRevision(1, null, previousOutage, new ParserRun(new Timestamp(4), new Timestamp(4)), "cause", CrewStatus.PENDING);
+	final OutageRevision previousOutageRevision = new OutageRevision(1, null, previousOutage, run, "cause", CrewStatus.PENDING);
 	final Outage currentOutage = new Outage(2, 2, new Timestamp(3), null);
-	final OutageRevision currentOutageRevision = new OutageRevision(1, null, currentOutage, new ParserRun(new Timestamp(4), new Timestamp(4)), "cause", CrewStatus.PENDING);
+	final OutageRevision currentOutageRevision = new OutageRevision(1, null, currentOutage, run, "cause", CrewStatus.PENDING);
 	final Outage futureOutage = new Outage(3, 3, new Timestamp(6), null);
-	final OutageRevision futureOutageRevision = new OutageRevision(1, null, futureOutage, new ParserRun(new Timestamp(4), new Timestamp(4)), "cause", CrewStatus.PENDING);
+	final OutageRevision futureOutageRevision = new OutageRevision(1, null, futureOutage, run, "cause", CrewStatus.PENDING);
 	final Outage closedOutage = new Outage(4, 4, new Timestamp(4), new Timestamp(5));
-	final OutageRevision closedOutageRevision = new OutageRevision(1, null, closedOutage, new ParserRun(new Timestamp(4), new Timestamp(4)), "cause", CrewStatus.PENDING);
+	final OutageRevision closedOutageRevision = new OutageRevision(1, null, closedOutage, run, "cause", CrewStatus.PENDING);
+	this.sessionFactory.getCurrentSession().save(run);
 	this.sessionFactory.getCurrentSession().save(previousOutage);
 	this.sessionFactory.getCurrentSession().save(currentOutage);
 	this.sessionFactory.getCurrentSession().save(futureOutage);
@@ -131,6 +137,12 @@ public class TestOutageDAO extends TestCase {
 	final OutageRevision pastOutageRevision = new OutageRevision(1, null, futureOutage, new ParserRun(new Timestamp(2), new Timestamp(2)), "Cause", CrewStatus.PENDING);
 	final OutageRevision futureOutageRevision = new OutageRevision(1, null, futureOutage, new ParserRun(new Timestamp(4), new Timestamp(4)), "Cause", CrewStatus.PENDING);
 
+	this.sessionFactory.getCurrentSession().save(r1.getRun());
+	this.sessionFactory.getCurrentSession().save(r2.getRun());
+	this.sessionFactory.getCurrentSession().save(r3.getRun());
+	this.sessionFactory.getCurrentSession().save(pastOutageRevision.getRun());
+	this.sessionFactory.getCurrentSession().save(futureOutageRevision.getRun());
+	
 	this.sessionFactory.getCurrentSession().save(currentOutage);
 	this.sessionFactory.getCurrentSession().save(futureOutage);
 	this.sessionFactory.getCurrentSession().save(r1);

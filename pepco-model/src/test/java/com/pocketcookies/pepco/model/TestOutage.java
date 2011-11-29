@@ -212,7 +212,7 @@ public class TestOutage extends TestCase {
 	session = this.sessionFactory.getCurrentSession();
 	session.beginTransaction();
 	outage = (Outage) session.load(Outage.class, outage.getId());
-	assertTrue(outage.getRevisions().get(0).getRun().getAsof().getTime() > outage.getRevisions().get(1).getRun().getAsof().getTime());
+	assertTrue(outage.getRevisions().first().getRun().getAsof().getTime() > outage.getRevisions().last().getRun().getAsof().getTime());
     }
 
     /**

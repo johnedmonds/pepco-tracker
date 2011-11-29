@@ -127,7 +127,7 @@ public class Outage implements Serializable {
 	}
         
         @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="outage")
-        @OrderBy(value="observationDate desc")
+        @OrderBy(value="observationDate")
 	public List<AbstractOutageRevision> getRevisions() {
 		return revisions;
 	}

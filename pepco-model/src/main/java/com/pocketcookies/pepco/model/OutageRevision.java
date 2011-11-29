@@ -8,7 +8,12 @@ import javax.persistence.Enumerated;
 
 @Entity
 public class OutageRevision extends AbstractOutageRevision {
+    //What caused the outage according to Pepco.
+    //Shouldn't be null.
 	private String cause;
+	//The status of the crew(s) resolving the outage according to Pepco
+	//Note, this should never be null however, we cannot make it "nullable=false"
+	//because the *column* can be null (when inserting a OutageClusterRevision).
 	private CrewStatus status;
 
 	public static enum CrewStatus {

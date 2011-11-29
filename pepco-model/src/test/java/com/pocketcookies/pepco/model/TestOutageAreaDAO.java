@@ -7,19 +7,19 @@ import junit.framework.TestCase;
 import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.dao.OutageAreaDAO;
-import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutageAreaDAO extends TestCase {
 
 	private SessionFactory sessionFactory;
 
+    @Override
 	public void setUp() {
 		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	}
 
 	public void testUpdateArea() {
-		final ParserRun now = new ParserRun(new Timestamp(0));
-		final ParserRun later = new ParserRun(new Timestamp(1));
+		final ParserRun now = new ParserRun(new Timestamp(0), new Timestamp(0));
+		final ParserRun later = new ParserRun(new Timestamp(1), new Timestamp(1));
 		final OutageAreaDAO dao = new OutageAreaDAO(sessionFactory);
 		this.sessionFactory.getCurrentSession().beginTransaction();
 		OutageArea a1 = new OutageArea("00000");

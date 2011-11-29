@@ -79,8 +79,8 @@ public class TestOutageDAO extends TestCase {
     public void testUpdateNullExpectedRestoration() {
 	final OutageDAO dao = new OutageDAO(sessionFactory);
 	final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
-	final OutageRevision or1 = new OutageRevision(1, null, o1, new ParserRun(new Timestamp(1), new Timestamp(1)), null, null);
-	final OutageRevision or2 = new OutageRevision(2, null, o1, new ParserRun(new Timestamp(2), new Timestamp(2)), null, null);
+	final OutageRevision or1 = new OutageRevision(1, null, o1, new ParserRun(new Timestamp(1), new Timestamp(1)), "", CrewStatus.PENDING);
+	final OutageRevision or2 = new OutageRevision(2, null, o1, new ParserRun(new Timestamp(2), new Timestamp(2)), "", CrewStatus.PENDING);
 	this.sessionFactory.getCurrentSession().save(or1.getRun());
 	this.sessionFactory.getCurrentSession().save(or2.getRun());
 	dao.updateOutage(or1);
@@ -89,7 +89,7 @@ public class TestOutageDAO extends TestCase {
 	assertEquals(null, retrievedor1.getEstimatedRestoration());
 	dao.updateOutage(or2);
 	final OutageRevision retrievedor2 = (OutageRevision) this.sessionFactory.getCurrentSession().createQuery(
-		"from AbstractOutageRevision order by observationDate desc").list().get(0);
+		"from AbstractOutageRevision order by run.asof desc").list().get(0);
 	assertEquals(2, retrievedor2.getNumCustomersAffected());
 	assertEquals(null, retrievedor2.getEstimatedRestoration());
     }

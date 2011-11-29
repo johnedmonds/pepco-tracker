@@ -149,7 +149,7 @@ public abstract class AbstractOutageRevision implements Serializable, Comparable
 	    //Make sure we don't say two objects are equal just because they occur at the same time.
 	    return getId() - o.getId();
 	} else {
-	    return comparison;
+	    return -comparison;
 	}
     }
 }

@@ -2,9 +2,8 @@ package com.pocketcookies.pepco.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -14,8 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 /**
  * Represents a single outage over its lifetime.
@@ -39,7 +39,7 @@ public class Outage implements Serializable {
 	 */
 	private Timestamp observedEnd;
 
-	private List<AbstractOutageRevision> revisions = new LinkedList<AbstractOutageRevision>();
+	private SortedSet<AbstractOutageRevision> revisions = new TreeSet<AbstractOutageRevision>();
 
 	protected Outage() {
 		super();
@@ -127,13 +127,13 @@ public class Outage implements Serializable {
 	}
         
         @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="outage")
-        @OrderBy(value="observationDate")
-	public List<AbstractOutageRevision> getRevisions() {
+	@Sort(type = SortType.NATURAL)
+	public SortedSet<AbstractOutageRevision> getRevisions() {
 		return revisions;
 	}
 
 	@SuppressWarnings("unused")
-	private void setRevisions(List<AbstractOutageRevision> revisions) {
+	private void setRevisions(SortedSet<AbstractOutageRevision> revisions) {
 		this.revisions = revisions;
 	}
 

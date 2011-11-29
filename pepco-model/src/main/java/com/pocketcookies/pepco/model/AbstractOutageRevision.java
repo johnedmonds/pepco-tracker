@@ -89,7 +89,8 @@ public abstract class AbstractOutageRevision implements Serializable, Comparable
 
     @Override
     public int hashCode() {
-	return (int) (getNumCustomersAffected() + getEstimatedRestoration().getTime() + getRun().getAsof().getTime());
+	final long estimatedRestoration=getEstimatedRestoration()==null?0:getEstimatedRestoration().getTime();
+	return (int) (getNumCustomersAffected() + estimatedRestoration + getRun().getAsof().getTime());
     }
 
     @Id

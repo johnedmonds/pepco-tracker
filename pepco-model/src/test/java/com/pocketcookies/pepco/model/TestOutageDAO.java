@@ -203,13 +203,15 @@ public class TestOutageDAO extends TestCase {
     }
 
     public void testOutagesAsOfZoomLevelWithDiscriminator() {
+	final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 	final OutageDAO dao = new OutageDAO(sessionFactory);
 	final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
 	o1.getZoomLevels().add(1);
 	final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
 	o2.getZoomLevels().add(2);
-	final OutageRevision or1 = new OutageRevision(1, new Timestamp(1), o1, new ParserRun(new Timestamp(1), new Timestamp(1)), "test", CrewStatus.PENDING);
-	final OutageClusterRevision or2 = new OutageClusterRevision(1, new Timestamp(1), o2, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageRevision or1 = new OutageRevision(1, new Timestamp(1), o1, run, "test", CrewStatus.PENDING);
+	final OutageClusterRevision or2 = new OutageClusterRevision(1, new Timestamp(1), o2, run, 1);
+	this.sessionFactory.getCurrentSession().save(run);
 	this.sessionFactory.getCurrentSession().save(o1);
 	this.sessionFactory.getCurrentSession().save(o2);
 	this.sessionFactory.getCurrentSession().save(or1);
@@ -232,11 +234,13 @@ public class TestOutageDAO extends TestCase {
 
     //Test that updating an outage adds zoom levels to the existing outage in the database.
     public void testUpdateZoomLevels() {
+	final ParserRun run =new ParserRun(new Timestamp(1), new Timestamp(1));
+	this.sessionFactory.getCurrentSession().save(run);
 	final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
 	// Saved
 	final Outage storedOutage = new Outage(1, 1, new Timestamp(1), null);
 	storedOutage.getZoomLevels().add(1);
-	final OutageClusterRevision storedRevision = new OutageClusterRevision(1, new Timestamp(1), storedOutage, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageClusterRevision storedRevision = new OutageClusterRevision(1, new Timestamp(1), storedOutage, run, 1);
 
 	//We need the outage to be in the database with a revision.
 	outageDao.updateOutage(storedRevision);
@@ -249,7 +253,7 @@ public class TestOutageDAO extends TestCase {
 	//Craft the outage revision with the new zoom level.
 	final Outage dummyOutage = new Outage(1, 1, new Timestamp(1), null);
 	dummyOutage.getZoomLevels().add(2);
-	final OutageClusterRevision revision = new OutageClusterRevision(1, new Timestamp(1), dummyOutage, new ParserRun(new Timestamp(1), new Timestamp(1)), 1);
+	final OutageClusterRevision revision = new OutageClusterRevision(1, new Timestamp(1), dummyOutage, run, 1);
 
 	outageDao.updateOutage(revision);
 
@@ -266,11 +270,13 @@ public class TestOutageDAO extends TestCase {
      * fetched by getOutagesAtZoomLevelAsOf.
      */
     public void testPreviouslyCollectedRevisions() {
+	final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 	final OutageDAO dao = new OutageDAO(this.sessionFactory);
 	final Outage oldOutage = new Outage(1, 1, new Timestamp(1), null);
 	final Outage newOutage = new Outage(1, 1, new Timestamp(2), null);
-	final OutageRevision oldRevision = new OutageRevision(1, new Timestamp(10), oldOutage, new ParserRun(new Timestamp(1), new Timestamp(1)), "test", CrewStatus.PENDING);
-	final OutageRevision newRevision = new OutageRevision(1, new Timestamp(10), newOutage, new ParserRun(new Timestamp(1), new Timestamp(1)), "test", CrewStatus.PENDING);
+	final OutageRevision oldRevision = new OutageRevision(1, new Timestamp(10), oldOutage, run, "test", CrewStatus.PENDING);
+	final OutageRevision newRevision = new OutageRevision(1, new Timestamp(10), newOutage, run, "test", CrewStatus.PENDING);
+	this.sessionFactory.getCurrentSession().save(run);
 	this.sessionFactory.getCurrentSession().save(oldOutage);
 	this.sessionFactory.getCurrentSession().save(newOutage);
 	this.sessionFactory.getCurrentSession().save(oldRevision);

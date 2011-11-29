@@ -16,10 +16,10 @@ public class OutageRevision extends AbstractOutageRevision {
 	}
 
 	public OutageRevision(int numCustomersAffected,
-			Timestamp estimatedRestoration, final Timestamp observationDate,
+			Timestamp estimatedRestoration,
 			final Outage outage, final ParserRun run, String cause,
 			CrewStatus status) {
-		super(numCustomersAffected, estimatedRestoration, observationDate,
+		super(numCustomersAffected, estimatedRestoration,
 				outage, run);
 		setCause(cause);
 		setStatus(status);
@@ -34,12 +34,12 @@ public class OutageRevision extends AbstractOutageRevision {
 				&& revision.getStatus().equals(this.getStatus());
 	}
         @Override
-	public boolean equalsIgnoreObservationDate(final AbstractOutageRevision o) {
+	public boolean equalsIgnoreRun(final AbstractOutageRevision o) {
 		if (!(o instanceof OutageRevision)) {
 			return false;
 		}
 		final OutageRevision r = (OutageRevision) o;
-		return super.equalsIgnoreObservationDate(o) && getCause().equals(r.getCause()) && getStatus().equals(r.getStatus());
+		return super.equalsIgnoreRun(o) && getCause().equals(r.getCause()) && getStatus().equals(r.getStatus());
         }
 
 	@Override

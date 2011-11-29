@@ -33,13 +33,13 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 	}
 	
 	@Override
-	public boolean equalsIgnoreObservationDate(final AbstractOutageRevision o){
+	public boolean equalsIgnoreRun(final AbstractOutageRevision o){
 	    if(!(o instanceof OutageClusterRevision))
 	    {
 		return false;
 	    }
 	    final OutageClusterRevision r = (OutageClusterRevision) o;
-	    return super.equalsIgnoreObservationDate(o)&&getNumOutages()==r.getNumOutages();
+	    return super.equalsIgnoreRun(o)&&getNumOutages()==r.getNumOutages();
 	}
 
 	@Override

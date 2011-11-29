@@ -14,6 +14,9 @@ import javax.persistence.Table;
 @Table(name="PARSERRUN")
 public class ParserRun {
 	private int id;
+        /**
+         * The time at which the parser was actually run.
+         */
 	private Timestamp runTime;
 	private Collection<AbstractOutageRevision> outageRevisions;
 	private Collection<OutageAreaRevision> areaRevisions;

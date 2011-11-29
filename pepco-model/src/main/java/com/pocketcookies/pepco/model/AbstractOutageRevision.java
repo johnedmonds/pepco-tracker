@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,7 +25,7 @@ import javax.persistence.Table;
 @Table(name="OUTAGEREVISIONS")
 @Inheritance(strategy= InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="OUTAGETYPE")
-public abstract class AbstractOutageRevision {
+public abstract class AbstractOutageRevision implements Serializable {
 	private int id;
 	/**
 	 * The number of customers affected. If fewer than 5 customers are affected,

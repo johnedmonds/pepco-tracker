@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PARSERRUN")
-public class ParserRun implements Serializable {
+public class ParserRun implements Serializable, Comparable<ParserRun> {
 
     private int id;
     /**
@@ -85,5 +85,15 @@ public class ParserRun implements Serializable {
     @Column(name = "ASOF")
     public Timestamp getAsof() {
         return this.asof;
+    }
+    
+    @Override public boolean equals(final Object o){
+	return o instanceof ParserRun && ((ParserRun)o).getAsof().equals(getAsof());
+    }
+    @Override public int hashCode(){return (int) getAsof().getTime();}
+
+    @Override
+    public int compareTo(ParserRun o) {
+	return getAsof().compareTo(o.getAsof());
     }
 }

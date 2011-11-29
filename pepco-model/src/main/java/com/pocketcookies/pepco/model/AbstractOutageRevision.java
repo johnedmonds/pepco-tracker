@@ -2,10 +2,10 @@ package com.pocketcookies.pepco.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -25,8 +25,8 @@ import javax.persistence.Table;
 @Table(name = "OUTAGEREVISIONS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "OUTAGETYPE")
-public abstract class AbstractOutageRevision implements Serializable {
-    
+public abstract class AbstractOutageRevision implements Serializable, Comparable<AbstractOutageRevision> {
+
     private int id;
     /**
      * The number of customers affected. If fewer than 5 customers are affected,
@@ -40,11 +40,11 @@ public abstract class AbstractOutageRevision implements Serializable {
     // group together outages so that we can know the state of all the
     // outages at a particular time.
     private ParserRun run;
-    
+
     protected AbstractOutageRevision() {
 	super();
     }
-    
+
     public AbstractOutageRevision(int numCustomersAffected,
 	    Timestamp estimatedRestoration,
 	    Outage outage, final ParserRun run) {
@@ -86,59 +86,70 @@ public abstract class AbstractOutageRevision implements Serializable {
 	}
 	return this.getNumCustomersAffected() == revision.getNumCustomersAffected();
     }
-    
+
     @Override
     public int hashCode() {
 	return (int) (getNumCustomersAffected() + getEstimatedRestoration().getTime() + getRun().getAsof().getTime());
     }
-    
+
     @Id
     @GeneratedValue
     @Column(name = "ID")
     public int getId() {
 	return id;
     }
-    
+
     @Column(name = "NUMCUSTOMERSAFFECTED")
     public int getNumCustomersAffected() {
 	return numCustomersAffected;
     }
-    
+
     @Column(name = "ESTIMATEDRESTORATION")
     public Timestamp getEstimatedRestoration() {
 	return estimatedRestoration;
     }
-    
+
     @ManyToOne
     @JoinColumn(name = "OUTAGE")
     public Outage getOutage() {
 	return outage;
     }
-    
+
     @SuppressWarnings("unused")
     private void setId(int id) {
 	this.id = id;
     }
-    
+
     private void setNumCustomersAffected(int numCustomersAffected) {
 	this.numCustomersAffected = numCustomersAffected;
     }
-    
+
     private void setEstimatedRestoration(Timestamp estimatedRestoration) {
 	this.estimatedRestoration = estimatedRestoration;
     }
-    
+
     public void setOutage(Outage outage) {
 	this.outage = outage;
     }
-    
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RUN")
     public ParserRun getRun() {
 	return run;
     }
-    
+
     private void setRun(ParserRun run) {
 	this.run = run;
+    }
+
+    @Override
+    public int compareTo(final AbstractOutageRevision o) {
+	final int comparison = getRun().compareTo(o.getRun());
+	if (comparison == 0) {
+	    //Make sure we don't say two objects are equal just because they occur at the same time.
+	    return getId() - o.getId();
+	} else {
+	    return comparison;
+	}
     }
 }

@@ -1,5 +1,6 @@
 package com.pocketcookies.pepco.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="PARSERRUN")
-public class ParserRun {
+public class ParserRun implements Serializable {
 	private int id;
         /**
          * The time at which the parser was actually run.

@@ -17,13 +17,13 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 
 	public OutageClusterRevision(final int numCustomersAffected,
 			final Timestamp estimatedRestoration,
-			final Timestamp observationDate, final Outage outage,
+			final Outage outage,
 			final ParserRun run, int numOutages) {
-		super(numCustomersAffected, estimatedRestoration, observationDate,
+		super(numCustomersAffected, estimatedRestoration,
 				outage, run);
 		setNumOutages(numOutages);
 	}
-
+        
 	@Override
 	public boolean equals(final Object o) {
 		if (!(o instanceof OutageClusterRevision))

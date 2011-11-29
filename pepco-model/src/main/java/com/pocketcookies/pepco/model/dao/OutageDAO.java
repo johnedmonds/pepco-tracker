@@ -74,7 +74,7 @@ public class OutageDAO {
             existingOutage.getZoomLevels().addAll(revision.getOutage().getZoomLevels());
             revision.setOutage(existingOutage);
             //Test that no updates need to be made to the revision.
-            if (revision.getOutage().getRevisions().get(0).equalsIgnoreObservationDate(revision)) {
+            if (revision.getOutage().getRevisions().get(0).equalsIgnoreRun(revision)) {
                 return false;
             }
             this.sessionFactory.getCurrentSession().save(revision);

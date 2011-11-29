@@ -32,6 +32,8 @@ public class TestOutage extends TestCase {
 	OutageRevision r1 = new OutageRevision(1, now, outage, new ParserRun(now, now), "test", CrewStatus.PENDING);
 	OutageClusterRevision r2 = new OutageClusterRevision(1, now, outage, new ParserRun(now, now), 1);
 	session.save(outage);
+	session.save(r1.getRun());
+	session.save(r2.getRun());
 	session.save(r1);
 	session.save(r2);
 	session.getTransaction().commit();
@@ -50,17 +52,19 @@ public class TestOutage extends TestCase {
 	Session session = this.sessionFactory.getCurrentSession();
 	session.beginTransaction();
 	Timestamp now = new Timestamp(new Date().getTime());
+	final ParserRun nowRun = new ParserRun(now, now);
 	Outage o1 = new Outage(1, 1, now, now);
 	Outage o2 = new Outage(2, 2, now, now);
 
 	session.save(o1);
 	session.save(o2);
 
-	OutageRevision or1 = new OutageRevision(1, now, o1, new ParserRun(now, now), "test", CrewStatus.PENDING);
-	OutageRevision or2 = new OutageRevision(2, now, o2, new ParserRun(now, now), "test", CrewStatus.PENDING);
-	OutageClusterRevision cr1 = new OutageClusterRevision(1, now, o1, new ParserRun(now, now), 1);
-	OutageClusterRevision cr2 = new OutageClusterRevision(2, now, o2, new ParserRun(now, now), 2);
+	OutageRevision or1 = new OutageRevision(1, now, o1, nowRun, "test", CrewStatus.PENDING);
+	OutageRevision or2 = new OutageRevision(2, now, o2, nowRun, "test", CrewStatus.PENDING);
+	OutageClusterRevision cr1 = new OutageClusterRevision(1, now, o1, nowRun, 1);
+	OutageClusterRevision cr2 = new OutageClusterRevision(2, now, o2, nowRun, 2);
 
+	session.save(nowRun);
 	session.save(or1);
 	session.save(or2);
 	session.save(cr1);
@@ -200,6 +204,8 @@ public class TestOutage extends TestCase {
 	final OutageRevision r2 = new OutageRevision(1, now, outage, new ParserRun(later, later), "test", CrewStatus.PENDING);
 	final OutageRevision r1 = new OutageRevision(1, now, outage, new ParserRun(now, now), "test", CrewStatus.PENDING);
 	session.save(outage);
+	session.save(r1.getRun());
+	session.save(r2.getRun());
 	session.save(r1);
 	session.save(r2);
 	session.getTransaction().commit();
@@ -245,7 +251,7 @@ public class TestOutage extends TestCase {
     public void testNullRestoration() {
 	assertEquals(
 		new OutageRevision(1, null, null, new ParserRun(new Timestamp(0), new Timestamp(0)), "test", CrewStatus.PENDING),
-		new OutageRevision(1, null, null, null, "test", CrewStatus.PENDING));
+		new OutageRevision(1, null, null, new ParserRun(new Timestamp(0), new Timestamp(0)), "test", CrewStatus.PENDING));
 	assertEquals(
 		new OutageRevision(1, new Timestamp(0), null, new ParserRun(new Timestamp(0), new Timestamp(0)), "test", CrewStatus.PENDING),
 		new OutageRevision(1, new Timestamp(0), null, new ParserRun(new Timestamp(0), new Timestamp(0)), "test", CrewStatus.PENDING));

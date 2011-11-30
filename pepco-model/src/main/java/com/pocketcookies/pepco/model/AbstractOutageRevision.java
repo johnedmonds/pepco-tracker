@@ -17,7 +17,10 @@ import javax.persistence.Table;
 /**
  * We like to keep track of all the things that happen to a revision over its
  * lifetime.
- * 
+ *
+ * There are two different types of revisions, those for regular outages,
+ * and those for outage clusters.  This is the parent class for both those
+ * types of outages.
  * @author jack
  * 
  */

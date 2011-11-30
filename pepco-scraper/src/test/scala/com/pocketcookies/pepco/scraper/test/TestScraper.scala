@@ -32,7 +32,7 @@ class ScraperTest {
 
   @Test
   def testParseSummary() = {
-    val run = new ParserRun(new Timestamp(1));
+    val run = new ParserRun(new Timestamp(1), new Timestamp(1));
     val s: Summary = PepcoScraper.parseSummary(XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/summary.xml")), run)
     assertEquals(4, s.getTotalOutages())
     assertEquals(1, s.getDcAffectedCustomers())
@@ -46,7 +46,7 @@ class ScraperTest {
   }
   @Test
   def testParseArea() = {
-    val run = new ParserRun(new Timestamp(1))
+    val run = new ParserRun(new Timestamp(1), new Timestamp(1))
     val areas: Seq[OutageAreaRevision] = (XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/thematic.xml")) \\ "item")
       .map(n => PepcoScraper.parseThematicArea(n, run))
     assertEquals(2, areas.size)
@@ -59,8 +59,8 @@ class ScraperTest {
   }
   @Test
   def testParseOutage() = {
-    val run = new ParserRun(new Timestamp(1))
-    val revision: OutageRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single.xml")) \\ "item")(0), new Timestamp(2), run) match { case r: OutageRevision => r case _ => throw new Exception("Wrong type") }
+    val run = new ParserRun(new Timestamp(1), new Timestamp(2))
+    val revision: OutageRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single.xml")) \\ "item")(0), run) match { case r: OutageRevision => r case _ => throw new Exception("Wrong type") }
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
@@ -70,12 +70,12 @@ class ScraperTest {
     assertEquals(3, revision.getOutage().getLon(), .0001)
     assertEquals("Under Evaluation", revision.getCause())
     assertEquals(CrewStatus.PENDING, revision.getStatus())
-    assertEquals(2, revision.getObservationDate().getTime())
+    assertEquals(2, revision.getRun().getAsof().getTime())
   }
   @Test
   def testParseOutageCluster() = {
-    val run = new ParserRun(new Timestamp(1))
-    val revision: OutageClusterRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_cluster.xml")) \\ "item")(0), new Timestamp(2), run) match { case r: OutageClusterRevision => r case _ => throw new Exception("Wrong type") }
+    val run = new ParserRun(new Timestamp(1), new Timestamp(2))
+    val revision: OutageClusterRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_cluster.xml")) \\ "item")(0), run) match { case r: OutageClusterRevision => r case _ => throw new Exception("Wrong type") }
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals("Jan 1, 2:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getEstimatedRestoration().getTime())))
@@ -84,12 +84,12 @@ class ScraperTest {
     assertEquals(1, revision.getOutage().getLat(), .0001)
     assertEquals(2, revision.getOutage().getLon(), .0001)
     assertEquals(2, revision.getNumOutages())
-    assertEquals(2, revision.getObservationDate().getTime())
+    assertEquals(2, revision.getRun().getAsof().getTime())
   }
   @Test
   def testParsePendingEstimatedRestorationOutageCluster() = {
-    val run = new ParserRun(new Timestamp(1))
-    val revision: OutageClusterRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_cluster_pending_restoration.xml")) \\ "item")(0), new Timestamp(2), run) match { case r: OutageClusterRevision => r case _ => throw new Exception("Wrong type") }
+    val run = new ParserRun(new Timestamp(1), new Timestamp(2));
+    val revision: OutageClusterRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_cluster_pending_restoration.xml")) \\ "item")(0), run) match { case r: OutageClusterRevision => r case _ => throw new Exception("Wrong type") }
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     //The year should always be the current year as Pepco does not send back the year of the outage.
@@ -97,13 +97,13 @@ class ScraperTest {
     assertEquals(1, revision.getOutage().getLat(), .0001)
     assertEquals(2, revision.getOutage().getLon(), .0001)
     assertEquals(2, revision.getNumOutages())
-    assertEquals(2, revision.getObservationDate().getTime())
+    assertEquals(2, revision.getRun().getAsof().getTime())
     assertNull(revision.getEstimatedRestoration());
   }
   @Test
   def testParsePendingRestorationOutage() = {
-    val run = new ParserRun(new Timestamp(1))
-    val revision: OutageRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single_pending_restoration.xml")) \\ "item")(0), new Timestamp(2), run) match { case r: OutageRevision => r case _ => throw new Exception("Wrong type") }
+    val run = new ParserRun(new Timestamp(1), new Timestamp(2))
+    val revision: OutageRevision = PepcoScraper.parseOutage((XML.load(PepcoScraper.getClass().getResourceAsStream("/testxml/outages_single_pending_restoration.xml")) \\ "item")(0), run) match { case r: OutageRevision => r case _ => throw new Exception("Wrong type") }
     assertEquals(10, revision.getNumCustomersAffected())
     assertEquals("Jan 1, 1:00 PM", PepcoScraper.getPepcoDateFormat().print(new DateTime(revision.getOutage().getEarliestReport().getTime())))
     assertEquals(new DateTime().getYear(),new DateTime(revision.getOutage().getEarliestReport().getTime()).getYear())
@@ -111,13 +111,13 @@ class ScraperTest {
     assertEquals(3, revision.getOutage().getLon(), .0001)
     assertEquals("Under Evaluation", revision.getCause())
     assertEquals(CrewStatus.PENDING, revision.getStatus())
-    assertEquals(2, revision.getObservationDate().getTime())
+    assertEquals(2, revision.getRun().getAsof().getTime())
     assertNull(revision.getEstimatedRestoration());
   }
 
   @Test
   def testZoomInOnCluster() = {
-    val run = new ParserRun(new Timestamp(1));
+    val run = new ParserRun(new Timestamp(1), new Timestamp(1));
     val outageDao = mock(classOf[OutageDAO]);
     val loader = mock(classOf[StormCenterLoader]);
     val indicesZoom8=PepcoUtil.getSpatialIndicesForPoint(0, 0, 8);

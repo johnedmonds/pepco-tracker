@@ -26,7 +26,11 @@ pepco-tracker is made of several components:
 * pepco-charts: Generates the summary chart image for when you can't use R.
 * pepco-uploader: Scrapes the site and uploads the content to S3.  Since we know the site will only be updated on a cron job, it's all essentially static content anyway.
 
-# Running the Scraper
+# Pepco-Scraper
+
+The scraper visits Pepco's StormCenter website and scrapes data from there.  If you're running the scraper in development mode, it will create a HSQLDB database in the `./data/pepco` (where `.` is the current working directory).
+
+## Running the Scraper
 
 cd into the pepco-scraper directory and run
 

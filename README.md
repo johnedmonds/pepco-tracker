@@ -40,7 +40,11 @@ cd into the pepco-scraper directory and run
 
 ## For Development
 
-If you're doing development on pepco-web, you can `cd` into the `pepco-web` folder and run
+When you compile pepco-tracker (by running `mvn install` in the root directory) it will by default compile everything in development mode.
+
+First make sure you have a database set up.  pepco-web in development mode by default looks for a HSQLDB database at ../pepco-scraper/data/pepco.  You can generate this database by running pepco-scraper in development mode from the `pepco-scraper/` directory.
+
+Then, to get a server going, simply `cd` into the `pepco-web` folder and run
 
     mvn jetty:run
 

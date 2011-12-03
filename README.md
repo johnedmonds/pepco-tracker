@@ -4,7 +4,11 @@ Pepco's storm center, which is found at http://www.pepco.com/home/emergency/maps
 
 # Dependencies
 
-Java 1.5+
+1. Java 1.5+
+2. Maven 2+
+
+All the library dependencies will be automatically downloaded by Maven.
+
 
 # Getting set up
 

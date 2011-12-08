@@ -48,18 +48,7 @@ object PepcoScraper {
   def getOutagesFolderName(doc: Elem): String = {
     doc \\ "directory" text
   }
-  /**
-   * Makes a request and parses the response as XML.  If the request fails for some reason, returns null.
-   */
-  def loadXMLRequest(client: HttpClient, getPath: String): Elem = {
-    val get: HttpGet = new HttpGet(getPath)
-    get.getParams().setLongParameter("timestamp", new DateTime().getMillis())
-    val response: HttpResponse = client.execute(get)
-    try {
-      XML.load(response.getEntity().getContent())
-    } catch { case e: Exception => { logger.warn("Error while downloading " + getPath, e); null } }
-    finally { EntityUtils.consume(response.getEntity()) }
-  }
+  
   def parseSummary(doc: Elem, run: ParserRun): Summary = {
     val areas: NodeSeq = doc \\ "area"
     val dc = areas(0)
@@ -118,11 +107,11 @@ object PepcoScraper {
     new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }
 
-  def scrape(client: HttpClient, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun) = {
+  def scrape(client: StormCenterLoader, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun) = {
     //Parse Summary
-    summaryDao.saveSummary(parseSummary(loadXMLRequest(client, dataHTMLPrefix + summarySuffix), run))
+    summaryDao.saveSummary(parseSummary(client.loadXMLRequest(dataHTMLPrefix + summarySuffix), run))
     //Parse thematic
-    (loadXMLRequest(client, dataHTMLPrefix + thematicSuffix) \\ "item")
+    (client.loadXMLRequest(dataHTMLPrefix + thematicSuffix) \\ "item")
       .map(area => parseThematicArea(area, run))
       .foreach(a => outageAreaDao.updateArea(a));
 
@@ -132,7 +121,7 @@ object PepcoScraper {
     val temp:java.util.Collection[Integer]=outageIds
     outageDao.closeMissingOutages(temp, run.getRunTime());
   }
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: HttpClient, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
     if (zoom > maxZoom) return ;
     val observationDate=new Timestamp(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").parseDateTime(outagesFolderName).getMillis())
     val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
@@ -141,7 +130,7 @@ object PepcoScraper {
 
     val outages = indices
       .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
-      .map(url => loadXMLRequest(client, url))
+      .map(url => client.loadXMLRequest(url))
       .filter(a => a != null) //Remove failed requests.  Usually requests can fail because they were made for data outside of Pepco's service area.
       .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
       .flatten //No need to parse each list individually.
@@ -159,8 +148,8 @@ object PepcoScraper {
   }
 
   def main(args: Array[String]): Unit = {
-    val client: HttpClient = new DefaultHttpClient();
-    val outagesFolderName = loadXMLRequest(client, dataHTMLPrefix + directorySuffix) \\ "directory" text
+    val client = new StormCenterLoader(new DefaultHttpClient());
+    val outagesFolderName = client.loadXMLRequest(dataHTMLPrefix + directorySuffix) \\ "directory" text
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()))
     val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
     sessionFactory.getCurrentSession().beginTransaction()

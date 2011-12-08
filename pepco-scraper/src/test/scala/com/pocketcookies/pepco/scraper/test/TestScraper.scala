@@ -2,6 +2,7 @@ package com.pocketcookies.pepco.scraper.test
 
 import org.junit._
 import Assert._
+import org.mockito.Mockito._
 import org.junit.Test
 import com.pocketcookies.pepco.scraper.PepcoScraper
 import scala.xml.XML
@@ -18,6 +19,13 @@ import com.pocketcookies.pepco.model.AbstractOutageRevision
 import org.joda.time.DateTime
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus
 import com.pocketcookies.pepco.model.OutageClusterRevision
+import com.pocketcookies.pepco.scraper.PepcoUtil
+import com.pocketcookies.pepco.model.dao.OutageDAO
+import com.pocketcookies.pepco.scraper.PointDouble
+import scala.collection.mutable.HashSet
+import com.pocketcookies.pepco.scraper.StormCenterLoader
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 @Test
 class ScraperTest {
@@ -105,5 +113,20 @@ class ScraperTest {
     assertEquals(CrewStatus.PENDING, revision.getStatus())
     assertEquals(2, revision.getObservationDate().getTime())
     assertNull(revision.getEstimatedRestoration());
+  }
+
+  @Test
+  def testZoomInOnCluster() = {
+    val run = new ParserRun(new Timestamp(1));
+    val outageDao = mock(classOf[OutageDAO]);
+    val loader = mock(classOf[StormCenterLoader]);
+    val indicesZoom8=PepcoUtil.getSpatialIndicesForPoint(0, 0, 8);
+    val now=DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").print(new DateTime());
+    when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom8.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_cluster.xml")));
+    
+    val indicesZoom9=PepcoUtil.getSpatialIndicesForPoint(1,2,9);
+    when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom9.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_single.xml")));
+    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String](), new HashSet[Integer]());
+    (indicesZoom8 ::: indicesZoom9).foreach(x=>verify(loader).loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+x+".xml"))
   }
 }

@@ -21,10 +21,10 @@ public class TestOutageRevision extends TestCase {
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1).compareTo(
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1)));
 	assertTrue(
-		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(0)), 1).compareTo(
+		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(0), new Timestamp(1)), 1).compareTo(
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1)) > 0);
 	assertTrue(
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1).compareTo(
-		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(0)), 1)) < 0);
+		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(0), new Timestamp(1)), 1)) < 0);
     }
 }

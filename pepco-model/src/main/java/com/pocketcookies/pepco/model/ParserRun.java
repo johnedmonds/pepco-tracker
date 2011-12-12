@@ -88,12 +88,12 @@ public class ParserRun implements Serializable, Comparable<ParserRun> {
     }
     
     @Override public boolean equals(final Object o){
-	return o instanceof ParserRun && ((ParserRun)o).getAsof().equals(getAsof());
+	return o instanceof ParserRun && ((ParserRun)o).getRunTime().equals(getRunTime());
     }
     @Override public int hashCode(){return (int) getAsof().getTime();}
 
     @Override
     public int compareTo(ParserRun o) {
-	return getAsof().compareTo(o.getAsof());
+	return getRunTime().compareTo(o.getRunTime());
     }
 }

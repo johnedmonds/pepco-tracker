@@ -66,7 +66,7 @@ public class PepcoController {
 			throws IOException {
 		response.setContentType("text/csv");
 		final StringBuilder sb = new StringBuilder(
-				"Observation Timestamp,DC Affected,PG Affected,Montgomery Affected,DC Total,PG Total,Montgomery Total\r\n");
+				"Observation Timestamp,DC Affected Customers,PG Affected Customers,Montgomery Affected Customers,DC Total Customers,PG Total Customers,Montgomery Total Customers\r\n");
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		for (final Summary s : this.summaryDao.getSummaries(null, null, false,
 				0)) {

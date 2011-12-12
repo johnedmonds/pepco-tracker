@@ -4,7 +4,11 @@ Pepco's storm center, which is found at http://www.pepco.com/home/emergency/maps
 
 # Dependencies
 
-Java 1.5+
+1. Java 1.5+
+2. Maven 2+
+
+All the library dependencies will be automatically downloaded by Maven.
+
 
 # Getting set up
 
@@ -22,7 +26,11 @@ pepco-tracker is made of several components:
 * pepco-charts: Generates the summary chart image for when you can't use R.
 * pepco-uploader: Scrapes the site and uploads the content to S3.  Since we know the site will only be updated on a cron job, it's all essentially static content anyway.
 
-# Running the Scraper
+# Pepco-Scraper
+
+The scraper visits Pepco's StormCenter website and scrapes data from there.  If you're running the scraper in development mode, it will create a HSQLDB database in the `./data/pepco` (where `.` is the current working directory).
+
+## Running the Scraper
 
 cd into the pepco-scraper directory and run
 
@@ -32,7 +40,11 @@ cd into the pepco-scraper directory and run
 
 ## For Development
 
-If you're doing development on pepco-web, you can `cd` into the `pepco-web` folder and run
+When you compile pepco-tracker (by running `mvn install` in the root directory) it will by default compile everything in development mode.
+
+First make sure you have a database set up.  pepco-web in development mode by default looks for a HSQLDB database at ../pepco-scraper/data/pepco.  You can generate this database by running pepco-scraper in development mode from the `pepco-scraper/` directory.
+
+Then, to get a server going, simply `cd` into the `pepco-web` folder and run
 
     mvn jetty:run
 

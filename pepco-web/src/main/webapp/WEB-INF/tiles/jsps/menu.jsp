@@ -4,7 +4,7 @@
 	<li <tiles:getAsString name="home.selected"/>><a
 		href="<c:url value="/"/>">Home</a></li>
 	<li <tiles:getAsString name="outage.map.selected"/>><a
-		href="<c:url value="/outage-map"/>">Outage Maps</a>
+		href="<c:url value="/outage-map"/>">Outage Map</a>
 	</li>
 	<li <tiles:getAsString name="about.selected"/>><a
 		href="<c:url value="/about"/>">About</a></li>

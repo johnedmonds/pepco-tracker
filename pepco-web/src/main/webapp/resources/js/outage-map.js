@@ -5,13 +5,12 @@ $(document).ready(function(){
         mapTypeId:google.maps.MapTypeId.ROADMAP
     });
     
-    var outagesUrl=new Date().toString("yyyyMMdd.HHmmss")+"/outages.json";
     if(window.location.toString().substr(window.location.toString().length-1)!="/")
-        outagesUrl=window.location.toString()+"/"+outagesUrl;
+        outagesUrl=window.location.toString()+"/outages.json";
     else
-        outagesUrl=window.location.toString()+outagesUrl;
+        outagesUrl=window.location.toString()+"outages.json";
     $.get(outagesUrl,
-    {},
+    {"asof":new Date().toString("yyyyMMdd.HHmmss")},
         function(data){
             for (i in data.outages){
                 var marker=new google.maps.Marker({

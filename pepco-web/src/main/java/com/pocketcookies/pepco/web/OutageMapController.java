@@ -23,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
@@ -96,9 +97,9 @@ public class OutageMapController {
         }
     }
 
-    @RequestMapping(value = "/{dateTime}/outages.json")
+    @RequestMapping(value = "/outages.json")
     @ResponseBody
-    public String outageJson(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws JSONException {
+    public String outageJson(final HttpServletResponse response, @RequestParam(value = "asof") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws JSONException {
         response.setContentType("application/json");
         final JSONArray outages = new JSONArray();
         for (final AbstractOutageRevision r : outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(dateTime.getTime()), null, OutageRevision.class)) {

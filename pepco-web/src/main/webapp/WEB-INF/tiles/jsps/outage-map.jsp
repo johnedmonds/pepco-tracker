@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h1>Outage Map</h1>
 <script type="text/javascript" src="<c:url value="/resources/js/jquery.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/jquery-ui-1.8.16.custom.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/jquery-ui-timepicker-addon.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/date.js"/>"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
 <script src="<c:url value="/resources/js/outage-map.js"/>"></script>

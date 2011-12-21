@@ -35,9 +35,6 @@ $(document).ready(function(){
         showSecond: true
     });
     $("#ui-datepicker-div").css("font-size",".8em");
-    $("#outagesAsof").change(function(){
-        
-    });
     
     var map = new google.maps.Map(document.getElementById("outage-map"),{
         zoom:8,

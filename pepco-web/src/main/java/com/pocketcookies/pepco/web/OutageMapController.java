@@ -99,7 +99,7 @@ public class OutageMapController {
 
     @RequestMapping(value = "/outages.json")
     @ResponseBody
-    public String outageJson(final HttpServletResponse response, @RequestParam(value = "asof") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws JSONException {
+    public String outageJson(final HttpServletResponse response, @RequestParam(value = "asof") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") final Date dateTime) throws JSONException {
         response.setContentType("application/json");
         final JSONArray outages = new JSONArray();
         for (final AbstractOutageRevision r : outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(dateTime.getTime()), null, OutageRevision.class)) {

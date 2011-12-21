@@ -29,7 +29,11 @@ $(document).ready(function(){
         }
     }
     $("#outage-map").before($("<input id='outagesAsof'/>"));
-    $("#outagesAsof").datetimepicker();
+    $("#outagesAsof").datetimepicker({
+        dateFormat: 'yy-mm-dd',
+        timeFormat: 'hh:mm:ss',
+        showSecond: true
+    });
     $("#ui-datepicker-div").css("font-size",".8em");
     $("#outagesAsof").change(function(){
         
@@ -46,6 +50,7 @@ $(document).ready(function(){
     else
         outagesUrl=window.location.toString()+"outages.json";
     function loadOutages(asof){
+        //Clear the map to make way for the new markers.
         for (i in markers){markers[i].setMap(null);}
         markers=[];
         $.get(outagesUrl,
@@ -54,6 +59,6 @@ $(document).ready(function(){
             "json"
         );
     }
-    loadOutages(new Date().toString("yyyyMMdd.HHmmss"));
-    $("#outagesAsof").change(loadOutages);
+    loadOutages(new Date().toString("yyyy-MM-dd HH:mm:ss"));
+    $("#outagesAsof").change(function(){loadOutages($(this).val());});
 });

@@ -56,6 +56,7 @@ $(document).ready(function(){
             "json"
         );
     }
-    loadOutages(new Date().toString("yyyy-MM-dd HH:mm:ss"));
-    $("#outagesAsof").change(function(){loadOutages($(this).val());});
+    var nowString = new Date().toString("yyyy-MM-dd HH:mm:ss");
+    loadOutages(nowString);
+    $("#outagesAsof").val(nowString).change(function(){loadOutages($(this).val());});
 });

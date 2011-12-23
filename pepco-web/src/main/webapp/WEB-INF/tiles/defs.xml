@@ -17,6 +17,7 @@
 		<put-attribute name="contact.selected" value="" cascade="true" />
 		<put-attribute name="outage.maps.selected" value=""
 			cascade="true" />
+                <put-attribute name="outages.selected" value="" cascade="true" />
 	</definition>
 	<definition name="pepco.404" extends="err-base">
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/err/404.jsp" />

@@ -1,6 +1,10 @@
 package com.pocketcookies.pepco.web;
 
+import com.pocketcookies.pepco.model.AbstractOutageRevision;
+import com.pocketcookies.pepco.model.dao.OutageDAO;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +22,14 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping(value = "/outages")
 public class OutagesController {
+
+    private final OutageDAO outageDao;
+
+    @Autowired
+    public OutagesController(
+            @Qualifier("outageDao") final OutageDAO outageDao) {
+        this.outageDao = outageDao;
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") final DateTime asof) {

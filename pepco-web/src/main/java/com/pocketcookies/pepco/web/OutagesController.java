@@ -36,7 +36,7 @@ public class OutagesController {
     public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") DateTime asof) {
         final ModelAndView mav = new ModelAndView("pepco.outages");
         if (asof == null) {
-            asof=new DateTime();
+            asof = new DateTime();
         }
         mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
         mav.getModel().put("asof", asof);

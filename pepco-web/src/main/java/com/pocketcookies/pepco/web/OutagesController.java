@@ -2,6 +2,7 @@ package com.pocketcookies.pepco.web;
 
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
+import java.sql.Timestamp;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +35,11 @@ public class OutagesController {
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") final DateTime asof) {
         final ModelAndView mav = new ModelAndView("pepco.outages");
+        if (asof == null) {
+            mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(new DateTime().getMillis()), null, AbstractOutageRevision.class));
+        } else {
+            mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
+        }
         return mav;
     }
 }

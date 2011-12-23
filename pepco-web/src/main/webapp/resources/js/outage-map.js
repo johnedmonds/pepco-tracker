@@ -28,7 +28,7 @@ $(document).ready(function(){
             createEvent(marker,infowindow);
         }
     }
-    $("#outage-map").before($("<div><label for=\"outagesAsof\">Outages As Of:</label><input id='outagesAsof'/></div>"));
+    $("#outage-map").before($("<div><label for=\"outagesAsof\">Outages As Of: </label><input id='outagesAsof'/></div>"));
     $("#outagesAsof").datetimepicker({
         dateFormat: 'yy-mm-dd',
         timeFormat: 'hh:mm:ss',

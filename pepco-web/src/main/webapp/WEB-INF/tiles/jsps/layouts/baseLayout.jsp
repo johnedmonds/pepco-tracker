@@ -9,7 +9,7 @@
 </title>
 <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>" >
 <link rel="stylesheet" href="<c:url value="/resources/css/menu.css"/>" >
-<link rel="stylesheet" href="<c:url value="/resources/css/custom-theme/jquery-ui-1.8.16.custom.css"/>" >
+<tiles:insertAttribute name="head.additional"/>
 </head>
 <body>
 	<div id="header">

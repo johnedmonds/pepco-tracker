@@ -29,6 +29,8 @@
 		<put-attribute name="body" value="/WEB-INF/tiles/jsps/body.jsp" />
 		<put-attribute name="menu" value="/WEB-INF/tiles/jsps/menu.jsp" />
 		<put-attribute name="footer" value="/WEB-INF/tiles/jsps/footer.jsp" />
+                
+                <put-attribute name="head.additional" value="" cascade="true"/>
 
 		<!-- Used to determine which menu option to highlight. -->
 		<put-attribute name="home.selected" value="" cascade="true" />
@@ -58,5 +60,6 @@
 			value="/WEB-INF/tiles/jsps/outage-map.jsp" />
 		<put-attribute name="outage.map.selected" value="class=&quot;selected&quot;"
 			cascade="true" />
+                <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outage-map-head.jsp" cascade="true"/>
 	</definition>
 </tiles-definitions>

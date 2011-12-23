@@ -33,13 +33,13 @@ public class OutagesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
-    public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") final DateTime asof) {
+    public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") DateTime asof) {
         final ModelAndView mav = new ModelAndView("pepco.outages");
         if (asof == null) {
-            mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(new DateTime().getMillis()), null, AbstractOutageRevision.class));
-        } else {
-            mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
+            asof=new DateTime();
         }
+        mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
+        mav.getModel().put("asof", asof);
         return mav;
     }
 }

@@ -6,6 +6,7 @@
 	<li <tiles:getAsString name="outage.map.selected"/>><a
 		href="<c:url value="/outage-map"/>">Outage Map</a>
 	</li>
+        <li <tiles:getAsString name="outages.selected"/>><a href="<c:url value="/outages"/>">Outages</a></li>
 	<li <tiles:getAsString name="about.selected"/>><a
 		href="<c:url value="/about"/>">About</a></li>
 	<li <tiles:getAsString name="contact.selected"/>><a

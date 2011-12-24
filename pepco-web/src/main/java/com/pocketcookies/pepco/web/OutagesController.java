@@ -39,7 +39,7 @@ public class OutagesController {
             asof = new DateTime();
         }
         mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
-        mav.getModel().put("asof", asof);
+        mav.getModel().put("asof", new java.util.Date(asof.getMillis()));
         return mav;
     }
 }

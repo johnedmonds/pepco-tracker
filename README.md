@@ -13,6 +13,9 @@ Here's how to get up and running really quickly:
     java -jar target/pepco-scraper-1.0-SNAPSHOT-local.jar #Fill up your database with some initial data.
     cd ../pepco-web
     mvn jetty:run #Start up your personal web server.
+
+Then, in another terminal, open Firefox to view the site:
+
     firefox localhost:8080/pepco-web #View the site.
 
 # Dependencies

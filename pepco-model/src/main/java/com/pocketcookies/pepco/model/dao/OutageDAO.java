@@ -36,8 +36,10 @@ public class OutageDAO {
         return outages.get(0);
     }
     
-public Outage getOutage(final int outageId){
-        return (Outage) this.sessionFactory.getCurrentSession().get(Outage.class, outageId);
+    public Outage getOutage(final int outageId){
+        final List<Outage> outages = this.sessionFactory.getCurrentSession().createQuery("from Outage o left outer join fetch o.revisions r left outer join fetch r.run where o.id=:outageId").setInteger("outageId", outageId).list();
+        if(outages.isEmpty())return null;
+        return outages.get(0);
     }
 
     /**

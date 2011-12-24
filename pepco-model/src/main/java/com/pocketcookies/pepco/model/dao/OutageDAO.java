@@ -35,6 +35,10 @@ public class OutageDAO {
         }
         return outages.get(0);
     }
+    
+public Outage getOutage(final int outageId){
+        return (Outage) this.sessionFactory.getCurrentSession().get(Outage.class, outageId);
+    }
 
     /**
      * If the revision's outage is not already in the database, we save the

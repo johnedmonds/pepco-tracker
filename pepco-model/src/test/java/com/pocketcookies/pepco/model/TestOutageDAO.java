@@ -288,4 +288,21 @@ public class TestOutageDAO extends TestCase {
 	assertTrue(revisions.contains(oldRevision));
 	assertTrue(revisions.contains(newRevision));
     }
+    
+    /**
+     * Makes sure getOutage gets the right outage.
+     */
+    public void testGetOutage() {
+        final OutageDAO dao = new OutageDAO(this.sessionFactory);
+        assertNull(dao.getOutage(-1));
+        final Outage o1 = new Outage(0, 0, new Timestamp(1), new Timestamp(2));
+        this.sessionFactory.getCurrentSession().save(o1);
+        this.sessionFactory.getCurrentSession().flush();
+        assertEquals(o1, dao.getOutage(o1.getId()));
+        final Outage o2 = new Outage(1, 1, new Timestamp(3), new Timestamp(4));
+        this.sessionFactory.getCurrentSession().save(o2);
+        this.sessionFactory.getCurrentSession().flush();
+        assertEquals(o1, dao.getOutage(o1.getId()));
+        assertEquals(o2, dao.getOutage(o2.getId()));
+    }
 }

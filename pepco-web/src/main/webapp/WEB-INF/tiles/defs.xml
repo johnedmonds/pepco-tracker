@@ -72,4 +72,12 @@
 			cascade="true" />
                 <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outages-head.jsp"/>
 	</definition>
+        <definition name="pepco.outages.history" extends="base">
+		<put-attribute name="title" value="Pepco Tracker - Outage History" />
+		<put-attribute name="body"
+			value="/WEB-INF/tiles/jsps/outages-history.jsp" />
+		<put-attribute name="outages.selected" value="class=&quot;selected&quot;"
+			cascade="true" />
+                <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outages-head.jsp"/>
+	</definition>
 </tiles-definitions>

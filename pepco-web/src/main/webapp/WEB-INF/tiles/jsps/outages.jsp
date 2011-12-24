@@ -9,8 +9,6 @@
             <dl>
                 <dt>Customers Affected:</dt><dd>${outageRevision.numCustomersAffected}</dd>
                 <dt>Estimated Restoration:</dt><dd>${outageRevision.estimatedRestoration}</dd>
-                <dt>Cause:</dt><dd>${outageRevision.cause}</dd>
-                <dt>Status:</dt><dd>${outageRevision.status}</dd>
             </dl>
         </li>
     </c:forEach>

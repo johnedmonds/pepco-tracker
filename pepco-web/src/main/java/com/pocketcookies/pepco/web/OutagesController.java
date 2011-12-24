@@ -1,6 +1,6 @@
 package com.pocketcookies.pepco.web;
 
-import com.pocketcookies.pepco.model.AbstractOutageRevision;
+import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import java.sql.Timestamp;
 import org.joda.time.DateTime;
@@ -38,7 +38,7 @@ public class OutagesController {
         if (asof == null) {
             asof = new DateTime();
         }
-        mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, AbstractOutageRevision.class));
+        mav.getModel().put("outages", outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(asof.getMillis()), null, OutageRevision.class));
         mav.getModel().put("asof", new java.util.Date(asof.getMillis()));
         return mav;
     }

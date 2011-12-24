@@ -9,6 +9,18 @@ Pepco's storm center, which is found at http://www.pepco.com/home/emergency/maps
 
 All the library dependencies will be automatically downloaded by Maven.
 
+# Quick Start
+
+Here's how to get up and running really quickly:
+
+    git clone https://github.com/johnedmonds/pepco-tracker.git
+    cd pepco-tracker
+    mvn install
+    cd pepco-scraper
+    java -jar target/pepco-scraper-1.0-SNAPSHOT-local.jar #Fill up your database with some initial data.
+    cd ../pepco-web
+    mvn jetty:run #Start up your personal web server.
+    firefox localhost:8080/pepco-web #View the site.
 
 # Getting set up
 

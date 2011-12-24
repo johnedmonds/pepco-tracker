@@ -2,7 +2,12 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <h1>Active Outages</h1>
-<p>As of <fmt:formatDate value="${asof}" pattern="yyyy-MM-dd h:mm:ss a"/></p>
+<p>
+<form method="get" action="<c:url value="/outages"/>">
+    <label for="outagesAsof">As of</label> <input type="text" id="outagesAsof" name="asof" value="<fmt:formatDate value="${asof}" pattern="yyyy-MM-dd HH:mm:ss"/>"/>
+    <input type="submit" name="submit" value="Update"/>
+</form>
+</p>
 <ul id="outages">
     <c:forEach items="${outages}" var="outageRevision">
         <li>

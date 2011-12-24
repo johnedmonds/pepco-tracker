@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class OutageDAO {
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     public OutageDAO(SessionFactory sessionFactory) {
         super();
@@ -21,12 +21,7 @@ public class OutageDAO {
     }
 
     protected OutageDAO() {
-    }
-
-    // Used by Spring
-    @SuppressWarnings("unused")
-    private void setSessionFactory(final SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+        this.sessionFactory=null;
     }
 
     @SuppressWarnings("unchecked")

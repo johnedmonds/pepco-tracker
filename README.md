@@ -2,13 +2,25 @@
 
 Pepco's storm center, which is found at http://www.pepco.com/home/emergency/maps/stormcenter/ , lets Pepco's customers see where there is an outage and how many customers that outage affects.  The goal of this project is to collect that data so we can have detailed statistics on Pepco's reliability.
 
+# Quick Start
+
+Here's how to get up and running really quickly:
+
+    git clone https://github.com/johnedmonds/pepco-tracker.git
+    cd pepco-tracker
+    mvn install
+    cd pepco-scraper
+    java -jar target/pepco-scraper-1.0-SNAPSHOT-local.jar #Fill up your database with some initial data.
+    cd ../pepco-web
+    mvn jetty:run #Start up your personal web server.
+    firefox localhost:8080/pepco-web #View the site.
+
 # Dependencies
 
 1. Java 1.5+
 2. Maven 2+
 
 All the library dependencies will be automatically downloaded by Maven.
-
 
 # Getting set up
 

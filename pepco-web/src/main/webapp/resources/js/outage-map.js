@@ -16,6 +16,7 @@ $(document).ready(function(){
             infoString=infoString+"<dt>Cause:</dt><dd>"+data.outages[i].cause+"</dd>";
             infoString=infoString+"<dt>Status:</dt><dd>"+data.outages[i].status+"</dd>";
             infoString=infoString+"</dl>";
+            infoString=infoString+"<a href=\"outages/"+data.outages[i].outageId+"\">History</a>";
             var infowindow=new google.maps.InfoWindow({
                 content:infoString
             });

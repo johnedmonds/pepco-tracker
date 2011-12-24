@@ -18,6 +18,7 @@
                 <dt>Cause:</dt><dd><c:out value="${outageRevision.cause}"/></dd>
                 <dt>Status:</dt><dd><c:out value="${outageRevision.status}"/></dd>
             </dl>
+            <a href="<c:url value="/outages/${outageRevision.outage.id}"/>">History</a>
         </li>
     </c:forEach>
 </ul>

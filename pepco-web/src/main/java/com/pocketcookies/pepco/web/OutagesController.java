@@ -1,11 +1,13 @@
 package com.pocketcookies.pepco.web;
 
+import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import com.pocketcookies.pepco.web.util.ResourceNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -55,7 +56,7 @@ public class OutagesController {
         if (o == null) {
             throw new ResourceNotFoundException();
         }
-        mav.getModel().put("outage", outageDao.getOutage(outageId));
+        mav.getModel().put("outage", o);
         return mav;
     }
 }

@@ -5,7 +5,7 @@
 <ol>
     <c:forEach items="${outage.revisions}" var="revision" varStatus="status">
         <li>
-            <p>At <fmt:formatDate value="${revision.run.asof}" pattern="yyyy-MM-dd H:mm:ss a"/></p>
+            <p>At <fmt:formatDate value="${revision.run.asof}" pattern="yyyy-MM-dd h:mm:ss a"/></p>
             <dl>
                 <dt>Customers Affected:</dt><dd><c:choose><c:when test="${revision.numCustomersAffected eq 0}">1-5</c:when><c:otherwise>${outageRevision.numCustomersAffected}</c:otherwise></c:choose></dd>
                 <dt>Estimated Restoration:</dt><dd><fmt:formatDate value="${revision.estimatedRestoration}" pattern="yyyy-MM-dd h:mm:ss a"/></dd>

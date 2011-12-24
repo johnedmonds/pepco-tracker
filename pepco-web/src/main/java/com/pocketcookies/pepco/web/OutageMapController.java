@@ -105,6 +105,7 @@ public class OutageMapController {
         for (final AbstractOutageRevision r : outageDao.getOutagesAtZoomLevelAsOf(new Timestamp(dateTime.getTime()), null, OutageRevision.class)) {
             final OutageRevision or = (OutageRevision) r;
             final JSONObject outage = new JSONObject();
+            outage.put("outageId", or.getOutage().getId());
             outage.put("lat", or.getOutage().getLat());
             outage.put("lon", or.getOutage().getLon());
             outage.put("numCustomersOut", or.getNumCustomersAffected());

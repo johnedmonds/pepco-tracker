@@ -10,6 +10,8 @@
             <dl>
                 <dt>Customers Affected:</dt><dd><c:choose><c:when test="${outageRevision.numCustomersAffected eq 0}">1-5</c:when><c:otherwise>${outageRevision.numCustomersAffected}</c:otherwise></c:choose></dd>
                 <dt>Estimated Restoration:</dt><dd><fmt:formatDate value="${outageRevision.estimatedRestoration}" pattern="yyyy-MM-dd h:mm:ss a"/></dd>
+                <dt>Cause:</dt><dd><c:out value="${outageRevision.cause}"/></dd>
+                <dt>Status:</dt><dd><c:out value="${outageRevision.status}"/></dd>
             </dl>
         </li>
     </c:forEach>

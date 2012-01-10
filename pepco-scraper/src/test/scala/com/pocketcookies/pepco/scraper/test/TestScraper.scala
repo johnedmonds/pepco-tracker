@@ -129,4 +129,16 @@ class ScraperTest {
     PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String](), new HashSet[Integer]());
     (indicesZoom8 ::: indicesZoom9).foreach(x=>verify(loader).loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+x+".xml"))
   }
+
+  @Test
+  def testYearChangeParseDateTime() = {
+    val jan1=new DateTime(2012, 1, 1, 0, 0);
+    val dec31=new DateTime(2011, 12, 31, 0, 0);
+    val jan2=new DateTime(2012, 1, 2, 0, 0);
+    assertEquals(jan1.getYear(), PepcoScraper.parsePepcoDateTime("Jan 1, 12:00 AM", jan1).getYear());
+    assertEquals(jan1.getYear() - 1, PepcoScraper.parsePepcoDateTime("Dec 31, 12:00 AM", jan1).getYear());
+    assertEquals(jan2.getYear(), PepcoScraper.parsePepcoDateTime("Dec 31, 12:00 AM", jan2).getYear());
+    assertEquals(dec31.getYear(), PepcoScraper.parsePepcoDateTime("Dec 31, 12:00 AM", dec31).getYear());
+    assertEquals(dec31.getYear(), PepcoScraper.parsePepcoDateTime("Jan 1, 12:00 AM", dec31).getYear());
+  }
 }

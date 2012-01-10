@@ -42,9 +42,38 @@ object PepcoScraper {
   val directorySuffix: String = "/outages/metadata.xml"
   val maxZoom: Int = 15;
   val logger: Logger = Logger.getLogger("PepcoScraper")
-  def getPepcoDateFormat(): DateTimeFormatter = {
-    return DateTimeFormat.forPattern("MMM d, h:mm a");
+  def getPepcoDateFormat():DateTimeFormatter = {DateTimeFormat.forPattern("MMM d, h:mm a")}
+  /**
+   * Parses the string representing the date/time from Pepco.
+   * @param date The date/time string to parse.
+   */
+  def parsePepcoDateTime(date:String):DateTime = {parsePepcoDateTime(date, new DateTime())}
+  /**
+   * Parses the string representing the date/time from Pepco.
+   * This is mainly used to allow unit testing.  It's rather difficult to set
+   * the current time just for unit testing.
+   * @param date The date/time string to parse.
+   * @param now Should represent now, as in the current moment in time.
+     For unit testing, we will set this so our unit tests don't only work on Jan 1.
+   */
+  def parsePepcoDateTime(date:String, now:DateTime):DateTime = {
+    val ret = getPepcoDateFormat().parseDateTime(date);
+    /*
+     * Check whether it is January and we are parsing a date in December.
+     * 
+     * Pepco's dates don't include the year.  So at the turn of the year
+     * (Jan 1), we'll probably read something like "Dec 31 12:58 PM".
+     * It is very unlikely that this actually represents December 31 of this
+     * year.  More likely, this is December 31 of last year (either that or
+     * some poor group of customers is going to have to wait more than a year
+     * for their power to get fixed).
+     */
+    if (now.getMonthOfYear() == 1 && now.getDayOfMonth() == 1 && ret.getMonthOfYear() == 12 && ret.getDayOfMonth() == 31)
+      ret.withYear(now.getYear() - 1)
+    else
+      ret.withYear(now.getYear())
   }
+      
   def getOutagesFolderName(doc: Elem): String = {
     doc \\ "directory" text
   }
@@ -62,7 +91,7 @@ object PepcoScraper {
       Integer.parseInt(pg \\ "total_custs" text),
       Integer.parseInt(mont \\ "custs_out" text),
       Integer.parseInt(mont \\ "total_custs" text),
-      new Timestamp(getPepcoDateFormat().parseDateTime(doc \\ "date_generated" text).withYear(new DateTime().getYear()).getMillis()),
+      new Timestamp(parsePepcoDateTime(doc \\ "date_generated" text).getMillis()),
       run)
     return ret
   }
@@ -75,11 +104,11 @@ object PepcoScraper {
     val doc = Jsoup.parseBodyFragment(item \\ "description" text)
     val sCustomersAffected = doc.select(":containsOwn(Customers Affected)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }
     val customersAffected = if (sCustomersAffected equals "Less than 5") 0 else Integer.parseInt(sCustomersAffected)
-    val earliestReport = getPepcoDateFormat().parseDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() }).withYear(new DateTime().getYear())
+    val earliestReport = parsePepcoDateTime(doc.select(":containsOwn(Report)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() })
     val estimatedRestoration = try {
       val sEstimatedRestoration = doc.select(":containsOwn(Restoration)").first().nextSibling() match { case n: TextNode => n.text().trim() case _ => throw new ClassCastException() } 
       if (sEstimatedRestoration equals "Pending") null
-      else new Timestamp(getPepcoDateFormat().parseDateTime(sEstimatedRestoration).withYear(new DateTime().getYear()).getMillis())
+      else new Timestamp(parsePepcoDateTime(sEstimatedRestoration).getMillis())
     } catch { case e:IllegalArgumentException => {logger.warn("Error parsing estimated restoration.", e); null}}
     if ((item \\ "point" size) != 0) {
       val latLon = new PointDouble(List.fromString((item \\ "point")(0) text, ' '))

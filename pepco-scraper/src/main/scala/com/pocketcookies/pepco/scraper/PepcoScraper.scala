@@ -54,7 +54,7 @@ object PepcoScraper {
    * the current time just for unit testing.
    * @param date The date/time string to parse.
    * @param now Should represent now, as in the current moment in time.
-     For unit testing, we will set this so our unit tests don't only work on Jan 1.
+   *   For unit testing, we will set this so our unit tests don't only work on Jan 1.
    */
   def parsePepcoDateTime(date:String, now:DateTime):DateTime = {
     val ret = getPepcoDateFormat().parseDateTime(date);

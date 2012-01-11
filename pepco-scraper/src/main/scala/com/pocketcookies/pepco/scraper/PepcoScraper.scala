@@ -136,6 +136,10 @@ object PepcoScraper {
     new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }
 
+  /**
+   * Basically the "hub" function that calls all the scraping functions.
+   * Also closes out all outages which appear resolved.
+   */
   def scrape(client: StormCenterLoader, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun) = {
     //Parse Summary
     summaryDao.saveSummary(parseSummary(client.loadXMLRequest(dataHTMLPrefix + summarySuffix), run))

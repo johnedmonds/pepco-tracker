@@ -3,9 +3,11 @@
 }
 #outageRevisions tbody tr{
     color:#aaaaaa;
-    text-decoration:line-through;
 }
 #outageRevisions tbody tr:first-child{
     text-decoration: none;
     color:#000000;
+}
+.changed{
+    text-decoration: line-through;
 }

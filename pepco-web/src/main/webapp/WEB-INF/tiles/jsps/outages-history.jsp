@@ -5,13 +5,23 @@
 <table id="outageRevisions">
     <thead><tr><th>As Of</th><th>Customers Affected</th><th>Estimated Restoration</th><th>Cause</th><th>Status</th></tr></thead>
     <tbody>
-        <c:forEach items="${outage.revisions}" var="revision">
+        <c:forEach items="${outageRevisions}" var="revision" varStatus="status">
             <tr>
                 <td>${revision.run.asof}</td>
-                <td>${revision.numCustomersAffected==0 ? '1-5' : revision.numCustomersAffected}</td>
-                <td>${revision.estimatedRestoration}</td>
-                <td>${revision.cause}</td>
-                <td>${revision.status}</td>
+                <c:choose>
+                    <c:when test="${status.first}">
+                        <td>${revision.numCustomersAffected==0 ? '1-5' : revision.numCustomersAffected}</td>
+                        <td>${revision.estimatedRestoration}</td>
+                        <td>${revision.cause}</td>
+                        <td>${revision.status}</td>
+                    </c:when>
+                    <c:otherwise>
+                        <td ${outageRevisions[status.index-1].numCustomersAffected!=revision.numCustomersAffected ? 'class="changed"' : ''}>${revision.numCustomersAffected==0 ? '1-5' : revision.numCustomersAffected}</td>
+                        <td ${not (outageRevisions[status.index - 1].estimatedRestoration eq revision.estimatedRestoration) ? 'class="changed"' : ''}>${revision.estimatedRestoration}</td>
+                        <td ${not (outageRevisions[status.index - 1].cause eq revision.cause) ? 'class="changed"' : ''}>${revision.cause}</td>
+                        <td ${not (outageRevisions[status.index - 1].status eq revision.status) ? 'class="changed"' : ''}>${revision.status}</td>
+                    </c:otherwise>
+                </c:choose>
             </tr>
         </c:forEach>
     </tbody>

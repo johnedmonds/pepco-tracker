@@ -1,10 +1,12 @@
 package com.pocketcookies.pepco.web;
 
+import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.OutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 import com.pocketcookies.pepco.web.util.ResourceNotFoundException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,6 +68,11 @@ public class OutagesController {
             throw new ResourceNotFoundException();
         }
         mav.getModel().put("outage", o);
+        //We need to reference outages in essentially random access to determine which attributes have changed.
+        //Thus, we need a list with fast random access.
+        //That is why we store outageRevisions as a separate ArrayList rather than allowing the jsp to rely on ${outage.revisions}.
+        //${outage.revisions} is a SortedSet which doesn't allow random access.
+        mav.getModel().put("outageRevisions", new ArrayList<AbstractOutageRevision>(o.getRevisions()));
         return mav;
     }
 }

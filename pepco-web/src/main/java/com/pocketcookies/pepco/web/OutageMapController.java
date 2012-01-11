@@ -108,6 +108,13 @@ public class OutageMapController {
         }
     }
 
+    /**
+     * Returns a list of outages as of @dateTime in JSON format.
+     * @param response Used to set the response's content-type to application/json
+     * @param dateTime The time in history at which to check for open outages.
+     * @return
+     * @throws JSONException 
+     */
     @RequestMapping(value = "/outages.json")
     @ResponseBody
     public String outageJson(final HttpServletResponse response, @RequestParam(value = "asof") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") final Date dateTime) throws JSONException {

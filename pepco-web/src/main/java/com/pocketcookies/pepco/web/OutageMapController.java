@@ -51,6 +51,17 @@ public class OutageMapController {
         return new ModelAndView("pepco.outage.map");
     }
 
+    /**
+     * Returns a list of outages open as of @dateTime in KML format.
+     * 
+     * KML is the format used by Google Earth.
+     * 
+     * @param response Needed to set the content-type to the Google Earth
+     *      content type.
+     * @param dateTime The time in history at which to retrieve the list of
+     *      open outages.
+     * @throws TransformerConfigurationException 
+     */
     @RequestMapping(value = "outages-{dateTime}.kmz")
     public void outageKml(final HttpServletResponse response, @PathVariable(value = "dateTime") @DateTimeFormat(pattern = "yyyyMMdd.HHmmss") final Date dateTime) throws TransformerConfigurationException {
         response.setContentType("application/vnd.google-earth.kmz");

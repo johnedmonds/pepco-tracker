@@ -8,7 +8,7 @@
         <c:forEach items="${outage.revisions}" var="revision">
             <tr>
                 <td>${revision.run.asof}</td>
-                <td>${revision.numCustomersAffected}</td>
+                <td>${revision.numCustomersAffected==0 ? '1-5' : revision.numCustomersAffected}</td>
                 <td>${revision.estimatedRestoration}</td>
                 <td>${revision.cause}</td>
                 <td>${revision.status}</td>

@@ -56,8 +56,13 @@ public class OutagesController {
         return mav;
     }
 
+    /**
+     * Retrieves the page showing the history of a particular outage.
+     * @param outageId
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/{outageId}")
-    public ModelAndView outage(@PathVariable(value = "outageId") final int outageId) throws IOException {
+    public ModelAndView outage(@PathVariable(value = "outageId") final int outageId) {
         final ModelAndView mav = new ModelAndView("pepco.outages.history");
         final Outage o = outageDao.getOutage(outageId);
         if (o == null) {

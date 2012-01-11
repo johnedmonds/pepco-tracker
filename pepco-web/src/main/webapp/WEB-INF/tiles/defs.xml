@@ -78,6 +78,6 @@
 			value="/WEB-INF/tiles/jsps/outages-history.jsp" />
 		<put-attribute name="outages.selected" value="class=&quot;selected&quot;"
 			cascade="true" />
-                <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outages-head.jsp"/>
+                <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outage-history-head.jsp"/>
 	</definition>
 </tiles-definitions>

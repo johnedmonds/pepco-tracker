@@ -11,7 +11,7 @@
 <ul id="outages">
     <c:forEach items="${outages}" var="outageRevision">
         <li>
-            <img src="<c:url value="http://maps.googleapis.com/maps/api/staticmap?size=100x100&zoom=14&sensor=false&markers=${outageRevision.outage.lat},${outageRevision.outage.lon}"/>"/>
+            <img alt="Mini-map of outage at ${outageRevision.outage.lat},${outageRevision.outage.lon}" src="<c:url value="http://maps.googleapis.com/maps/api/staticmap?size=100x100&zoom=14&sensor=false&markers=${outageRevision.outage.lat},${outageRevision.outage.lon}"/>"/>
             <dl>
                 <dt>Customers Affected:</dt><dd><c:choose><c:when test="${outageRevision.numCustomersAffected eq 0}">1-5</c:when><c:otherwise>${outageRevision.numCustomersAffected}</c:otherwise></c:choose></dd>
                 <dt>Estimated Restoration:</dt><dd><fmt:formatDate value="${outageRevision.estimatedRestoration}" pattern="yyyy-MM-dd h:mm:ss a"/></dd>

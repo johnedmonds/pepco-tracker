@@ -2,6 +2,11 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <h1>Outage History</h1>
 <img alt="Mini-map of outage at ${outage.lat},${outage.lon}" src="<c:url value="http://maps.googleapis.com/maps/api/staticmap?size=100x100&amp;zoom=14&amp;sensor=false&amp;markers=${outage.lat},${outage.lon}"/>"/>
+
+<c:choose>
+    <c:when test="${not (outage.observedEnd eq null)}"><p id="outageResolutionStatus" class="resolved">Outage was resolved by <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss a" value="${outage.observedEnd}"/>.</p></c:when>
+    <c:otherwise><p id="outageResolutionStatus" class="unresolved">Outage is still unresolved.</p></c:otherwise>
+</c:choose>
 <table id="outageRevisions">
     <thead><tr><th>As Of</th><th>Customers Affected</th><th>Estimated Restoration</th><th>Cause</th><th>Status</th></tr></thead>
     <tbody>

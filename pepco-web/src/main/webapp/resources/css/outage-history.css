@@ -11,3 +11,5 @@
 .changed{
     text-decoration: line-through;
 }
+/*#outageResolutionStatus.resolved{background-color:green;}
+#outageResolutionStatus.unresolved{background-color:orange;}*/

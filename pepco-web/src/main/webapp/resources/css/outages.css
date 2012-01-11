@@ -1,4 +1,4 @@
 #outages img{float:left;}
-#outages dl{float:left;margin:0 0 0 1em;}
+#outages dl{float:left;margin:0 0 0 1em;width:16em;}
 #outages li{display:block;overflow:auto;padding:1em 0;}
 #outages li:not(:last-child){border-bottom: 1px solid black;}

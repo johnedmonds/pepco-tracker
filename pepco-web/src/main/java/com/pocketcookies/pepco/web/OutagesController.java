@@ -38,6 +38,13 @@ public class OutagesController {
         this.outageDao = outageDao;
     }
 
+    /**
+     * This is the home page for the outages section.
+     * 
+     * Retrieves the list of open (not repaired) outages as of @asof.
+     * @param asof The time in history at which to check for open outages.
+     * @return 
+     */
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ModelAndView index(@RequestParam(value = "asof", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") DateTime asof) {
         final ModelAndView mav = new ModelAndView("pepco.outages");

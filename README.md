@@ -45,6 +45,13 @@ pepco-tracker is made of several components:
 
 The scraper visits Pepco's StormCenter website and scrapes data from there.  If you're running the scraper in development mode, it will create a HSQLDB database in the `./data/pepco` (where `.` is the current working directory).
 
+## Tweets from the Scraper
+
+The scraper can make a location-aware tweet for every outage it finds and every outage update.
+However, in order to do this, it needs some twitter API keys.
+
+Copy `pepco-scraper/src/main/resources/twitter.properties.example` to `pepco-scraper/src/main/resources/twitter.properties` and fill in values for `key` and `secret`.
+
 ## Running the Scraper
 
 cd into the pepco-scraper directory and run

@@ -7,3 +7,4 @@ bin/
 pepco-web/src/main/webapp/resources/img/generated
 notes
 /pepco-scraper/logs/
+/pepco-scraper/src/main/resources/twitter.properties

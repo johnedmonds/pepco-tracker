@@ -158,6 +158,8 @@ object PepcoScraper {
       .map(n => parseOutage(n, run))
     //Add the current zoom level to all the outages.
     outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
+    //Twitter updates.
+    outages.foreach(outageRevision => {TweetUtil.tweet(outageRevision)})
     outages.foreach(outageRevision => {outageDao.updateOutage(outageRevision); outageIds.add(outageRevision.getOutage().getId())})
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
     outages.filter(outageRevision => outageRevision match {

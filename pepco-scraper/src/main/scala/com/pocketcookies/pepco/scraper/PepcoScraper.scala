@@ -2,16 +2,9 @@ package com.pocketcookies.pepco.scraper
 
 import com.pocketcookies.pepco.model.dao.SummaryDAO
 import com.pocketcookies.pepco.model.dao.OutageAreaDAO
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.params.HttpParams
 import org.joda.time.DateTime
-import scala.xml.XML
-import org.apache.http.client.HttpClient
-import scala.collection.mutable.LinkedList
 import com.pocketcookies.pepco.model.Summary
 import org.apache.log4j.Logger
-import org.apache.http.HttpResponse
-import org.apache.http.util.EntityUtils
 import scala.xml.Elem
 import scala.xml.NodeSeq
 import org.joda.time.format.DateTimeFormat

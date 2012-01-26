@@ -1,4 +1,6 @@
-import com.pocketcookies.pepco.model.OutageRevision
+package com.pocketcookies.pepco.scraper;
+
+import com.pocketcookies.pepco.model.AbstractOutageRevision
 import java.util.Properties
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
@@ -15,7 +17,7 @@ object TweetUtil {
   } else { None }
   
   
-  def getTweetText(or:OutageRevision):String = {
+  def getTweetText(or:AbstractOutageRevision):String = {
     val outageURL = "http://pepcotracker.com/outages/"+or.getOutage.getId;
     if (or.getOutage.getRevisions.size>1) {
       "Outage updated: " + outageURL
@@ -24,7 +26,7 @@ object TweetUtil {
     }
   }
   
-  def tweet(or:OutageRevision) = {
+  def tweet(or:AbstractOutageRevision) = {
     twitter match {
       case Some(twitter)=> twitter.updateStatus(getTweetText(or))
       case None=>{}

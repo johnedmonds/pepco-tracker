@@ -180,9 +180,12 @@ object PepcoScraper {
     val observationDate=new Timestamp(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").parseDateTime(outagesFolderName).getMillis());
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()), observationDate)
     val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
+    val tweeter = new Tweeter;
+    tweeter.start();
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)
-    scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run, Some(new Tweeter))
+    scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run, Some(tweeter))
+    tweeter ! None //Stop the tweeter.
     sessionFactory.getCurrentSession().getTransaction().commit()
     sessionFactory.getCurrentSession().close()
     sessionFactory.close()

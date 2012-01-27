@@ -4,6 +4,8 @@ import com.pocketcookies.pepco.model.AbstractOutageRevision
 import java.util.Properties
 import org.joda.time.DateTime
 import scala.actors.Actor
+import twitter4j.GeoLocation
+import twitter4j.StatusUpdate
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
@@ -37,7 +39,12 @@ class Tweeter extends Actor {
       react{
         case Some(or:AbstractOutageRevision) => {
           twitter match {
-            case Some(twitter)=> twitter.updateStatus(getTweetText(or))
+            case Some(twitter)=> {
+              val statusUpdate = new StatusUpdate(getTweetText(or));
+              statusUpdate.setDisplayCoordinates(true);
+              statusUpdate.setLocation(new GeoLocation(or.getOutage.getLat, or.getOutage.getLon))
+              twitter.updateStatus(statusUpdate)
+            }
             case None=>{}
           }
         }

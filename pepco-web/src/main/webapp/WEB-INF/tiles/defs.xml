@@ -80,4 +80,7 @@
 			cascade="true" />
                 <put-attribute name="head.additional" value="/WEB-INF/tiles/jsps/custom-heads/outage-history-head.jsp"/>
 	</definition>
+        <definition name="pepco.bot" extends="base">
+            <put-attribute name="body" value="/WEB-INF/tiles/jsps/bot.jsp"/>
+        </definition>
 </tiles-definitions>

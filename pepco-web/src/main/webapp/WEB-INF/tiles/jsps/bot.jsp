@@ -5,5 +5,5 @@
 </p>
 <p>
     Feel free to travel around this site to see all the data I've gathered.
-    Here, not only can you see all the current outages, but you can also peek into the past has changed (or stayed the same) over time. 
+    On this site, not only can you see all the current outages, but you can also peek into the past to see how Pepco's reliability has changed (or stayed the same) over time. 
 </p>

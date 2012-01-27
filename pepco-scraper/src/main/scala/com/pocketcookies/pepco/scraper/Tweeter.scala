@@ -3,10 +3,11 @@ package com.pocketcookies.pepco.scraper;
 import com.pocketcookies.pepco.model.AbstractOutageRevision
 import java.util.Properties
 import org.joda.time.DateTime
+import scala.actors.Actor
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
-object TweetUtil {
+class Tweeter extends Actor {
   val twitterPropertiesStream = getClass.getClassLoader.getResourceAsStream("twitter.properties")
   val twitter = if (twitterPropertiesStream != null){
     val twitterProperties = new Properties();
@@ -31,10 +32,18 @@ object TweetUtil {
     }
   }
   
-  def tweet(or:AbstractOutageRevision) = {
-    twitter match {
-      case Some(twitter)=> twitter.updateStatus(getTweetText(or))
-      case None=>{}
+  def act() = {
+    loop{
+      react{
+        case Some(or:AbstractOutageRevision) => {
+          twitter match {
+            case Some(twitter)=> twitter.updateStatus(getTweetText(or))
+            case None=>{}
+          }
+        }
+        case None => exit()
+      }
     }
+    
   }
 }

@@ -126,7 +126,7 @@ class ScraperTest {
     
     val indicesZoom9=PepcoUtil.getSpatialIndicesForPoint(1,2,9);
     when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom9.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_single.xml")));
-    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String](), new HashSet[Integer]());
+    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String](), new HashSet[Integer](), None);
     (indicesZoom8 ::: indicesZoom9).foreach(x=>verify(loader).loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+x+".xml"))
   }
 

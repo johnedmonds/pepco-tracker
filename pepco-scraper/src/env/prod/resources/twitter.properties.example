@@ -2,4 +2,5 @@ key=fill in application key
 secret=fill in application secret key
 access=fill in access token
 access_secret=fill in your twitter account's access key for your application.
-enabled=true # Set to true to enable tweeting about outages.  Set to false to not tweet anything.  Also, if twitter.properties is missing, no tweets will be made.
+# Set to true to enable tweeting about outages.  Set to false to not tweet anything.  Also, if twitter.properties is missing, no tweets will be made.
+enabled=true

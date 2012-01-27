@@ -60,4 +60,5 @@ em.summaryCount {
 #footer {
     border-top: 1px solid black;
     clear:both;
+    margin-top:7em;
 }

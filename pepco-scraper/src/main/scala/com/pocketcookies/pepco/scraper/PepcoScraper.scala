@@ -162,7 +162,7 @@ object PepcoScraper {
         //Attempt to update the outage.
         //If the outage has any updates, we should tweet about the outage.
         //Otherwise, we have already tweeted about the outage earlier and Twitter will reject us for having duplicate Tweets. 
-        if (outageDao.updateOutage(outageRevision)) {tweeter match {case Some(t) => {t ! outageRevision} case None => {}}} else {}
+        if (outageDao.updateOutage(outageRevision)) {tweeter match {case Some(t) => {t ! Some(outageRevision)} case None => {}}} else {}
         outageIds.add(outageRevision.getOutage().getId());
     })
     //We only want to zoom in on clusters as there may be more information at the next zoom level.

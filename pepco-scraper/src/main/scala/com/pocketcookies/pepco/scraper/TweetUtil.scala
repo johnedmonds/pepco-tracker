@@ -2,6 +2,7 @@ package com.pocketcookies.pepco.scraper;
 
 import com.pocketcookies.pepco.model.AbstractOutageRevision
 import java.util.Properties
+import org.joda.time.DateTime
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
@@ -24,7 +25,7 @@ object TweetUtil {
   def getTweetText(or:AbstractOutageRevision):String = {
     val outageURL = "http://pepcotracker.com/outages/"+or.getOutage.getId;
     if (or.getOutage.getRevisions.size>1) {
-      "Outage updated: " + outageURL
+      "Outage updated as of " + PepcoScraper.getPepcoDateFormat.print(new DateTime(or.getRun.getAsof.getTime)) + ": " + outageURL
     } else {
       "New outage: " + outageURL
     }

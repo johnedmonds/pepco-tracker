@@ -10,10 +10,14 @@ object TweetUtil {
   val twitter = if (twitterPropertiesStream != null){
     val twitterProperties = new Properties();
     twitterProperties.load(twitterPropertiesStream);
-    val twitter = new TwitterFactory().getInstance();
-    twitter.setOAuthConsumer(twitterProperties.getProperty("key"), twitterProperties.getProperty("secret"));
-    twitter.setOAuthAccessToken(new AccessToken(twitterProperties.getProperty("access"), twitterProperties.getProperty("access_secret")));
-    Some(twitter)
+    if (java.lang.Boolean.parseBoolean(twitterProperties.getProperty("enabled"))) {
+      val twitter = new TwitterFactory().getInstance();
+      twitter.setOAuthConsumer(twitterProperties.getProperty("key"), twitterProperties.getProperty("secret"));
+      twitter.setOAuthAccessToken(new AccessToken(twitterProperties.getProperty("access"), twitterProperties.getProperty("access_secret")));
+      Some(twitter)
+    } else {
+      None
+    }
   } else { None }
   
   

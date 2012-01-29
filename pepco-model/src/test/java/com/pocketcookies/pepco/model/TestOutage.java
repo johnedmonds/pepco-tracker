@@ -17,8 +17,15 @@ public class TestOutage extends TestCase {
 
     private SessionFactory sessionFactory;
 
+    @Override
     public void setUp() {
 	this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
+    }
+    
+    @Override
+    public void tearDown(){
+        this.sessionFactory.getCurrentSession().close();
+        this.sessionFactory.close();
     }
 
     /**

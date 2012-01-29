@@ -16,6 +16,10 @@ public class TestOutageAreaDAO extends TestCase {
 	public void setUp() {
 		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	}
+    @Override public void tearDown(){
+        this.sessionFactory.getCurrentSession().close();
+        this.sessionFactory.close();
+    }
 
 	public void testUpdateArea() {
 		final ParserRun now = new ParserRun(new Timestamp(0), new Timestamp(0));

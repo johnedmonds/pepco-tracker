@@ -162,7 +162,7 @@ object PepcoScraper {
         //Attempt to update the outage.
         //If the outage has any updates, we should tweet about the outage.
         //Otherwise, we have already tweeted about the outage earlier and Twitter will reject us for having duplicate Tweets. 
-        if (outageDao.updateOutage(outageRevision)) {tweeter match {case Some(t) => {t ! Some(outageRevision)} case None => {}}} else {}
+        outageDao.updateOutage(outageRevision);
         outageIds.add(outageRevision.getOutage().getId());
     })
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
@@ -181,11 +181,9 @@ object PepcoScraper {
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()), observationDate)
     val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
     val tweeter = new Tweeter;
-    tweeter.start();
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)
     scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run, Some(tweeter))
-    tweeter ! None //Stop the tweeter.
     sessionFactory.getCurrentSession().getTransaction().commit()
     sessionFactory.getCurrentSession().close()
     sessionFactory.close()

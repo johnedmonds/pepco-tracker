@@ -1,15 +1,14 @@
 package com.pocketcookies.pepco.scraper;
 
-import com.pocketcookies.pepco.model.AbstractOutageRevision
+import com.pocketcookies.pepco.model.dao.ParserRunSummary
+import java.net.URLEncoder
 import java.util.Properties
 import org.joda.time.DateTime
-import scala.actors.Actor
-import twitter4j.GeoLocation
-import twitter4j.StatusUpdate
+import org.joda.time.format.DateTimeFormat
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
-class Tweeter extends Actor {
+class Tweeter {
   val twitterPropertiesStream = getClass.getClassLoader.getResourceAsStream("twitter.properties")
   val twitter = if (twitterPropertiesStream != null){
     val twitterProperties = new Properties();
@@ -24,33 +23,17 @@ class Tweeter extends Actor {
     }
   } else { None }
   
-  
-  def getTweetText(or:AbstractOutageRevision):String = {
-    val outageURL = "http://pepcotracker.com/outages/"+or.getOutage.getId;
-    if (or.getOutage.getRevisions.size>1) {
-      "Outage updated as of " + PepcoScraper.getPepcoDateFormat.print(new DateTime(or.getRun.getAsof.getTime)) + ": " + outageURL
-    } else {
-      "New outage: " + outageURL
-    }
-  }
-  
-  def act() = {
-    loop{
-      react{
-        case Some(or:AbstractOutageRevision) => {
-          twitter match {
-            case Some(twitter)=> {
-              val statusUpdate = new StatusUpdate(getTweetText(or));
-              statusUpdate.setDisplayCoordinates(true);
-              statusUpdate.setLocation(new GeoLocation(or.getOutage.getLat, or.getOutage.getLon))
-              twitter.updateStatus(statusUpdate)
-            }
-            case None=>{}
-          }
+  def tweetSummary(summary:ParserRunSummary) = {
+    twitter match {
+      case Some(t)=>{
+          val format=DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss a");
+          val urlFormat=DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+          val runTime = new DateTime(summary.run.getRunTime.getTime());
+          t.updateStatus("At %s we found that #pepco experienced %d new outages, posted updates to %d existing (still ongoing) outages, and fixed %d outages.  Get more details by visiting http://pepcotracker.com/%s".format(
+              format.print(runTime), summary.newOutages, summary.updatedOutages, summary.closedOutages, URLEncoder.encode(urlFormat.print(runTime), "UTF-8")))
         }
-        case None => exit()
-      }
+      case _=>{}
     }
-    
   }
+  
 }

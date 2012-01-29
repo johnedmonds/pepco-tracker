@@ -129,7 +129,7 @@ object PepcoScraper {
     new OutageAreaRevision(new OutageArea(area \\ "title" text), customersOut, run)
   }
 
-  def scrape(client: StormCenterLoader, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun, tweeter:Option[Tweeter]) = {
+  def scrape(client: StormCenterLoader, outageDao: OutageDAO, outageAreaDao: OutageAreaDAO, summaryDao: SummaryDAO, outagesFolderName: String, run: ParserRun) = {
     //Parse Summary
     summaryDao.saveSummary(parseSummary(client.loadXMLRequest(dataHTMLPrefix + summarySuffix), run))
     //Parse thematic
@@ -139,11 +139,11 @@ object PepcoScraper {
 
     //Parse outages.
     val outageIds=new HashSet[Integer]();
-    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String](), outageIds, tweeter);
+    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String](), outageIds);
     val temp:java.util.Collection[Integer]=outageIds
     outageDao.closeMissingOutages(temp, run.getRunTime());
   }
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer], tweeter:Option[Tweeter]): Unit = {
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
     if (zoom > maxZoom) return ;
     val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
       .filter(index => !visitedIndices.contains(index))
@@ -159,9 +159,6 @@ object PepcoScraper {
     //Add the current zoom level to all the outages.
     outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
     outages.foreach(outageRevision => {
-        //Attempt to update the outage.
-        //If the outage has any updates, we should tweet about the outage.
-        //Otherwise, we have already tweeted about the outage earlier and Twitter will reject us for having duplicate Tweets. 
         outageDao.updateOutage(outageRevision);
         outageIds.add(outageRevision.getOutage().getId());
     })
@@ -171,7 +168,7 @@ object PepcoScraper {
       case _ => false
     })
       //Recurse.
-      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices, outageIds, tweeter))
+      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices, outageIds))
   }
 
   def main(args: Array[String]): Unit = {
@@ -180,10 +177,12 @@ object PepcoScraper {
     val observationDate=new Timestamp(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").parseDateTime(outagesFolderName).getMillis());
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()), observationDate)
     val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
-    val tweeter = new Tweeter;
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)
-    scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run, Some(tweeter))
+    val outageDao = new OutageDAO(sessionFactory);
+    scrape(client, outageDao, new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run)
+    sessionFactory.getCurrentSession().flush();
+    Tweeter.tweetSummary(outageDao.getParserRunSummary(run));
     sessionFactory.getCurrentSession().getTransaction().commit()
     sessionFactory.getCurrentSession().close()
     sessionFactory.close()

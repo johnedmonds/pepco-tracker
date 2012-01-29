@@ -5,10 +5,11 @@ import java.net.URLEncoder
 import java.util.Properties
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import twitter4j.StatusUpdate
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
-class Tweeter {
+object Tweeter {
   val twitterPropertiesStream = getClass.getClassLoader.getResourceAsStream("twitter.properties")
   val twitter = if (twitterPropertiesStream != null){
     val twitterProperties = new Properties();
@@ -29,8 +30,9 @@ class Tweeter {
           val format=DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss a");
           val urlFormat=DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
           val runTime = new DateTime(summary.run.getRunTime.getTime());
-          t.updateStatus("At %s we found that #pepco experienced %d new outages, posted updates to %d existing (still ongoing) outages, and fixed %d outages.  Get more details by visiting http://pepcotracker.com/%s".format(
+          val status=new StatusUpdate("At %s we found that #pepco experienced %d new outages, posted updates to %d existing (still ongoing) outages, and fixed %d outages.  Get more details by visiting http://pepcotracker.com/%s".format(
               format.print(runTime), summary.newOutages, summary.updatedOutages, summary.closedOutages, URLEncoder.encode(urlFormat.print(runTime), "UTF-8")))
+          t.updateStatus(status)
         }
       case _=>{}
     }

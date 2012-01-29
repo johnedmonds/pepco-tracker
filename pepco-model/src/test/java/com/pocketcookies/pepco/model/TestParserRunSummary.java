@@ -30,7 +30,7 @@ public class TestParserRunSummary extends TestCase {
         this.sessionFactory.getCurrentSession().beginTransaction();
         final OutageDAO dao = new OutageDAO(this.sessionFactory);
         final ParserRun pr = new ParserRun(new Timestamp(1), new Timestamp(1));
-        final Outage o = new Outage(1, 1, new Timestamp(1), new Timestamp(1));
+        final Outage o = new Outage(1, 1, new Timestamp(1), null);
         final OutageRevision or = new OutageRevision(0, new Timestamp(1), o, pr, "cause", OutageRevision.CrewStatus.PENDING);
 
         this.sessionFactory.getCurrentSession().save(pr);
@@ -39,7 +39,7 @@ public class TestParserRunSummary extends TestCase {
 
         final ParserRunSummary summary = dao.getParserRunSummary(pr);
         assertEquals(1, summary.newOutages);
-        assertEquals(-1, summary.closedOutages);
+        assertEquals(0, summary.closedOutages);
         assertEquals(0, summary.updatedOutages);
     }
 
@@ -52,7 +52,7 @@ public class TestParserRunSummary extends TestCase {
         final OutageDAO dao = new OutageDAO(this.sessionFactory);
         final ParserRun pr1 = new ParserRun(new Timestamp(1), new Timestamp(1));
         final ParserRun pr2 = new ParserRun(new Timestamp(2), new Timestamp(2));
-        final Outage o = new Outage(1, 1, new Timestamp(1), new Timestamp(1));
+        final Outage o = new Outage(1, 1, new Timestamp(1), null);
         final OutageRevision or1 = new OutageRevision(0, new Timestamp(1), o, pr1, "cause", OutageRevision.CrewStatus.PENDING);
         final OutageRevision or2 = new OutageRevision(0, new Timestamp(1), o, pr2, "cause2", OutageRevision.CrewStatus.PENDING);
 
@@ -65,12 +65,12 @@ public class TestParserRunSummary extends TestCase {
         //Check that as of pr2, the outage has been updated.
         final ParserRunSummary summary1 = dao.getParserRunSummary(pr2);
         assertEquals(0, summary1.newOutages);
-        assertEquals(-1, summary1.closedOutages);
+        assertEquals(0, summary1.closedOutages);
         assertEquals(1, summary1.updatedOutages);
         //Now check that as of pr1, the outage was new.
         final ParserRunSummary summary2 = dao.getParserRunSummary(pr1);
         assertEquals(1, summary2.newOutages);
-        assertEquals(-1, summary2.closedOutages);
+        assertEquals(0, summary2.closedOutages);
         assertEquals(0, summary2.updatedOutages);
     }
     
@@ -113,9 +113,11 @@ public class TestParserRunSummary extends TestCase {
         final ParserRunSummary summary1=dao.getParserRunSummary(pr2);
         assertEquals(2, summary1.newOutages);
         assertEquals(2, summary1.updatedOutages);
+        assertEquals(2, summary1.closedOutages);
         
         final ParserRunSummary summary2=dao.getParserRunSummary(pr1);
         assertEquals(2, summary2.newOutages);
         assertEquals(0, summary2.updatedOutages);
+        assertEquals(0, summary2.closedOutages);
     }
 }

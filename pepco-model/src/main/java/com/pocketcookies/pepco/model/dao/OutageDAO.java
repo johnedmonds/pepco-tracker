@@ -11,6 +11,7 @@ import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.ParserRun;
 import java.util.ArrayList;
+import java.util.Date;
 import org.hibernate.type.StandardBasicTypes;
 
 public class OutageDAO {
@@ -202,7 +203,15 @@ public class OutageDAO {
                 }
             }
         }
-        //TODO:Find how many closed outages there are.
-        return new ParserRunSummary(newOutages, updatedOutages, -1);
+        //Find the runTime of the next ParserRun (if it exists).
+        //This will let us find all the outages that were closed in this parser run.
+        //We can tell that an outage was closed for this parser run if it happened after this parser run but before the next one.
+        final Timestamp nextParserRuntime=(Timestamp) this.sessionFactory.getCurrentSession().createQuery("select min(runTime) from ParserRun where runTime > :currentRunTime").setTimestamp("currentRunTime", run.getRunTime()).uniqueResult();
+        
+        final int closedOutages = ((Number)this.sessionFactory.getCurrentSession().createQuery("select count(*) from Outage o where o.observedEnd >= :currentRunTime and o.observedEnd < :nextRunTime")
+                .setTimestamp("currentRunTime", run.getRunTime())
+                .setTimestamp("nextRunTime", nextParserRuntime==null?new Timestamp(new Date().getTime()):nextParserRuntime)
+                .uniqueResult()).intValue();
+        return new ParserRunSummary(newOutages, updatedOutages, closedOutages);
     }
 }

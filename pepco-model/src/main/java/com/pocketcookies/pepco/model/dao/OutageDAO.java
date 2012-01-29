@@ -212,6 +212,6 @@ public class OutageDAO {
                 .setTimestamp("currentRunTime", run.getRunTime())
                 .setTimestamp("nextRunTime", nextParserRuntime==null?new Timestamp(new Date().getTime()):nextParserRuntime)
                 .uniqueResult()).intValue();
-        return new ParserRunSummary(newOutages, updatedOutages, closedOutages);
+        return new ParserRunSummary(newOutages, updatedOutages, closedOutages, run);
     }
 }

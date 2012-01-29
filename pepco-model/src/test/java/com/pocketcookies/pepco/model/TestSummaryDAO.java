@@ -14,9 +14,14 @@ public class TestSummaryDAO extends TestCase {
 
 	private SessionFactory sessionFactory;
 
+    @Override
 	public void setUp() {
 		this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	}
+    @Override public void tearDown(){
+        this.sessionFactory.getCurrentSession().close();
+        this.sessionFactory.close();
+    }
 
 	public void testSaveSummary() {
 		final SummaryDAO summaryDao = new SummaryDAO(this.sessionFactory);

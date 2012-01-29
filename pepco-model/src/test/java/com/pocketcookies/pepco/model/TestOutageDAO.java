@@ -10,7 +10,6 @@ import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
-import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestOutageDAO extends TestCase {
 
@@ -19,6 +18,10 @@ public class TestOutageDAO extends TestCase {
     public void setUp() {
 	this.sessionFactory = SessionFactoryLoader.loadSessionFactory();
 	this.sessionFactory.getCurrentSession().beginTransaction();
+    }
+    @Override public void tearDown(){
+        this.sessionFactory.getCurrentSession().close();
+        this.sessionFactory.close();
     }
 
     public void testUpdateOutage() {

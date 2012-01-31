@@ -2,16 +2,9 @@ package com.pocketcookies.pepco.scraper
 
 import com.pocketcookies.pepco.model.dao.SummaryDAO
 import com.pocketcookies.pepco.model.dao.OutageAreaDAO
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.params.HttpParams
 import org.joda.time.DateTime
-import scala.xml.XML
-import org.apache.http.client.HttpClient
-import scala.collection.mutable.LinkedList
 import com.pocketcookies.pepco.model.Summary
 import org.apache.log4j.Logger
-import org.apache.http.HttpResponse
-import org.apache.http.util.EntityUtils
 import scala.xml.Elem
 import scala.xml.NodeSeq
 import org.joda.time.format.DateTimeFormat
@@ -169,7 +162,10 @@ object PepcoScraper {
       .map(n => parseOutage(n, run))
     //Add the current zoom level to all the outages.
     outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
-    outages.foreach(outageRevision => {outageDao.updateOutage(outageRevision); outageIds.add(outageRevision.getOutage().getId())})
+    outages.foreach(outageRevision => {
+        outageDao.updateOutage(outageRevision);
+        outageIds.add(outageRevision.getOutage().getId());
+    })
     //We only want to zoom in on clusters as there may be more information at the next zoom level.
     outages.filter(outageRevision => outageRevision match {
       case r: OutageClusterRevision => true
@@ -187,7 +183,10 @@ object PepcoScraper {
     val sessionFactory: SessionFactory = new AnnotationConfiguration().configure("hibernate-mappings.cfg.xml").configure("hibernate.ds.cfg.xml").buildSessionFactory()
     sessionFactory.getCurrentSession().beginTransaction()
     sessionFactory.getCurrentSession().save(run)
-    scrape(client, new OutageDAO(sessionFactory), new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run)
+    val outageDao = new OutageDAO(sessionFactory);
+    scrape(client, outageDao, new OutageAreaDAO(sessionFactory), new SummaryDAO(sessionFactory), outagesFolderName, run)
+    sessionFactory.getCurrentSession().flush();
+    Tweeter.tweetSummary(outageDao.getParserRunSummary(run));
     sessionFactory.getCurrentSession().getTransaction().commit()
     sessionFactory.getCurrentSession().close()
     sessionFactory.close()

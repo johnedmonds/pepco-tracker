@@ -1,0 +1,12 @@
+key=fill in application key
+secret=fill in application secret key
+access=fill in access token
+access_secret=fill in your twitter account's access key for your application.
+# Set to true to enable tweeting about outages.  Set to false to not tweet anything.  Also, if twitter.properties is missing, no tweets will be made.
+enabled=true
+
+#bit.ly stuff.  Tweets need to be 14 characters and we cannot reasonably fit our outages URL with the as of parameter within those constraints.
+#Thus, we use bit.ly to shorten the URLs.
+#For now, I'm too lazy to do the full OAuth stuff so I'm just going to send the login and API key.
+bit.ly.login=Fill in your login
+bit.ly.apikey=Fill in your API key.

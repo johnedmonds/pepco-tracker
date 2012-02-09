@@ -43,7 +43,7 @@ public class PepcoController {
         response.setContentType("text/csv");
         final PrintWriter out = new PrintWriter(response.getOutputStream());
         for (final Summary s : this.summaryDao.getSummaries(null, null, false, 0)) {
-            out.println(s.getRun().getAsof().getTime() + "," + s.getDcAffectedCustomers() + "," + s.getPgAffectedCustomers() + "," + s.getMontAffectedCustomers());
+            out.println(s.getRun().getRunTime().getTime() + "," + s.getDcAffectedCustomers() + "," + s.getPgAffectedCustomers() + "," + s.getMontAffectedCustomers());
         }
         out.flush();
     }

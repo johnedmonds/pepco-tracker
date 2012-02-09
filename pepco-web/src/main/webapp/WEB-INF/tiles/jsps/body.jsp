@@ -18,9 +18,9 @@
 				// Don't need the image since people with javascript can use our flot
 				// charts.
 				$("#reliability-chart-img").remove();
-				$.getJSON('<c:url value="/summary-data"/>', null, function(
+				$.get('<c:url value="/summary-data"/>', null, function(
 						dataset, textStatus) {
-					makeChart(dataset);
+					makeChart(formatSummaryData(dataset));
 				});
 			});
 //-->

@@ -22,7 +22,7 @@ function makeChart(dataset) {
 		xaxis : {
 			show : true,
 			mode : "time",
-			timeformat : "%y-%m-%d",
+			timeformat : "%y-%m-%d"
 		},
 		yaxis : {
 			show : true,
@@ -31,4 +31,21 @@ function makeChart(dataset) {
 	});
 	$("#reliability-chart-placeholder").before($('<div id="yAxisLabel" class="axisLabel" style="width: 100px; height: 200px; float:left;position:relative;"><p style="position:absolute;top:25%;">Customers Affected</p></div>'));
 	$(".tickLabels").append("<div class=\"tickLabel axisLabel\" id=\"xAxisLabel\">Time</div>");
+}
+//The data we get from /summary-data is comma-separated.
+//This function returns a JavaScript object that can be used by flot.
+function formatSummaryData(summaryData){
+    lines = summaryData.split("\n");
+    dc={label:'DC',color:'#0157AB',data:[]};
+    pg={label:'Prince George', color:'#888888',data:[]};
+    mont={label:'Montgomery County', color:'#21941B',data:[]};
+    for (lineIndex in lines){
+        if(lines[lineIndex]!=""){
+            regions = lines[lineIndex].split(",");
+            dc.data.push([regions[0],regions[1]]);
+            pg.data.push([regions[0],regions[2]]);
+            mont.data.push([regions[0],regions[3]]);
+        }
+    }
+    return [dc,pg,mont];
 }

@@ -35,6 +35,14 @@ em.summaryCount {
 	margin: 0 auto;
 }
 
+#loading-message{
+    margin-left:auto;
+    margin-right:auto;
+    width:10em;
+    top:10em;
+    position:relative;
+}
+
 .axisLabel {
 	text-align: center;
 	font-size: 1.2em;

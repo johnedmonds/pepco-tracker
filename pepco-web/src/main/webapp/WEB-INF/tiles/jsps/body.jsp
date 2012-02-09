@@ -18,7 +18,7 @@
 				// Don't need the image since people with javascript can use our flot
 				// charts.
 				$("#reliability-chart-img").remove();
-                                $("#reliability-chart").before($("<p id=\"loading-message\">Loading chart...</p>"));
+                                $("#reliability-chart").before($("<p id=\"loading-message\"><img src=\"<c:url value="/resources/img/ajax-loader.gif"/>\"></img>Loading chart...</p>"));
 				$.get('<c:url value="/summary-data"/>', null, function(
 						dataset, textStatus) {
 					makeChart(formatSummaryData(dataset));

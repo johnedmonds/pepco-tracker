@@ -1,57 +1,31 @@
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.pocketcookies.pepco.scraper</groupId>
-    <artifactId>pepco-scraper</artifactId>
-    <name>${project.artifactId}</name>
-    <description>Scrapes Pepco's StormCenter for reliability statistics.</description>
-    <inceptionYear>2010</inceptionYear>
-    <licenses>
-        <license>
-            <name>My License</name>
-            <url>http://pepcotracker.com</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <properties>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
-        <encoding>UTF-8</encoding>
-        <scala.version>2.8.0</scala.version>
-        <build.env>local</build.env>
-    </properties>
-
-	<!-- <repositories> <repository> <id>scala-tools.org</id> <name>Scala-Tools 
-		Maven2 Repository</name> <url>http://scala-tools.org/repo-releases</url> 
-		</repository> </repositories> <pluginRepositories> <pluginRepository> <id>scala-tools.org</id> 
-		<name>Scala-Tools Maven2 Repository</name> <url>http://scala-tools.org/repo-releases</url> 
-		</pluginRepository> </pluginRepositories> -->
-    <dependencies>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-		<!-- Test -->
-        <dependency>
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.pocketcookies</groupId>
+    <artifactId>pepco</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.pocketcookies</groupId>
+  <artifactId>pepco-scraper</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>pepco-scraper</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+      </dependency>
+      <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>specs_${scala.version}</artifactId>
-            <version>1.6.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
-            <version>1.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -63,7 +37,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.1.1</version>
+            <version>4.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -131,57 +105,8 @@
             <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
-
-    <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>src/env/${build.env}/resources</directory>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <args>
-                                <arg>-make:transitive</arg>
-                                <arg>-dependencyfile</arg>
-                                <arg>${project.build.directory}/.scala_dependencies</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <useFile>false</useFile>
-                    <disableXmlReport>true</disableXmlReport>
-					<!-- If you have classpath issue like NoDefClassError,... -->
-					<!-- useManifestOnlyJar>false</useManifestOnlyJar -->
-                    <includes>
-                        <include>**/*Test.*</include>
-                        <include>**/*Suite.*</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+  </dependencies><build><plugins><plugin>
+  <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
@@ -193,9 +118,8 @@
                             <classpathPrefix>dependencies/</classpathPrefix>
                         </manifest>
                     </archive>
-                </configuration>
-            </plugin>
-			<!-- Copy the dependencies into target/dependencies -->
+                </configuration></plugin>
+                <!-- Copy the dependencies into target/dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -216,12 +140,5 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
-    <parent>
-        <groupId>com.pocketcookies</groupId>
-        <artifactId>pepco</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
-    </parent>
+        </plugins></build>
 </project>

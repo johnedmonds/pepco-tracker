@@ -33,6 +33,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 import java.util.concurrent.Callable
+import org.apache.http.impl.conn.PoolingClientConnectionManager
 
 object PepcoScraper {
   val dataHTMLPrefix: String = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
@@ -156,16 +157,11 @@ object PepcoScraper {
   
   class OutageScraper(val executorService: ExecutorService, outageFutures:Queue[Future[List[AbstractOutageRevision]]], val point: PointDouble, val zoom: Int, val outagesFolderName: String, val client: StormCenterLoader, val run: ParserRun, val visitedIndices: HashSet[String]) extends Callable[List[AbstractOutageRevision]] {
     def call():List[AbstractOutageRevision] = {
-      println("Called")
       if (zoom > maxZoom) return List[AbstractOutageRevision]();
       val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
         .filter(index => !visitedIndices.contains(index))
       indices.foreach(index => {visitedIndices.add(index); logger.debug("scraping "+index)})
       
-      indices
-        .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
-        .foreach(a=>println(a))
-
       val outages = indices
         .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
         .map(url => client.loadXMLRequest(url))
@@ -191,11 +187,10 @@ object PepcoScraper {
     var outageFutures:Queue[Future[List[AbstractOutageRevision]]] = new LinkedList[Future[List[AbstractOutageRevision]]]()
     outageFutures.add(executorService.submit(new OutageScraper(executorService, outageFutures, point, zoom, outagesFolderName, client, run, visitedIndices)))
     
-    println("here3")
-    println(outageFutures)
-    
     while ({!outageFutures.isEmpty()}) {
       outageFutures.poll().get().foreach(outageRevision => {
+        println("here1")
+        println(outageRevision)
         outageDao.updateOutage(outageRevision);
         outageIds.add(outageRevision.getOutage().getId());
       })
@@ -205,7 +200,7 @@ object PepcoScraper {
   }
 
   def main(args: Array[String]): Unit = {
-    val client = new StormCenterLoader(new DefaultHttpClient());
+    val client = new StormCenterLoader(new DefaultHttpClient(new PoolingClientConnectionManager()));
     val outagesFolderName = client.loadXMLRequest(dataHTMLPrefix + directorySuffix) \\ "directory" text;
     val observationDate=new Timestamp(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").parseDateTime(outagesFolderName).getMillis());
     val run: ParserRun = new ParserRun(new Timestamp(new DateTime().getMillis()), observationDate)

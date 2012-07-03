@@ -27,6 +27,12 @@ import org.hibernate.cfg.AnnotationConfiguration
 import scala.collection.mutable.HashSet
 import org.jsoup.nodes.TextNode
 import collection.JavaConversions._
+import java.util.LinkedList
+import java.util.Queue
+import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
+import java.util.concurrent.Callable
 
 object PepcoScraper {
   val dataHTMLPrefix: String = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
@@ -147,32 +153,55 @@ object PepcoScraper {
     val temp:java.util.Collection[Integer]=outageIds
     outageDao.closeMissingOutages(temp, run.getRunTime());
   }
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
-    if (zoom > maxZoom) return ;
-    val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
-      .filter(index => !visitedIndices.contains(index))
-    indices.foreach(index => {visitedIndices.add(index); logger.debug("scraping "+index)})
+  
+  class OutageScraper(val executorService: ExecutorService, outageFutures:Queue[Future[List[AbstractOutageRevision]]], val point: PointDouble, val zoom: Int, val outagesFolderName: String, val client: StormCenterLoader, val run: ParserRun, val visitedIndices: HashSet[String]) extends Callable[List[AbstractOutageRevision]] {
+    def call():List[AbstractOutageRevision] = {
+      println("Called")
+      if (zoom > maxZoom) return List[AbstractOutageRevision]();
+      val indices = PepcoUtil.getSpatialIndicesForPoint(point.lat, point.lon, zoom)
+        .filter(index => !visitedIndices.contains(index))
+      indices.foreach(index => {visitedIndices.add(index); logger.debug("scraping "+index)})
+      
+      indices
+        .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
+        .foreach(a=>println(a))
 
-    val outages = indices
-      .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
-      .map(url => client.loadXMLRequest(url))
-      .filter(a => a != null) //Remove failed requests.  Usually requests can fail because they were made for data outside of Pepco's service area.
-      .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
-      .flatten //No need to parse each list individually.
-      .map(n => parseOutage(n, run))
-    //Add the current zoom level to all the outages.
-    outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
-    outages.foreach(outageRevision => {
+      val outages = indices
+        .map(id => dataHTMLPrefix + "outages/" + outagesFolderName + "/" + id + ".xml") //Convert to Get requests.
+        .map(url => client.loadXMLRequest(url))
+        .filter(a => a != null) //Remove failed requests.  Usually requests can fail because they were made for data outside of Pepco's service area.
+        .map(el => el \\ "item") //Each request returns a list of outages as xml.  Here we turn the XML list into a Scala list.
+        .flatten //No need to parse each list individually.
+        .map(n => parseOutage(n, run))
+      //Add the current zoom level to all the outages.
+      outages.foreach(outageRevision => {outageRevision.getOutage().getZoomLevels.add(zoom)})
+      //We only want to zoom in on clusters as there may be more information at the next zoom level.
+      outages.filter(outageRevision => outageRevision match {
+        case r: OutageClusterRevision => true
+        case _ => false
+      })
+        //Recurse.
+        .foreach(outageRevision => outageFutures.add(executorService.submit(new OutageScraper(executorService, outageFutures, new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, visitedIndices))))
+      return outages
+    }
+  }
+
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
+    val executorService = Executors.newFixedThreadPool(10)
+    var outageFutures:Queue[Future[List[AbstractOutageRevision]]] = new LinkedList[Future[List[AbstractOutageRevision]]]()
+    outageFutures.add(executorService.submit(new OutageScraper(executorService, outageFutures, point, zoom, outagesFolderName, client, run, visitedIndices)))
+    
+    println("here3")
+    println(outageFutures)
+    
+    while ({!outageFutures.isEmpty()}) {
+      outageFutures.poll().get().foreach(outageRevision => {
         outageDao.updateOutage(outageRevision);
         outageIds.add(outageRevision.getOutage().getId());
-    })
-    //We only want to zoom in on clusters as there may be more information at the next zoom level.
-    outages.filter(outageRevision => outageRevision match {
-      case r: OutageClusterRevision => true
-      case _ => false
-    })
-      //Recurse.
-      .foreach(outageRevision => scrapeAllOutages(new PointDouble(outageRevision.getOutage().getLat(), outageRevision.getOutage().getLon()), zoom + 1, outagesFolderName, client, run, outageDao, visitedIndices, outageIds))
+      })
+    }
+    
+    executorService.shutdown()
   }
 
   def main(args: Array[String]): Unit = {

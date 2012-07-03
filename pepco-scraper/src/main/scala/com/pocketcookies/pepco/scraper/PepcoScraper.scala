@@ -189,8 +189,6 @@ object PepcoScraper {
     
     while ({!outageFutures.isEmpty()}) {
       outageFutures.poll().get().foreach(outageRevision => {
-        println("here1")
-        println(outageRevision)
         outageDao.updateOutage(outageRevision);
         outageIds.add(outageRevision.getOutage().getId());
       })

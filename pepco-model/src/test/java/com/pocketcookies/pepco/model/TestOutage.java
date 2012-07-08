@@ -378,4 +378,8 @@ public class TestOutage extends TestCase {
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1).equalsIgnoreRun(
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(2)), 1)));
     }
+    
+    public void testOutageHashCode() {
+        assertEquals(-830068698, new Outage(1, 1, new Timestamp(1), null).hashCode());
+    }
 }

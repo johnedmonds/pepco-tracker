@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -72,11 +74,12 @@ public class Outage implements Serializable {
 				&& a.getEarliestReport().equals(this.getEarliestReport());
 	}
         
-        @Override
-        public int hashCode()
-        {
-            return (int)(getLat()+getLon())+getEarliestReport().hashCode()+getObservedEnd().hashCode();
-        }
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getLat()).append(getLon())
+                .append(getEarliestReport()).append(getObservedEnd())
+                .toHashCode();
+    }
 
 	@Id
 	@GeneratedValue

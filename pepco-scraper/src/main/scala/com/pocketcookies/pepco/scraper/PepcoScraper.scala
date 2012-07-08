@@ -17,6 +17,7 @@ import com.pocketcookies.pepco.model.OutageClusterRevision
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus
 import com.pocketcookies.pepco.model.OutageRevision
 import com.pocketcookies.pepco.model.dao.OutageDAO
+import com.pocketcookies.pepco.model.dao.OutageDAO.ProtoOutage
 import com.pocketcookies.pepco.model.OutageAreaRevision
 import com.pocketcookies.pepco.model.OutageArea
 import scala.xml.Node
@@ -187,13 +188,20 @@ object PepcoScraper {
     var outageFutures:Queue[Future[List[AbstractOutageRevision]]] = new LinkedList[Future[List[AbstractOutageRevision]]]()
     outageFutures.add(executorService.submit(new OutageScraper(executorService, outageFutures, point, zoom, outagesFolderName, client, run, visitedIndices)))
     
+    val outages = new java.util.LinkedList[List[AbstractOutageRevision]]
+    
     while ({!outageFutures.isEmpty()}) {
-      outageFutures.poll().get().foreach(outageRevision => {
-        outageDao.updateOutage(outageRevision);
-        outageIds.add(outageRevision.getOutage().getId());
-      })
+      outages.add(outageFutures.poll().get());
     }
     
+    // Update all the outages at once and add their ids to the set of outage ids.
+    outageDao
+      .updateOutages(scala.collection.immutable.HashSet[ProtoOutage]() ++
+          outages
+            .foldLeft(List[AbstractOutageRevision]())((a,b)=>a++b)
+            .map(outageRevision => (new ProtoOutage(outageRevision.getOutage()))))
+      .foreach(outage => outageIds.add(outage.getId()));
+
     executorService.shutdown()
   }
 

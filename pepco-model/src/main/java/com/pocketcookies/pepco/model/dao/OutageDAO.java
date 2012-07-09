@@ -17,6 +17,11 @@ import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.ParserRun;
 
+/**
+ * DAO for updating {@link Outage}s and {@link AbstractOutageRevision}s.
+ * 
+ * @author John "Jack" Edmonds (john.a.edmonds@gmail.com)
+ */
 public class OutageDAO {
     
     /**
@@ -142,6 +147,13 @@ public class OutageDAO {
         }
     }
     
+    /**
+     * Updates each outage in the set of outages by adding that outage's new
+     * revision if the revision needs to be added.
+     * 
+     * @param outages The outages to update.
+     * @return A list of all the outages that were updated or added.
+     */
     public Set<Outage> updateOutages(final Set<ProtoOutage> outages) {
         final Set<Outage> ret = new HashSet<Outage>();
         for (ProtoOutage protoOutage : outages) {

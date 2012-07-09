@@ -194,13 +194,13 @@ object PepcoScraper {
       outages.add(outageFutures.poll().get());
     }
     
+    val protoOutages = outages
+            .foldLeft(List[AbstractOutageRevision]())((a,b)=>a++b)
+            .map(outageRevision => (new ProtoOutage(outageRevision.getOutage()))
     // Update all the outages at once and add their ids to the set of outage ids.
     outageDao
-      .updateOutages(scala.collection.immutable.HashSet[ProtoOutage]() ++
-          outages
-            .foldLeft(List[AbstractOutageRevision]())((a,b)=>a++b)
-            .map(outageRevision => (new ProtoOutage(outageRevision.getOutage()))))
-      .foreach(outage => outageIds.add(outage.getId()));
+      .updateOutages(scala.collection.immutable.HashSet[ProtoOutage]() ++ protoOutages))
+    protoOutages.foreach(protoOutage => outageIds.add(protoOutage.getOutage().getId()));
 
     executorService.shutdown()
   }

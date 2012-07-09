@@ -3,6 +3,7 @@ package com.pocketcookies.pepco.model;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -93,10 +94,11 @@ public class TestOutageDAO extends TestCase {
         o1.getRevisions().add(r1);
         o2.getRevisions().add(r2);
         o3.getRevisions().add(r3);
-        
+
         this.sessionFactory.getCurrentSession().save(run);
-        outageDao
+        final Set<Outage> changedOutages1 = outageDao
                 .updateOutages(ImmutableSet.of(new ProtoOutage(r1.getOutage())));
+        assertEquals(1, changedOutages1.size());
         assertEquals(
                 1,
                 this.sessionFactory.getCurrentSession()
@@ -106,8 +108,10 @@ public class TestOutageDAO extends TestCase {
                 this.sessionFactory.getCurrentSession()
                         .createQuery("from AbstractOutageRevision").list()
                         .size());
-        outageDao
+
+        final Set<Outage> changedOutages2 = outageDao
                 .updateOutages(ImmutableSet.of(new ProtoOutage(r2.getOutage())));
+        assertEquals(1, changedOutages2.size());
         assertEquals(
                 1,
                 this.sessionFactory.getCurrentSession()
@@ -117,8 +121,10 @@ public class TestOutageDAO extends TestCase {
                 this.sessionFactory.getCurrentSession()
                         .createQuery("from AbstractOutageRevision").list()
                         .size());
-        outageDao
+
+        final Set<Outage> changedOutages3 = outageDao
                 .updateOutages(ImmutableSet.of(new ProtoOutage(r3.getOutage())));
+        assertEquals(0, changedOutages3.size());
         assertEquals(
                 1,
                 this.sessionFactory.getCurrentSession()

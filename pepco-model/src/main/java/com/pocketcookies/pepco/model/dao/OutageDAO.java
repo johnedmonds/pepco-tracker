@@ -166,7 +166,6 @@ public class OutageDAO {
                 sessionFactory.getCurrentSession().save(newRevision);
                 ret.add(protoOutage.outage);
             } else {
-                ret.add(existingOutage);
                 existingOutage.getZoomLevels().addAll(
                         protoOutage.outage.getZoomLevels());
                 newRevision.setOutage(existingOutage);
@@ -175,6 +174,7 @@ public class OutageDAO {
                         .equalsIgnoreRun(newRevision)) {
                     // Ignore it.
                 } else {
+                    ret.add(existingOutage);
                     sessionFactory.getCurrentSession().save(newRevision);
                 }
             }

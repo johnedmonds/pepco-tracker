@@ -11,6 +11,7 @@ import com.pocketcookies.pepco.model.ParserRun
 import java.sql.Timestamp
 import java.io.InputStream
 import org.xml.sax.InputSource
+import com.pocketcookies.pepco.model.Outage
 import com.pocketcookies.pepco.model.OutageArea
 import com.pocketcookies.pepco.model.OutageAreaRevision
 import org.jsoup.Jsoup
@@ -21,11 +22,15 @@ import com.pocketcookies.pepco.model.OutageRevision.CrewStatus
 import com.pocketcookies.pepco.model.OutageClusterRevision
 import com.pocketcookies.pepco.scraper.PepcoUtil
 import com.pocketcookies.pepco.model.dao.OutageDAO
+import com.pocketcookies.pepco.model.dao.OutageDAO.ProtoOutage
 import com.pocketcookies.pepco.scraper.PointDouble
 import scala.collection.mutable.HashSet
 import com.pocketcookies.pepco.scraper.StormCenterLoader
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import org.mockito.stubbing.Answer
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.Matchers
 
 @Test
 class ScraperTest {
@@ -126,7 +131,45 @@ class ScraperTest {
     
     val indicesZoom9=PepcoUtil.getSpatialIndicesForPoint(1,2,9);
     when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom9.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_single.xml")));
-    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String](), new HashSet[Integer]());
+    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String]());
+    (indicesZoom8 ::: indicesZoom9).foreach(x=>verify(loader).loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+x+".xml"))
+  }
+  
+  // Tests that when we scrape all outages, the outages are properly populated.
+  @Test
+  def testHasOutageIds() = {
+    val run = new ParserRun(new Timestamp(1), new Timestamp(1));
+    val outageDao = mock(classOf[OutageDAO]);
+    val loader = mock(classOf[StormCenterLoader]);
+    val indicesZoom8=PepcoUtil.getSpatialIndicesForPoint(0, 0, 8);
+    val now=DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss").print(new DateTime());
+    var generatedId = 0
+    when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom8.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_cluster.xml")));
+    when(outageDao.updateOutages(Matchers.anySetOf(classOf[ProtoOutage]))).thenAnswer(new Answer[java.util.Set[Outage]]() {
+      def answer(invocation:InvocationOnMock):java.util.Set[Outage] = {
+        invocation.getArguments()(0) match {
+          case outages:Set[ProtoOutage] => {
+            outages.foreach(protoOutage=>{
+              protoOutage.getOutage().setId(generatedId);
+              generatedId = generatedId + 1
+            })
+          } case _=> {
+            throw new ClassCastException()
+          }
+        }
+        return new java.util.Set[Outage]()
+      }
+    })
+    
+    generatedId = 0
+    
+    val indicesZoom9=PepcoUtil.getSpatialIndicesForPoint(1,2,9);
+    when(loader.loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+indicesZoom9.head+".xml")).thenReturn(XML.load(getClass().getResourceAsStream("/zoomOutageClusterXml/outages_single.xml")));
+    PepcoScraper.scrapeAllOutages(new PointDouble(0, 0), 8, now, loader, run, outageDao, new HashSet[String]())
+      .foreach(outageId => {
+        assertEquals(generatedId, outageId);
+        generatedId = generatedId + 1
+      });
     (indicesZoom8 ::: indicesZoom9).foreach(x=>verify(loader).loadXMLRequest(PepcoScraper.dataHTMLPrefix+"outages/"+now+"/"+x+".xml"))
   }
 

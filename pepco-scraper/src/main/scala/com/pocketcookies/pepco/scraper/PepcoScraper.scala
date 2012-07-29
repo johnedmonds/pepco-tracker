@@ -150,10 +150,8 @@ object PepcoScraper {
       .foreach(a => outageAreaDao.updateArea(a));
 
     //Parse outages.
-    val outageIds=new HashSet[Integer]();
-    scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String](), outageIds);
-    val temp:java.util.Collection[Integer]=outageIds
-    outageDao.closeMissingOutages(temp, run.getRunTime());
+    val outageIds = scrapeAllOutages(new PointDouble(38.96, -77.03), 8, outagesFolderName, client, run, outageDao, new HashSet[String]());
+    outageDao.closeMissingOutages(outageIds, run.getRunTime());
   }
   
   class OutageScraper(val executorService: ExecutorService, outageFutures:Queue[Future[List[AbstractOutageRevision]]], val point: PointDouble, val zoom: Int, val outagesFolderName: String, val client: StormCenterLoader, val run: ParserRun, val visitedIndices: HashSet[String]) extends Callable[List[AbstractOutageRevision]] {
@@ -183,7 +181,7 @@ object PepcoScraper {
     }
   }
 
-  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String], outageIds:HashSet[Integer]): Unit = {
+  def scrapeAllOutages(point: PointDouble, zoom: Int, outagesFolderName: String, client: StormCenterLoader, run: ParserRun, outageDao: OutageDAO, visitedIndices: HashSet[String]): List[Integer] = {
     val executorService = Executors.newFixedThreadPool(10)
     var outageFutures:Queue[Future[List[AbstractOutageRevision]]] = new LinkedList[Future[List[AbstractOutageRevision]]]()
     outageFutures.add(executorService.submit(new OutageScraper(executorService, outageFutures, point, zoom, outagesFolderName, client, run, visitedIndices)))
@@ -194,15 +192,15 @@ object PepcoScraper {
       outages.add(outageFutures.poll().get());
     }
     
-    val protoOutages = outages
-            .foldLeft(List[AbstractOutageRevision]())((a,b)=>a++b)
-            .map(outageRevision => (new ProtoOutage(outageRevision.getOutage())));
+    val allOutages = outages.foldLeft(List[AbstractOutageRevision]())((a,b)=>a++b);
+    val protoOutages = allOutages.map(outageRevision => (new ProtoOutage(outageRevision.getOutage())));
     // Update all the outages at once and add their ids to the set of outage ids.
     outageDao
       .updateOutages(scala.collection.immutable.HashSet[ProtoOutage]() ++ protoOutages)
-    protoOutages.foreach(protoOutage => outageIds.add(protoOutage.getOutage().getId()));
 
     executorService.shutdown()
+    
+    return allOutages.map(outageRevision => java.lang.Integer.valueOf(outageRevision.getOutage().getId()));
   }
 
   def main(args: Array[String]): Unit = {

@@ -1,5 +1,7 @@
 .project
 .classpath
+.metadata/
+.springBeans
 target/
 pepco-scraper/data/
 .settings/

@@ -23,10 +23,6 @@ public class OutageDAO {
         this.sessionFactory = sessionFactory;
     }
 
-    protected OutageDAO() {
-        this.sessionFactory = null;
-    }
-
     @SuppressWarnings("unchecked")
     public Outage getActiveOutage(final double lat, final double lon) {
 
@@ -40,6 +36,7 @@ public class OutageDAO {
     }
 
     public Outage getOutage(final int outageId) {
+        @SuppressWarnings("unchecked")
         final List<Outage> outages = this.sessionFactory.getCurrentSession().createQuery("from Outage o left outer join fetch o.revisions r left outer join fetch r.run where o.id=:outageId").setInteger("outageId", outageId).list();
         if (outages.isEmpty()) {
             return null;
@@ -164,6 +161,7 @@ public class OutageDAO {
      * @return
      */
     public ParserRunSummary getParserRunSummary(final ParserRun run) {
+        @SuppressWarnings("unchecked")
         final List<Object[]> openUpdated = this.sessionFactory.getCurrentSession().createSQLQuery("select count(*) as num_outages, revision_count > 1 as is_updated "
                 //Get the outages that were created or updated for this run.  That is, the outage has a revision that was obtained during this run.
                 + "    from (select o2.id from"

@@ -6,19 +6,10 @@ import com.pocketcookies.pepco.model.OutageArea;
 import com.pocketcookies.pepco.model.OutageAreaRevision;
 
 public class OutageAreaDAO {
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 
 	public OutageAreaDAO(SessionFactory sessionFactory) {
 		super();
-		this.sessionFactory = sessionFactory;
-	}
-
-	protected OutageAreaDAO() {
-	}
-
-	// Used by spring.
-	@SuppressWarnings("unused")
-	private void setSessionFactory(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 

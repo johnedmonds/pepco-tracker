@@ -11,19 +11,10 @@ import com.pocketcookies.pepco.model.Summary;
 
 public class SummaryDAO {
 
-	private SessionFactory sessionFactory;
-
-	protected SummaryDAO() {
-	}
+	private final SessionFactory sessionFactory;
 
 	public SummaryDAO(SessionFactory sessionFactory) {
 		super();
-		this.sessionFactory = sessionFactory;
-	}
-
-	// Used by spring.
-	@SuppressWarnings("unused")
-	private void setSessionFactory(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 

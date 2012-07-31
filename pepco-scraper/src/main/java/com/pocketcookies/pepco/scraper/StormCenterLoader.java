@@ -4,15 +4,19 @@ import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.joda.time.DateTime;
-import org.w3c.dom.Document;
-import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.w3c.dom.Document;
 
+/**
+ * Makes requests from the StormCenter.
+ *
+ * @author john.a.edmonds@gmail.com (John "Jack" Edmonds)
+ */
 class StormCenterLoader {
     private HttpClient client;
 
@@ -26,11 +30,10 @@ class StormCenterLoader {
      * Makes a request and parses the response as XML. If the request fails for
      * some reason, returns null.
      * 
-     * @throws IOException
-     * @throws ClientProtocolException
+     * @throws IOException If an error occurs while reading.
      */
     public Document loadXMLRequest(final String getPath)
-            throws ClientProtocolException, IOException {
+            throws IOException {
         final HttpGet get = new HttpGet(getPath);
         get.getParams().setLongParameter("timestamp",
                 new DateTime().getMillis());

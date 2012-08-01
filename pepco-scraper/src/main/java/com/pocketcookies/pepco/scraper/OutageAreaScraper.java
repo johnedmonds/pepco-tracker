@@ -34,7 +34,7 @@ public class OutageAreaScraper implements Scraper {
         final String sCustomersOut = ((TextNode) Jsoup
                 .parseBodyFragment(descriptionHtml)
                 .select(":containsOwn(Customers Affected)").first()
-                .nextSibling()).text();
+                .nextSibling()).text().trim();
         final int customersOut = sCustomersOut.equals("Less than 5") ? 0
                 : Integer.parseInt(sCustomersOut);
         return new OutageAreaRevision(new OutageArea(

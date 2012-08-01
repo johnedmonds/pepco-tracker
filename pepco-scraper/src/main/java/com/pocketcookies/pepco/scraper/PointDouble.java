@@ -17,4 +17,9 @@ public class PointDouble {
         this(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1]));
         assert latLng.length == 2;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%f, %f)", lat, lon);
+    }
 }

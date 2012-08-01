@@ -12,7 +12,7 @@ public class Polygon {
         assert sPoints.length % 2 == 0;
         final ImmutableList.Builder<String> builder = ImmutableList.builder();
         for (int i = 0; i < sPoints.length / 2; i++) {
-            builder.add(sPoints[i] + sPoints[i + 1]);
+            builder.add(sPoints[i * 2] + " " + sPoints[i * 2 + 1]);
         }
         points = ImmutableList.copyOf(Iterables.transform(builder.build(),
                 new Function<String, PointDouble>() {

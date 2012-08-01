@@ -38,8 +38,8 @@ import com.pocketcookies.pepco.model.dao.OutageDAO;
 
 public class OutageScraper implements Scraper {
     private static final Logger logger = Logger.getLogger(OutageScraper.class);
-    private static final PointDouble STARTING_POINT = new PointDouble(38.96,
-            -77.03);
+    private static final PointDouble DEFAULT_STARTING_POINT = new PointDouble(
+            38.96, -77.03);
     private static final int STARTING_ZOOM = 8;
     private static final int MAX_ZOOM = 15;
     private static final Function<AbstractOutageRevision, Integer> REVISION_TO_ID = new Function<AbstractOutageRevision, Integer>() {
@@ -52,14 +52,23 @@ public class OutageScraper implements Scraper {
     private final OutageDAO dao;
     private final StormCenterLoader stormCenterLoader;
     private final String outagesFolderName;
+    private final PointDouble startingPoint;
 
     public OutageScraper(final OutageDAO dao,
             final StormCenterLoader stormCenterLoader) throws IOException {
-        this.dao = dao;
-        this.stormCenterLoader = stormCenterLoader;
-        this.outagesFolderName = PepcoUtil.getTextFromOnlyElement(
+        this(dao, stormCenterLoader, PepcoUtil.getTextFromOnlyElement(
                 stormCenterLoader.loadXMLRequest(PepcoScraper.DATA_HTML_PREFIX
-                        + PepcoScraper.DIRECTORY_SUFFIX), "directory");
+                        + PepcoScraper.DIRECTORY_SUFFIX), "directory"),
+                DEFAULT_STARTING_POINT);
+    }
+
+    OutageScraper(final OutageDAO dao,
+            final StormCenterLoader stormCenterLoader,
+            final String outagesFolderName, final PointDouble startingPoint) {
+        this.stormCenterLoader = stormCenterLoader;
+        this.dao = dao;
+        this.outagesFolderName = outagesFolderName;
+        this.startingPoint = startingPoint;
     }
 
     private static Timestamp parseEstimatedRestoration(
@@ -83,7 +92,7 @@ public class OutageScraper implements Scraper {
                 .getTextFromOnlyElement(item, "description"));
         final String sCustomersAffected = ((TextNode) doc
                 .select(":containsOwn(Customers Affected)").first()
-                .nextSibling()).text();
+                .nextSibling()).text().trim();
         final int customersAffected = sCustomersAffected.equals("Less than 5") ? 0
                 : Integer.parseInt(sCustomersAffected);
         final DateTime earliestReport = PepcoUtil
@@ -93,9 +102,9 @@ public class OutageScraper implements Scraper {
         final Timestamp estimatedRestoration = parseEstimatedRestoration(((TextNode) doc
                 .select(":containsOwn(Restoration)").first().nextSibling())
                 .text().trim());
-        if (((Element) item).getElementsByTagName("point").getLength() != 0) {
+        if (((Element) item).getElementsByTagName("georss:point").getLength() != 0) {
             final PointDouble latLon = new PointDouble(
-                    PepcoUtil.getTextFromOnlyElement(item, "point"));
+                    PepcoUtil.getTextFromOnlyElement(item, "georss:point"));
             final int numOutages = Integer.parseInt(((TextNode) doc
                     .select(":containsOwn(Number of Outage Orders)").first()
                     .nextSibling()).text().trim());
@@ -108,7 +117,7 @@ public class OutageScraper implements Scraper {
             return outageRevision;
         } else {
             final PointDouble latLon = new Polygon(
-                    PepcoUtil.getTextFromOnlyElement(item, "polygon"))
+                    PepcoUtil.getTextFromOnlyElement(item, "georss:polygon"))
                     .getCenter();
             final String cause = ((TextNode) doc.select(":containsOwn(Cause)")
                     .first().nextSibling()).text().trim();
@@ -172,12 +181,13 @@ public class OutageScraper implements Scraper {
             @Override
             public Collection<AbstractOutageRevision> call() throws Exception {
                 try {
+                    downloadsInProgress.incrementAndGet();
                     if (zoom > MAX_ZOOM
                             || visitedIndices
                                     .contains(sectionIdBeingDownloaded)) {
                         return ImmutableList.<AbstractOutageRevision> of();
                     }
-                    downloadsInProgress.incrementAndGet();
+                    visitedIndices.add(sectionIdBeingDownloaded);
                     final org.w3c.dom.Document doc = stormCenterLoader
                             .loadXMLRequest(PepcoScraper.DATA_HTML_PREFIX
                                     + "outages/" + outagesFolderName + "/"
@@ -185,8 +195,8 @@ public class OutageScraper implements Scraper {
                     if (doc == null) {
                         return ImmutableList.<AbstractOutageRevision> of();
                     }
-                    final Collection<AbstractOutageRevision> builtRevisions = parseOutages(doc
-                            .getElementsByTagName("item"), run);
+                    final Collection<AbstractOutageRevision> builtRevisions = parseOutages(
+                            doc.getElementsByTagName("item"), run);
                     for (AbstractOutageRevision revision : builtRevisions) {
                         // We only need to zoom in if there's a cluster.
                         // Otherwise, zooming in will give us no more useful
@@ -196,7 +206,6 @@ public class OutageScraper implements Scraper {
                                     .getSpatialIndicesForPoint(revision
                                             .getOutage().getLat(), revision
                                             .getOutage().getLon(), zoom + 1)) {
-                                visitedIndices.add(index);
                                 // Recurse. Basically, submit a download task
                                 // for the next highest zoomlevel.
                                 revisionFutures
@@ -217,11 +226,20 @@ public class OutageScraper implements Scraper {
 
             }
         }
+        // Increment to "lock" the downloadExecutor just in case the first
+        // "seed" task finishes before we can finish submitting the "seed"
+        // tasks.
+        downloadsInProgress.incrementAndGet();
         // Submit the "seed" (starting) download tasks.
         for (String index : PepcoUtil.getSpatialIndicesForPoint(
-                STARTING_POINT.lat, STARTING_POINT.lon, STARTING_ZOOM)) {
+                startingPoint.lat, startingPoint.lon, STARTING_ZOOM)) {
             revisionFutures.add(downloadExecutor.submit(new Downloader(index,
                     STARTING_ZOOM)));
+        }
+        // We're done submitting "seed" tasks, remove the "lock" and check if we
+        // finished everything by now.
+        if (downloadsInProgress.decrementAndGet() == 0) {
+            downloadExecutor.shutdown();
         }
         downloadExecutor.awaitTermination(30, TimeUnit.MINUTES);
         final ImmutableSet.Builder<AbstractOutageRevision> builder = ImmutableSet

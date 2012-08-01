@@ -14,7 +14,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.collect.ImmutableList;
 
 public class PepcoUtil {
-    private static final DateTimeFormatter PEPCO_DATE_FORMATTER = DateTimeFormat
+    public static final DateTimeFormatter PEPCO_DATE_FORMATTER = DateTimeFormat
             .forPattern("MMM d, h:mm a");
     
     /**

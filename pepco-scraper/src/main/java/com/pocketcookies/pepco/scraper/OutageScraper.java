@@ -77,7 +77,7 @@ public class OutageScraper implements Scraper {
         }
     }
 
-    private AbstractOutageRevision parseOutage(final Node item,
+    static AbstractOutageRevision parseOutage(final Node item,
             final ParserRun run) {
         final Document doc = Jsoup.parseBodyFragment(PepcoUtil
                 .getTextFromOnlyElement(item, "description"));
@@ -125,11 +125,21 @@ public class OutageScraper implements Scraper {
         }
     }
 
+    static Collection<AbstractOutageRevision> parseOutages(
+            final NodeList items, final ParserRun run) {
+        final ImmutableList.Builder<AbstractOutageRevision> builder = ImmutableList
+                .builder();
+        for (int i = 0; i < items.getLength(); i++) {
+            builder.add(parseOutage(items.item(i), run));
+        }
+        return builder.build();
+    }
+
     /**
      * Downloads and parses outages from Pepco. Note that the downloads happen
      * in parallel.
      */
-    private Set<AbstractOutageRevision> downloadOutages(final ParserRun run)
+    Set<AbstractOutageRevision> downloadOutages(final ParserRun run)
             throws InterruptedException, ExecutionException {
         /**
          * How many sections we're currently downloading. We use this to know
@@ -175,14 +185,8 @@ public class OutageScraper implements Scraper {
                     if (doc == null) {
                         return ImmutableList.<AbstractOutageRevision> of();
                     }
-                    final ImmutableList.Builder<AbstractOutageRevision> builder = ImmutableList
-                            .builder();
-                    final NodeList outages = doc.getElementsByTagName("item");
-                    for (int i = 0; i < outages.getLength(); i++) {
-                        builder.add(parseOutage(outages.item(i), run));
-                    }
-                    final Collection<AbstractOutageRevision> builtRevisions = builder
-                            .build();
+                    final Collection<AbstractOutageRevision> builtRevisions = parseOutages(doc
+                            .getElementsByTagName("item"), run);
                     for (AbstractOutageRevision revision : builtRevisions) {
                         // We only need to zoom in if there's a cluster.
                         // Otherwise, zooming in will give us no more useful
@@ -202,7 +206,7 @@ public class OutageScraper implements Scraper {
                             }
                         }
                     }
-                    return builder.build();
+                    return builtRevisions;
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
                 } finally {

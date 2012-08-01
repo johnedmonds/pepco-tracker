@@ -27,7 +27,7 @@ public class OutageAreaScraper implements Scraper {
     /**
      * Parses a single thematic area into an OutageAreaRevision.
      */
-    private OutageAreaRevision parseOutageArea(final Node area,
+    static OutageAreaRevision parseOutageArea(final Node area,
             final ParserRun run) {
         final String descriptionHtml = PepcoUtil.getTextFromOnlyElement(area,
                 "description");

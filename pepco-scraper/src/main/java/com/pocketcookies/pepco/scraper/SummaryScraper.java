@@ -22,7 +22,7 @@ public class SummaryScraper implements Scraper {
         this.stormCenterLoader = stormCenterLoader;
     }
 
-    private Summary parseSummary(final Document doc, final ParserRun run) {
+    static Summary parseSummary(final Document doc, final ParserRun run) {
         final NodeList areas = doc.getElementsByTagName("area");
         final Node dc = areas.item(0);
         final Node pg = areas.item(1);

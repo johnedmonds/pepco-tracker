@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.log4j.Logger;
@@ -13,6 +15,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.ImmutableList;
 import com.pocketcookies.pepco.model.ParserRun;
@@ -22,6 +25,7 @@ import com.pocketcookies.pepco.model.ParserRun;
  * 
  * @author john.a.edmonds@gmail.com (John "Jack" Edmonds)
  */
+@Service
 public class PepcoScraper {
     public static final String DATA_HTML_PREFIX = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
     public static final String DIRECTORY_SUFFIX = "/outages/metadata.xml";
@@ -30,6 +34,7 @@ public class PepcoScraper {
     private final SummaryScraper summaryScraper;
     private final OutageAreaScraper outageAreaScraper;
 
+    @Inject
     public PepcoScraper(OutageScraper outageScraper,
             SummaryScraper summaryScraper, OutageAreaScraper outageAreaScraper) {
         this.outageScraper = outageScraper;

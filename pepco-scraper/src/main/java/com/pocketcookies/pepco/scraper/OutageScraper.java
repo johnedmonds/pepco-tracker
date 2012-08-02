@@ -15,11 +15,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.TextNode;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,6 +39,7 @@ import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
+@Service
 public class OutageScraper implements Scraper {
     private static final Logger logger = Logger.getLogger(OutageScraper.class);
     private static final PointDouble DEFAULT_STARTING_POINT = new PointDouble(
@@ -54,6 +58,7 @@ public class OutageScraper implements Scraper {
     private final String outagesFolderName;
     private final PointDouble startingPoint;
 
+    @Inject
     public OutageScraper(final OutageDAO dao,
             final StormCenterLoader stormCenterLoader) throws IOException {
         this(dao, stormCenterLoader, PepcoUtil.getTextFromOnlyElement(

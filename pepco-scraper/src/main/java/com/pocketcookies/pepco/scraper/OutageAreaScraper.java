@@ -2,8 +2,11 @@ package com.pocketcookies.pepco.scraper;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.TextNode;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -12,12 +15,14 @@ import com.pocketcookies.pepco.model.OutageAreaRevision;
 import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.dao.OutageAreaDAO;
 
+@Service
 public class OutageAreaScraper implements Scraper {
     private static final String THEMATIC_SUFFIX = "thematic/current/thematic_areas.xml";
 
     private final OutageAreaDAO dao;
     private final StormCenterLoader stormCenterLoader;
 
+    @Inject
     public OutageAreaScraper(final OutageAreaDAO dao,
             final StormCenterLoader stormCenterLoader) {
         this.dao = dao;

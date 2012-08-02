@@ -3,6 +3,9 @@ package com.pocketcookies.pepco.scraper;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -11,11 +14,13 @@ import com.pocketcookies.pepco.model.ParserRun;
 import com.pocketcookies.pepco.model.Summary;
 import com.pocketcookies.pepco.model.dao.SummaryDAO;
 
+@Service
 public class SummaryScraper implements Scraper {
     private static final String SUMMARY_SUFFIX = "data.xml";
     private final SummaryDAO dao;
     private final StormCenterLoader stormCenterLoader;
 
+    @Inject
     public SummaryScraper(final SummaryDAO dao,
             final StormCenterLoader stormCenterLoader) {
         this.dao = dao;

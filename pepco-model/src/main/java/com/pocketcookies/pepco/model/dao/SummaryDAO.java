@@ -14,9 +14,16 @@ public class SummaryDAO {
 	private final SessionFactory sessionFactory;
 
 	public SummaryDAO(SessionFactory sessionFactory) {
-		super();
 		this.sessionFactory = sessionFactory;
 	}
+	
+	/**
+	 * Used by CGLIB.
+	 */
+    @SuppressWarnings("unused")
+    protected SummaryDAO() {
+        this.sessionFactory = null;
+    }
 
 	public void saveSummary(final Summary summary) {
 		this.sessionFactory.getCurrentSession().save(summary);

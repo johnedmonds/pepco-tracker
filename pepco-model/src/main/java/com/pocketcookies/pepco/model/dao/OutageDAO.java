@@ -19,8 +19,14 @@ public class OutageDAO {
     private final SessionFactory sessionFactory;
 
     public OutageDAO(SessionFactory sessionFactory) {
-        super();
         this.sessionFactory = sessionFactory;
+    }
+
+    /**
+     * Used by CGLIB.
+     */
+    protected OutageDAO() {
+        this.sessionFactory = null;
     }
 
     @SuppressWarnings("unchecked")

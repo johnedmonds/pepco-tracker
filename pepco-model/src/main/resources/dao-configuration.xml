@@ -36,12 +36,20 @@
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="outageDaoOperation" />
 	</aop:config>
 	<aop:config proxy-target-class="false">
+		<aop:pointcut id="outageAreaDaoOperation"
+			expression="execution(* com.pocketcookies.pepco.model.dao.OutageAreaDAO.get*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="outageAreaDaoOperation" />
+	</aop:config>
+	<aop:config proxy-target-class="false">
 		<aop:pointcut id="summaryDaoOperation"
 			expression="execution(* com.pocketcookies.pepco.model.dao.SummaryDAO.get*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="summaryDaoOperation" />
 	</aop:config>
 
 	<bean id="outageDao" class="com.pocketcookies.pepco.model.dao.OutageDAO">
+		<constructor-arg index="0" ref="sessionFactory" />
+	</bean>
+	<bean id="outageAreaDao" class="com.pocketcookies.pepco.model.dao.OutageAreaDAO">
 		<constructor-arg index="0" ref="sessionFactory" />
 	</bean>
 	<bean id="summaryDao" class="com.pocketcookies.pepco.model.dao.SummaryDAO">

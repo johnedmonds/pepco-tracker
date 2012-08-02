@@ -9,9 +9,16 @@ public class OutageAreaDAO {
 	private final SessionFactory sessionFactory;
 
 	public OutageAreaDAO(SessionFactory sessionFactory) {
-		super();
 		this.sessionFactory = sessionFactory;
 	}
+	
+	/**
+	 * Used by CGLIB.
+	 */
+    @SuppressWarnings("unused")
+    protected OutageAreaDAO() {
+        this.sessionFactory = null;
+    }
 
 	/**
 	 * Updates the area referred to by revision.getArea() with the given

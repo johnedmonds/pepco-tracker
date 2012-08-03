@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.pocketcookies.pepco.model.ParserRun;
 
 /**
- * Scrapes Pepco's outages.
+ * Scrapes Pepco's outages.  This is the main class (with the main method) that calls all the other scrapers.
  * 
  * @author john.a.edmonds@gmail.com (John "Jack" Edmonds)
  */

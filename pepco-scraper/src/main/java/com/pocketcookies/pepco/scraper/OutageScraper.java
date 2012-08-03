@@ -165,7 +165,7 @@ public class OutageScraper implements Scraper {
         final AtomicInteger downloadsInProgress = new AtomicInteger(0);
         final ExecutorService downloadExecutor = Executors
                 .newFixedThreadPool(10);
-        final Collection<Future<Collection<AbstractOutageRevision>>> revisionFutures = new LinkedList<Future<Collection<AbstractOutageRevision>>>();
+        final Collection<Future<Collection<AbstractOutageRevision>>> revisionFutures = Collections.synchronizedList(new LinkedList<Future<Collection<AbstractOutageRevision>>>());
         final Set<String> visitedIndices = Collections
                 .synchronizedSet(new HashSet<String>());
         /**

@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import com.pocketcookies.pepco.model.dao.SummaryDAO;
-import org.hibernate.cfg.AnnotationConfiguration;
 
 public class TestSummaryDAO extends TestCase {
 

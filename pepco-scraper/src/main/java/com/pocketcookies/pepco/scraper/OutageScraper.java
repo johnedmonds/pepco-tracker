@@ -270,7 +270,9 @@ public class OutageScraper implements Scraper {
     @Transactional
     public void scrape(ParserRun run) throws InterruptedException,
             ExecutionException {
+        logger.info("Starting download.");
         final Set<AbstractOutageRevision> revisions = downloadOutages(run);
+        logger.info("Finished download.");
         for (AbstractOutageRevision revision : revisions) {
             dao.updateOutage(revision);
         }

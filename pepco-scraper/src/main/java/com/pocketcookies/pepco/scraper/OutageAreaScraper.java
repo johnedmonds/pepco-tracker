@@ -56,7 +56,6 @@ public class OutageAreaScraper implements Scraper {
                 run);
     }
 
-    @Transactional
     private void scrape(NodeList areas, ParserRun run) {
         for (int i = 0; i < areas.getLength(); i++) {
             dao.updateArea(parseOutageArea(areas.item(i), run));
@@ -64,6 +63,7 @@ public class OutageAreaScraper implements Scraper {
     }
 
     @Override
+    @Transactional
     public void scrape(ParserRun run) throws IOException {
         scrape(stormCenterLoader.loadXMLRequest(
                 PepcoScraper.DATA_HTML_PREFIX + THEMATIC_SUFFIX)

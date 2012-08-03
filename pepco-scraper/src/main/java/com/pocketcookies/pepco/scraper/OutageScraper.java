@@ -76,6 +76,16 @@ public class OutageScraper implements Scraper {
         this.outagesFolderName = outagesFolderName;
         this.startingPoint = startingPoint;
     }
+    
+    /**
+     * Used only for Spring.  Don't use this constructor!
+     */
+    protected OutageScraper(){
+        dao = null;
+        stormCenterLoader = null;
+        outagesFolderName = null;
+        startingPoint = null;
+    }
 
     private static Timestamp parseEstimatedRestoration(
             String sEstimatedRestoration) {

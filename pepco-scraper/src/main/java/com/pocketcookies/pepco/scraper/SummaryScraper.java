@@ -27,6 +27,14 @@ public class SummaryScraper implements Scraper {
         this.dao = dao;
         this.stormCenterLoader = stormCenterLoader;
     }
+    
+    /**
+     * Used only by Spring.  Do not use this constructor!
+     */
+    protected SummaryScraper() {
+        dao = null;
+        stormCenterLoader = null;
+    }
 
     static Summary parseSummary(final Document doc, final ParserRun run) {
         final NodeList areas = doc.getElementsByTagName("area");

@@ -29,6 +29,14 @@ public class OutageAreaScraper implements Scraper {
         this.dao = dao;
         this.stormCenterLoader = stormCenterLoader;
     }
+    
+    /**
+     * Used only by Spring. Do not use this constructor!
+     */
+    public OutageAreaScraper() {
+        dao = null;
+        stormCenterLoader = null;
+    }
 
     /**
      * Parses a single thematic area into an OutageAreaRevision.

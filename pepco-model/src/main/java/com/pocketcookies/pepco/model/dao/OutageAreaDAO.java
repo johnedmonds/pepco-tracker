@@ -15,7 +15,6 @@ public class OutageAreaDAO {
 	/**
 	 * Used by CGLIB.
 	 */
-    @SuppressWarnings("unused")
     protected OutageAreaDAO() {
         this.sessionFactory = null;
     }

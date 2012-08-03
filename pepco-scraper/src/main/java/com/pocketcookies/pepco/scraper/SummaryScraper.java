@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,6 +50,7 @@ public class SummaryScraper implements Scraper {
     }
 
     @Override
+    @Transactional
     public void scrape(final ParserRun run) throws IOException {
         dao.saveSummary(parseSummary(
                 stormCenterLoader.loadXMLRequest(PepcoScraper.DATA_HTML_PREFIX

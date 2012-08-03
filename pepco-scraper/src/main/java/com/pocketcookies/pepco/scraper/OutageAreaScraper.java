@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.TextNode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -47,6 +48,7 @@ public class OutageAreaScraper implements Scraper {
                 run);
     }
 
+    @Transactional
     private void scrape(NodeList areas, ParserRun run) {
         for (int i = 0; i < areas.getLength(); i++) {
             dao.updateArea(parseOutageArea(areas.item(i), run));

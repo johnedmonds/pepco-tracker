@@ -23,6 +23,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.TextNode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -256,6 +257,7 @@ public class OutageScraper implements Scraper {
     }
 
     @Override
+    @Transactional
     public void scrape(ParserRun run) throws InterruptedException,
             ExecutionException {
         final Set<AbstractOutageRevision> revisions = downloadOutages(run);

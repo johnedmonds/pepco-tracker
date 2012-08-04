@@ -6,6 +6,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -378,4 +379,11 @@ public class TestOutage extends TestCase {
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(1)), 1).equalsIgnoreRun(
 		new OutageClusterRevision(1, new Timestamp(1), null, new ParserRun(new Timestamp(1), new Timestamp(2)), 1)));
     }
+    
+    // Make sure Outage can deal with a null observedEnd.
+	public void testHashCode() {
+		assertEquals(new HashCodeBuilder().append((double)1).append((double)1)
+				.append(new Timestamp(1)).append((Timestamp)null)
+				.toHashCode(), new Outage(1, 1, new Timestamp(1), null).hashCode());
+	}
 }

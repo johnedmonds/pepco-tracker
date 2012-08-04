@@ -6,14 +6,18 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 @Entity
 public class OutageRevision extends AbstractOutageRevision {
-    //What caused the outage according to Pepco.
-    //Shouldn't be null.
+	// What caused the outage according to Pepco.
+	// Shouldn't be null.
 	private String cause;
-	//The status of the crew(s) resolving the outage according to Pepco
-	//Note, this should never be null however, we cannot make it "nullable=false"
-	//because the *column* can be null (when inserting a OutageClusterRevision).
+	// The status of the crew(s) resolving the outage according to Pepco
+	// Note, this should never be null however, we cannot make it
+	// "nullable=false"
+	// because the *column* can be null (when inserting a
+	// OutageClusterRevision).
 	private CrewStatus status;
 
 	public static enum CrewStatus {
@@ -21,11 +25,9 @@ public class OutageRevision extends AbstractOutageRevision {
 	}
 
 	public OutageRevision(int numCustomersAffected,
-			Timestamp estimatedRestoration,
-			final Outage outage, final ParserRun run, String cause,
-			CrewStatus status) {
-		super(numCustomersAffected, estimatedRestoration,
-				outage, run);
+			Timestamp estimatedRestoration, final Outage outage,
+			final ParserRun run, String cause, CrewStatus status) {
+		super(numCustomersAffected, estimatedRestoration, outage, run);
 		setCause(cause);
 		setStatus(status);
 	}
@@ -35,28 +37,32 @@ public class OutageRevision extends AbstractOutageRevision {
 		if (!(o instanceof OutageRevision))
 			return false;
 		final OutageRevision revision = (OutageRevision) o;
-		return super.equals(revision) && revision.getCause().equals(this.getCause())
+		return super.equals(revision)
+				&& revision.getCause().equals(this.getCause())
 				&& revision.getStatus().equals(this.getStatus());
 	}
-        @Override
+
+	@Override
 	public boolean equalsIgnoreRun(final AbstractOutageRevision o) {
 		if (!(o instanceof OutageRevision)) {
 			return false;
 		}
 		final OutageRevision r = (OutageRevision) o;
-		return super.equalsIgnoreRun(o) && getCause().equals(r.getCause()) && getStatus().equals(r.getStatus());
-        }
+		return super.equalsIgnoreRun(o) && getCause().equals(r.getCause())
+				&& getStatus().equals(r.getStatus());
+	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() + getCause().hashCode() + getStatus().hashCode();
+		return new HashCodeBuilder().append(super.hashCode())
+				.append(getCause()).append(getStatus()).toHashCode();
 	}
 
 	public OutageRevision() {
 		super();
 	}
 
-        @Column(name="CAUSE")
+	@Column(name = "CAUSE")
 	public String getCause() {
 		return cause;
 	}
@@ -65,8 +71,8 @@ public class OutageRevision extends AbstractOutageRevision {
 		this.cause = cause;
 	}
 
-        @Column(name="STATUS")
-        @Enumerated(EnumType.STRING)
+	@Column(name = "STATUS")
+	@Enumerated(EnumType.STRING)
 	public CrewStatus getStatus() {
 		return status;
 	}

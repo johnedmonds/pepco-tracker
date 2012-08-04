@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -24,14 +26,14 @@ import org.hibernate.annotations.SortType;
  * 
  */
 @Entity
-@Table(name="OUTAGES")
+@Table(name = "OUTAGES")
 public class Outage implements Serializable {
 	private int id;
 	private double lat;
-        private double lon;
+	private double lon;
 	private Timestamp earliestReport;
-        //The zoom levels on which this outage appears.
-        private Set<Integer> zoomLevels;
+	// The zoom levels on which this outage appears.
+	private Set<Integer> zoomLevels;
 
 	/**
 	 * The time we scraped the site and this outage disappeared. This will
@@ -54,7 +56,7 @@ public class Outage implements Serializable {
 		setLon(lon);
 		setEarliestReport(earliestReport);
 		setObservedEnd(observedEnd);
-                setZoomLevels(new TreeSet<Integer>());
+		setZoomLevels(new TreeSet<Integer>());
 	}
 
 	@Override
@@ -71,36 +73,37 @@ public class Outage implements Serializable {
 				&& a.getLon() == this.getLon()
 				&& a.getEarliestReport().equals(this.getEarliestReport());
 	}
-        
-        @Override
-        public int hashCode()
-        {
-            return (int)(getLat()+getLon())+getEarliestReport().hashCode()+getObservedEnd().hashCode();
-        }
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getLat()).append(getLon())
+				.append(getEarliestReport()).append(getObservedEnd())
+				.toHashCode();
+	}
 
 	@Id
 	@GeneratedValue
-        @Column(name="ID")
-        public int getId() {
+	@Column(name = "ID")
+	public int getId() {
 		return id;
 	}
 
-        @Column(name="LAT")
+	@Column(name = "LAT")
 	public double getLat() {
 		return lat;
 	}
 
-        @Column(name="LON")
+	@Column(name = "LON")
 	public double getLon() {
 		return lon;
 	}
 
-        @Column(name="EARLIESTREPORT")
+	@Column(name = "EARLIESTREPORT")
 	public Timestamp getEarliestReport() {
 		return earliestReport;
 	}
 
-        @Column(name="OBSERVEDEND")
+	@Column(name = "OBSERVEDEND")
 	public Timestamp getObservedEnd() {
 		return observedEnd;
 	}
@@ -125,8 +128,8 @@ public class Outage implements Serializable {
 	public void setObservedEnd(Timestamp observedEnd) {
 		this.observedEnd = observedEnd;
 	}
-        
-        @OneToMany(targetEntity=AbstractOutageRevision.class,mappedBy="outage")
+
+	@OneToMany(targetEntity = AbstractOutageRevision.class, mappedBy = "outage")
 	@Sort(type = SortType.NATURAL)
 	public SortedSet<AbstractOutageRevision> getRevisions() {
 		return revisions;
@@ -137,9 +140,14 @@ public class Outage implements Serializable {
 		this.revisions = revisions;
 	}
 
-        @ElementCollection
-        @CollectionTable(name="ZOOMLEVELS", joinColumns={@JoinColumn(name="ID")})
-        @Column(name="ZOOMLEVEL")
-        public Set<Integer>getZoomLevels(){return this.zoomLevels;}
-        public void setZoomLevels(final Set<Integer>zoomLevels){this.zoomLevels=zoomLevels;}
+	@ElementCollection
+	@CollectionTable(name = "ZOOMLEVELS", joinColumns = { @JoinColumn(name = "ID") })
+	@Column(name = "ZOOMLEVEL")
+	public Set<Integer> getZoomLevels() {
+		return this.zoomLevels;
+	}
+
+	public void setZoomLevels(final Set<Integer> zoomLevels) {
+		this.zoomLevels = zoomLevels;
+	}
 }

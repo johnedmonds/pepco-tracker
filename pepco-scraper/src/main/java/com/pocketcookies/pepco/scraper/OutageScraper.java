@@ -50,7 +50,7 @@ public class OutageScraper implements Scraper {
     private static final Function<AbstractOutageRevision, Integer> REVISION_TO_ID = new Function<AbstractOutageRevision, Integer>() {
         @Override
         public Integer apply(AbstractOutageRevision input) {
-            return input.getId();
+            return input.getOutage().getId();
         }
     };
 

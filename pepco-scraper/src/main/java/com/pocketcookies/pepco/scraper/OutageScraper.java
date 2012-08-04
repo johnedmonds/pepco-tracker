@@ -6,14 +6,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -166,16 +167,13 @@ public class OutageScraper implements Scraper {
      */
     Set<AbstractOutageRevision> downloadOutages(final ParserRun run)
             throws InterruptedException, ExecutionException {
-        /**
-         * How many sections we're currently downloading. We use this to know
-         * when there's nothing more to download. At this point, we can shutdown
-         * the download executor. Essentially, this variable tells us how many
-         * "paths" we're exploring.
-         */
-        final AtomicInteger downloadsInProgress = new AtomicInteger(0);
-        final ExecutorService downloadExecutor = Executors
-                .newFixedThreadPool(10);
-        final Collection<Future<Collection<AbstractOutageRevision>>> revisionFutures = Collections.synchronizedList(new LinkedList<Future<Collection<AbstractOutageRevision>>>());
+		/*
+		 * We can use a fixed thread pool because submitting tasks does not block.  They just get backed up.
+		 */
+		final ExecutorService downloadExecutor = Executors
+				.newFixedThreadPool(10);
+        final Queue<Future<Collection<AbstractOutageRevision>>> revisionFutures = new LinkedBlockingQueue<Future<Collection<AbstractOutageRevision>>>();
+        
         final Set<String> visitedIndices = Collections
                 .synchronizedSet(new HashSet<String>());
         /**
@@ -196,8 +194,6 @@ public class OutageScraper implements Scraper {
 
             @Override
             public Collection<AbstractOutageRevision> call() throws Exception {
-                try {
-                    downloadsInProgress.incrementAndGet();
                     if (zoom > MAX_ZOOM
                             || visitedIndices
                                     .contains(sectionIdBeingDownloaded)) {
@@ -232,37 +228,36 @@ public class OutageScraper implements Scraper {
                         }
                     }
                     return builtRevisions;
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
-                } finally {
-                    if (downloadsInProgress.decrementAndGet() == 0) {
-                        downloadExecutor.shutdown();
-                    }
-                }
-
             }
         }
-        // Increment to "lock" the downloadExecutor just in case the first
-        // "seed" task finishes before we can finish submitting the "seed"
-        // tasks.
-        downloadsInProgress.incrementAndGet();
         // Submit the "seed" (starting) download tasks.
         for (String index : PepcoUtil.getSpatialIndicesForPoint(
                 startingPoint.lat, startingPoint.lon, STARTING_ZOOM)) {
             revisionFutures.add(downloadExecutor.submit(new Downloader(index,
                     STARTING_ZOOM)));
         }
-        // We're done submitting "seed" tasks, remove the "lock" and check if we
-        // finished everything by now.
-        if (downloadsInProgress.decrementAndGet() == 0) {
-            downloadExecutor.shutdown();
-        }
-        downloadExecutor.awaitTermination(30, TimeUnit.MINUTES);
         final ImmutableSet.Builder<AbstractOutageRevision> builder = ImmutableSet
                 .builder();
+        /*
+		 * When the queue is empty, we are done. We know the queue will never be
+		 * empty before we're done because each future we're waiting on will not
+		 * return until it either submits another future to run, or doesn't need
+		 * to zoom in any more and returns.
+		 */
+        while (!revisionFutures.isEmpty()) {
+        	builder.addAll(revisionFutures.poll().get());
+        }
         for (Future<Collection<AbstractOutageRevision>> future : revisionFutures) {
             builder.addAll(future.get());
         }
+        downloadExecutor.shutdown();
+		/*
+		 * The executor should shut down *IMMEDIATELY* because we know (unless
+		 * one of my assumptions is wrong (that's what asserts are for! :-) ))
+		 * that everything is done processing by now so nothing should be
+		 * running.
+		 */
+        assert downloadExecutor.isShutdown();
         return builder.build();
     }
 

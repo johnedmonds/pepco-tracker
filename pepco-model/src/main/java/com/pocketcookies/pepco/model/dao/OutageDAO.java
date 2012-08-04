@@ -12,7 +12,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.StandardBasicTypes;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Function;
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.ParserRun;
@@ -39,23 +39,23 @@ public class OutageDAO {
      * 
      * @author John Edmonds (john.a.edmonds@gmail.com)
      */
-    public static class ProtoOutage {
-        private final Outage outage;
+    public static class ProtoOutageRevision {
+        private final AbstractOutageRevision revision;
 
-        public ProtoOutage(final Outage outage) {
-            assert outage.getRevisions().size()==1;
-            this.outage = outage;
+        public ProtoOutageRevision(final AbstractOutageRevision revision) {
+            assert revision.getOutage() != null;
+            this.revision = revision;
         }
 
-        public Outage getOutage() {
-            return outage;
+        public AbstractOutageRevision getRevision() {
+            return revision;
         }
 
         @Override
         public boolean equals(Object o) {
-            ProtoOutage other = (ProtoOutage) o;
-            return outage.getLat() == other.outage.getLat()
-                    && outage.getLon() == other.outage.getLon();
+            ProtoOutageRevision other = (ProtoOutageRevision) o;
+            return revision.getOutage().getLat() == other.revision.getOutage().getLat()
+                    && revision.getOutage().getLon() == other.revision.getOutage().getLon();
         }
         
         @Override public int hashCode() {
@@ -65,9 +65,16 @@ public class OutageDAO {
             // outages look the same. Multiplying by 1000 gives us a bit more
             // precision so the outages can (hopefully) be hashed with fewer
             // collisions.
-            return (int) ((outage.getLat() * 180.0 + outage.getLon())*1000);
+            return (int) ((revision.getOutage().getLat() * 180.0 + revision.getOutage().getLon())*1000);
         }
     }
+    
+	public final static Function<AbstractOutageRevision, ProtoOutageRevision> REVISION_TO_PROTO_REVISION = new Function<AbstractOutageRevision, ProtoOutageRevision>() {
+		@Override
+		public ProtoOutageRevision apply(final AbstractOutageRevision input) {
+			return new ProtoOutageRevision(input);
+		}
+	};
 
     private final SessionFactory sessionFactory;
 
@@ -157,28 +164,27 @@ public class OutageDAO {
      * @param outages The outages to update.
      * @return A list of all the outages that were updated or added.
      */
-    public Set<Outage> updateOutages(final Set<ProtoOutage> outages) {
-        final Set<Outage> ret = new HashSet<Outage>();
-        for (ProtoOutage protoOutage : outages) {
+    public Set<AbstractOutageRevision> updateOutages(final Set<ProtoOutageRevision> outages) {
+        final Set<AbstractOutageRevision> ret = new HashSet<AbstractOutageRevision>();
+        for (ProtoOutageRevision protoOutageRevision : outages) {
+        	final Outage outage = protoOutageRevision.getRevision().getOutage();
             final Outage existingOutage = getActiveOutage(
-                    protoOutage.outage.getLat(), protoOutage.outage.getLon());
-            final AbstractOutageRevision newRevision = Iterables
-                    .getOnlyElement(protoOutage.outage.getRevisions());
+                    outage.getLat(), outage.getLon());
             if (existingOutage == null) {// If there is no existing outage.
-                sessionFactory.getCurrentSession().save(protoOutage.outage);
-                sessionFactory.getCurrentSession().save(newRevision);
-                ret.add(protoOutage.outage);
+                sessionFactory.getCurrentSession().save(outage);
+                sessionFactory.getCurrentSession().save(protoOutageRevision.getRevision());
+                ret.add(protoOutageRevision.getRevision());
             } else {
                 existingOutage.getZoomLevels().addAll(
-                        protoOutage.outage.getZoomLevels());
-                newRevision.setOutage(existingOutage);
+                        outage.getZoomLevels());
+                protoOutageRevision.getRevision().setOutage(existingOutage);
                 // Test that no updates need to be made to the revision.
                 if (existingOutage.getRevisions().first()
-                        .equalsIgnoreRun(newRevision)) {
+                        .equalsIgnoreRun(protoOutageRevision.getRevision())) {
                     // Ignore it.
                 } else {
-                    ret.add(existingOutage);
-                    sessionFactory.getCurrentSession().save(newRevision);
+                    ret.add(protoOutageRevision.getRevision());
+                    sessionFactory.getCurrentSession().save(protoOutageRevision.getRevision());
                 }
             }
         }
@@ -186,13 +192,13 @@ public class OutageDAO {
     }
 
     /**
-     * Any outages with ids missing from the given list of outages will be
-     * assumed closed with the given close time. If the outage is not in the
-     * list but is already closed, it will not be updated (i.e. its closing time
-     * will remain the same).
-     *
-     * @param outages
-     */
+	 * Any outages that are "active" in the database but whose ids are missing
+	 * from the given list of outages will be assumed closed with the given
+	 * close time. If the outage is not in the list but is already closed, it
+	 * will not be updated (i.e. its closing time will remain the same).
+	 * 
+	 * @param outages The outages *NOT* to close.
+	 */
     public void closeMissingOutages(final Collection<Integer> outages,
             Timestamp closeTime) {
         this.sessionFactory.getCurrentSession().createQuery(

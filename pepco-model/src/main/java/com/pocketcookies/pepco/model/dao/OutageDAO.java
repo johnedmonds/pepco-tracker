@@ -1,20 +1,73 @@
 package com.pocketcookies.pepco.model.dao;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.type.StandardBasicTypes;
 
+import com.google.common.collect.Iterables;
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.ParserRun;
-import java.util.ArrayList;
-import java.util.Date;
-import org.hibernate.type.StandardBasicTypes;
 
+/**
+ * DAO for updating {@link Outage}s and {@link AbstractOutageRevision}s.
+ * 
+ * @author John "Jack" Edmonds (john.a.edmonds@gmail.com)
+ */
 public class OutageDAO {
+    
+    /**
+     * An {@link Outage} before it's been stored in the database.
+     * 
+     * Normally, an {@link Outage} is equal to another Outage if its lat/lng is
+     * equal plus a bunch of other things. This allows us to have two outages
+     * happening at the same place but at different points in time (e.g., an
+     * outage can be resolved during one storm, and then come back later in the
+     * exact same location but different storm).
+     * 
+     * ProtoOutages allow us to have a set of unique outages before we have
+     * checked whether they already exist in the DB (basically, allows us to
+     * reimplement an equals method).
+     * 
+     * @author John Edmonds (john.a.edmonds@gmail.com)
+     */
+    public static class ProtoOutage {
+        private final Outage outage;
+
+        public ProtoOutage(final Outage outage) {
+            assert outage.getRevisions().size()==1;
+            this.outage = outage;
+        }
+
+        public Outage getOutage() {
+            return outage;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            ProtoOutage other = (ProtoOutage) o;
+            return outage.getLat() == other.outage.getLat()
+                    && outage.getLon() == other.outage.getLon();
+        }
+        
+        @Override public int hashCode() {
+            // We multiply by 1000 because otherwise, there would be a lot of
+            // collisions due to most of the outages being close to each other.
+            // The outages are so close that converting to an int makes all the
+            // outages look the same. Multiplying by 1000 gives us a bit more
+            // precision so the outages can (hopefully) be hashed with fewer
+            // collisions.
+            return (int) ((outage.getLat() * 180.0 + outage.getLon())*1000);
+        }
+    }
 
     private final SessionFactory sessionFactory;
 
@@ -56,14 +109,19 @@ public class OutageDAO {
      * database. If the revision is different from the most recent revision for
      * the outage, we save the revision and return true. Otherwise, we do
      * nothing and return false.
-     *
+     * 
      * We also add all zoom levels from the revision's outage to the existing
      * outage's list of zoom levels.
-     *
+     * 
      * @param revision
      * @return True if the revision is new and is successfully added to the
-     * database, false otherwise.
+     *         database, false otherwise.
+     * 
+     * @deprecated You should never need to update a single outage. Instead, you
+     *             should use updateOutages to more quickly update a batch of
+     *             outages using {@link #updateOutages}.
      */
+    @Deprecated
     public boolean updateOutage(final AbstractOutageRevision revision) {
         this.sessionFactory.getCurrentSession().flush();
         final Outage existingOutage = getActiveOutage(revision.getOutage().getLat(), revision.getOutage().getLon());
@@ -90,6 +148,41 @@ public class OutageDAO {
             this.sessionFactory.getCurrentSession().save(revision);
             return true;
         }
+    }
+    
+    /**
+     * Updates each outage in the set of outages by adding that outage's new
+     * revision if the revision needs to be added.
+     * 
+     * @param outages The outages to update.
+     * @return A list of all the outages that were updated or added.
+     */
+    public Set<Outage> updateOutages(final Set<ProtoOutage> outages) {
+        final Set<Outage> ret = new HashSet<Outage>();
+        for (ProtoOutage protoOutage : outages) {
+            final Outage existingOutage = getActiveOutage(
+                    protoOutage.outage.getLat(), protoOutage.outage.getLon());
+            final AbstractOutageRevision newRevision = Iterables
+                    .getOnlyElement(protoOutage.outage.getRevisions());
+            if (existingOutage == null) {// If there is no existing outage.
+                sessionFactory.getCurrentSession().save(protoOutage.outage);
+                sessionFactory.getCurrentSession().save(newRevision);
+                ret.add(protoOutage.outage);
+            } else {
+                existingOutage.getZoomLevels().addAll(
+                        protoOutage.outage.getZoomLevels());
+                newRevision.setOutage(existingOutage);
+                // Test that no updates need to be made to the revision.
+                if (existingOutage.getRevisions().first()
+                        .equalsIgnoreRun(newRevision)) {
+                    // Ignore it.
+                } else {
+                    ret.add(existingOutage);
+                    sessionFactory.getCurrentSession().save(newRevision);
+                }
+            }
+        }
+        return ret;
     }
 
     /**

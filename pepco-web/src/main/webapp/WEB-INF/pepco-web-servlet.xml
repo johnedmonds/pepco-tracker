@@ -18,7 +18,7 @@
 
 	<context:component-scan base-package="com.pocketcookies.pepco.web" />
 	<import resource="dao-configuration.xml"/>
-        <import resource="classpath:model-beans.xml"/>
+        <import resource="classpath:/model-beans.xml"/>
 	<!-- Tiles -->
 	<bean id="tilesConfigurer"
 		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">

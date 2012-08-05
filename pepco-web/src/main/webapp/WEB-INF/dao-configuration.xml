@@ -10,7 +10,7 @@
      	http://www.springframework.org/schema/aop 
      	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-    <import resource="spring-data-source.xml" />
+    <import resource="classpath:/spring-data-source.xml" />
 
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<!-- the transactional semantics... -->

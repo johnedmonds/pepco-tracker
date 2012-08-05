@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       xmlns:tx="http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/context/spring-context-2.5.xsd/spring-spring-context-2.5.xsd-3.1.0.RELEASE.xsd
+          http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/tx/spring-tx-2.5.xsd/spring-spring-tx-2.5.xsd-3.1.0.RELEASE.xsd
+">
+    <import resource="spring-data-source.xml" />
+    
+    <context:component-scan base-package="com.pocketcookies.pepco.model.dao"/>
+    
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="outageDao" class="com.pocketcookies.pepco.model.dao.OutageDAO">
+        <constructor-arg index="0" ref="sessionFactory" />
+    </bean>
+    <bean id="outageAreaDao" class="com.pocketcookies.pepco.model.dao.OutageAreaDAO">
+        <constructor-arg index="0" ref="sessionFactory" />
+    </bean>
+    <bean id="summaryDao" class="com.pocketcookies.pepco.model.dao.SummaryDAO">
+        <constructor-arg index="0" ref="sessionFactory" />
+    </bean>
+</beans>

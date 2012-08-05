@@ -10,7 +10,7 @@
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
 	<import resource="spring-data-source.xml" />
-	<import resource="dao-configuration.xml" />
+	<import resource="model-beans.xml" />
 	<context:component-scan base-package="com.pocketcookies.pepco.scraper" />
 	<tx:annotation-driven proxy-target-class="true"/>
 

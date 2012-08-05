@@ -12,7 +12,6 @@ import org.hibernate.SessionFactory;
 import com.google.common.collect.ImmutableSet;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
-import com.pocketcookies.pepco.model.dao.OutageDAO.ProtoOutageRevision;
 
 public class TestOutageDAO extends TestCase {
 
@@ -29,6 +28,7 @@ public class TestOutageDAO extends TestCase {
 		this.sessionFactory.close();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void testUpdateOutage() {
 		final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
 		final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
@@ -97,7 +97,7 @@ public class TestOutageDAO extends TestCase {
 
 		this.sessionFactory.getCurrentSession().save(run);
 		final Set<AbstractOutageRevision> changedOutages1 = outageDao
-				.updateOutages(ImmutableSet.of(new ProtoOutageRevision(r1)));
+				.updateOutages(ImmutableSet.<AbstractOutageRevision> of(r1));
 		assertEquals(1, changedOutages1.size());
 		assertEquals(
 				1,
@@ -110,7 +110,7 @@ public class TestOutageDAO extends TestCase {
 						.size());
 
 		final Set<AbstractOutageRevision> changedOutages2 = outageDao
-				.updateOutages(ImmutableSet.of(new ProtoOutageRevision(r2)));
+				.updateOutages(ImmutableSet.<AbstractOutageRevision> of(r2));
 		assertEquals(1, changedOutages2.size());
 		assertEquals(
 				1,
@@ -123,7 +123,7 @@ public class TestOutageDAO extends TestCase {
 						.size());
 
 		final Set<AbstractOutageRevision> changedOutages3 = outageDao
-				.updateOutages(ImmutableSet.of(new ProtoOutageRevision(r3)));
+				.updateOutages(ImmutableSet.<AbstractOutageRevision> of(r3));
 		assertEquals(0, changedOutages3.size());
 		assertEquals(
 				1,
@@ -177,6 +177,35 @@ public class TestOutageDAO extends TestCase {
 		assertEquals(1, retrievedor1.getNumCustomersAffected());
 		assertEquals(null, retrievedor1.getEstimatedRestoration());
 		dao.updateOutage(or2);
+		final OutageRevision retrievedor2 = (OutageRevision) this.sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from AbstractOutageRevision order by run.asof desc")
+				.list().get(0);
+		assertEquals(2, retrievedor2.getNumCustomersAffected());
+		assertEquals(null, retrievedor2.getEstimatedRestoration());
+	}
+
+	public void testUpdateNullExpectedRestorations() {
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
+		final OutageRevision or1 = new OutageRevision(1, null, o1,
+				new ParserRun(new Timestamp(1), new Timestamp(1)), "",
+				CrewStatus.PENDING);
+		final OutageRevision or2 = new OutageRevision(2, null, o1,
+				new ParserRun(new Timestamp(2), new Timestamp(2)), "",
+				CrewStatus.PENDING);
+		this.sessionFactory.getCurrentSession().save(or1.getRun());
+		this.sessionFactory.getCurrentSession().save(or2.getRun());
+		dao.updateOutages(ImmutableSet.<AbstractOutageRevision> of(or1));
+		final OutageRevision retrievedor1 = (OutageRevision) this.sessionFactory
+				.getCurrentSession().createQuery("from AbstractOutageRevision")
+				.list().get(0);
+		assertEquals(1, retrievedor1.getNumCustomersAffected());
+		assertEquals(null, retrievedor1.getEstimatedRestoration());
+		// updateOutages assumes we always pass a valid revision.
+		o1.getRevisions().add(or1);
+		dao.updateOutages(ImmutableSet.<AbstractOutageRevision> of(or2));
 		final OutageRevision retrievedor2 = (OutageRevision) this.sessionFactory
 				.getCurrentSession()
 				.createQuery(
@@ -368,6 +397,7 @@ public class TestOutageDAO extends TestCase {
 
 	// Test that updating an outage adds zoom levels to the existing outage in
 	// the database.
+	@SuppressWarnings("deprecation")
 	public void testUpdateZoomLevels() {
 		final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 		this.sessionFactory.getCurrentSession().save(run);
@@ -397,6 +427,53 @@ public class TestOutageDAO extends TestCase {
 				new Timestamp(1), dummyOutage, run, 1);
 
 		outageDao.updateOutage(revision);
+
+		// Test that this has added zoom levels.
+		// Check that there are exactly 2 zoom levels for this outage.
+		assertEquals(2, ((Outage) this.sessionFactory.getCurrentSession()
+				.createQuery("from Outage").list().get(0)).getZoomLevels()
+				.size());
+		// Check that the only zoom level is 1.
+		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
+				.createQuery("from Outage").list().get(0)).getZoomLevels()
+				.contains(1));
+		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
+				.createQuery("from Outage").list().get(0)).getZoomLevels()
+				.contains(2));
+	}
+
+	public void testUpdateOutagesZoomLevels() {
+		final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
+		this.sessionFactory.getCurrentSession().save(run);
+		final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
+		// Saved
+		final Outage storedOutage = new Outage(1, 1, new Timestamp(1), null);
+		storedOutage.getZoomLevels().add(1);
+		final OutageClusterRevision storedRevision = new OutageClusterRevision(
+				1, new Timestamp(1), storedOutage, run, 1);
+		storedOutage.getRevisions().add(storedRevision);
+
+		// We need the outage to be in the database with a revision.
+		outageDao.updateOutages(ImmutableSet
+				.<AbstractOutageRevision> of(storedRevision));
+
+		// Check that there is exactly one zoom level for this outage.
+		assertEquals(1, ((Outage) this.sessionFactory.getCurrentSession()
+				.createQuery("from Outage").list().get(0)).getZoomLevels()
+				.size());
+		// Check that the only zoom level is 1.
+		assertEquals(1, (int) ((Outage) this.sessionFactory.getCurrentSession()
+				.createQuery("from Outage").list().get(0)).getZoomLevels()
+				.iterator().next());
+
+		// Craft the outage revision with the new zoom level.
+		final Outage dummyOutage = new Outage(1, 1, new Timestamp(1), null);
+		dummyOutage.getZoomLevels().add(2);
+		final OutageClusterRevision revision = new OutageClusterRevision(1,
+				new Timestamp(1), dummyOutage, run, 1);
+
+		outageDao.updateOutages(ImmutableSet
+				.<AbstractOutageRevision> of(revision));
 
 		// Test that this has added zoom levels.
 		// Check that there are exactly 2 zoom levels for this outage.
@@ -455,14 +532,5 @@ public class TestOutageDAO extends TestCase {
 		this.sessionFactory.getCurrentSession().flush();
 		assertEquals(o1, dao.getOutage(o1.getId()));
 		assertEquals(o2, dao.getOutage(o2.getId()));
-	}
-
-	public void testFunctionConvertingRevisionToProtoRevision() {
-		Outage o = new Outage(1, 2, new Timestamp(3), null);
-		OutageRevision r = new OutageRevision(1, new Timestamp(1), o,
-				new ParserRun(new Timestamp(1), new Timestamp(1)), "test",
-				CrewStatus.PENDING);
-		assertEquals(new ProtoOutageRevision(r),
-				OutageDAO.REVISION_TO_PROTO_REVISION.apply(r));
 	}
 }

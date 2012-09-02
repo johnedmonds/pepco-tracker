@@ -12,6 +12,9 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.StandardBasicTypes;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.ParserRun;
@@ -183,16 +186,28 @@ public class OutageDAO {
 	 */
 	public Set<AbstractOutageRevision> updateOutages(
 			final Set<AbstractOutageRevision> outages) {
+		class RevisionAndOutage {
+			final AbstractOutageRevision revision;
+			final Optional<Outage> outage;
+			public RevisionAndOutage(final AbstractOutageRevision revision, final Optional<Outage> outage) {
+				this.revision = revision;
+				this.outage = outage;
+			}
+		}
+		final Iterable<RevisionAndOutage> loadedOutages = Iterables.transform(outages, new Function<AbstractOutageRevision, RevisionAndOutage>(){
+			@Override public RevisionAndOutage apply(AbstractOutageRevision revision) {
+				return new RevisionAndOutage(revision, Optional.fromNullable(getActiveOutage(
+					revision.getOutage().getLat(), revision.getOutage()
+							.getLon())));
+			}
+		});
 		final Set<AbstractOutageRevision> ret = new HashSet<AbstractOutageRevision>();
-		for (AbstractOutageRevision revision : outages) {
-			final Outage outage = revision.getOutage();
-			final Outage existingOutage = getActiveOutage(outage.getLat(),
-					outage.getLon());
-			if (existingOutage == null) {// If there is no existing outage.
-				sessionFactory.getCurrentSession().save(outage);
-				sessionFactory.getCurrentSession().save(revision);
-				ret.add(revision);
-			} else {
+		for (RevisionAndOutage entry : loadedOutages) {
+			AbstractOutageRevision revision = entry.revision;
+			Outage outage = revision.getOutage();
+			// If there was already an outage.
+			if (entry.outage.isPresent()) {
+				Outage existingOutage = entry.outage.get();
 				existingOutage.getZoomLevels().addAll(outage.getZoomLevels());
 				revision.setOutage(existingOutage);
 				// Test that no updates need to be made to the revision.
@@ -203,6 +218,10 @@ public class OutageDAO {
 					ret.add(revision);
 					sessionFactory.getCurrentSession().save(revision);
 				}
+			} else {
+				sessionFactory.getCurrentSession().save(outage);
+				sessionFactory.getCurrentSession().save(revision);
+				ret.add(revision);
 			}
 		}
 		return ret;

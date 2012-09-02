@@ -26,55 +26,6 @@ import com.pocketcookies.pepco.model.ParserRun;
  */
 public class OutageDAO {
 
-	/**
-	 * An {@link Outage} before it's been stored in the database.
-	 * 
-	 * Normally, an {@link Outage} is equal to another Outage if its lat/lng is
-	 * equal plus a bunch of other things. This allows us to have two outages
-	 * happening at the same place but at different points in time (e.g., an
-	 * outage can be resolved during one storm, and then come back later in the
-	 * exact same location but different storm).
-	 * 
-	 * ProtoOutages allow us to have a set of unique outages before we have
-	 * checked whether they already exist in the DB (basically, allows us to
-	 * reimplement an equals method).
-	 * 
-	 * @author John Edmonds (john.a.edmonds@gmail.com)
-	 */
-	public static class ProtoOutageRevision {
-		private final AbstractOutageRevision revision;
-
-		public ProtoOutageRevision(final AbstractOutageRevision revision) {
-			assert revision.getOutage() != null;
-			this.revision = revision;
-		}
-
-		public AbstractOutageRevision getRevision() {
-			return revision;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			ProtoOutageRevision other = (ProtoOutageRevision) o;
-			return revision.getOutage().getLat() == other.revision.getOutage()
-					.getLat()
-					&& revision.getOutage().getLon() == other.revision
-							.getOutage().getLon();
-		}
-
-		@Override
-		public int hashCode() {
-			// We multiply by 1000 because otherwise, there would be a lot of
-			// collisions due to most of the outages being close to each other.
-			// The outages are so close that converting to an int makes all the
-			// outages look the same. Multiplying by 1000 gives us a bit more
-			// precision so the outages can (hopefully) be hashed with fewer
-			// collisions.
-			return (int) ((revision.getOutage().getLat() * 180.0 + revision
-					.getOutage().getLon()) * 1000);
-		}
-	}
-
 	private final SessionFactory sessionFactory;
 
 	public OutageDAO(SessionFactory sessionFactory) {

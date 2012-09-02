@@ -26,20 +26,12 @@ public class OutageRevision extends AbstractOutageRevision {
 
 	public OutageRevision(int numCustomersAffected,
 			Timestamp estimatedRestoration, final Outage outage,
-			final ParserRun run, String cause, CrewStatus status) {
-		super(numCustomersAffected, estimatedRestoration, outage, run);
+			final ParserRun run, String cause, CrewStatus status,
+			int firstSeenZoomLevel) {
+		super(numCustomersAffected, estimatedRestoration, outage, run,
+				firstSeenZoomLevel);
 		setCause(cause);
 		setStatus(status);
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (!(o instanceof OutageRevision))
-			return false;
-		final OutageRevision revision = (OutageRevision) o;
-		return super.equals(revision)
-				&& revision.getCause().equals(this.getCause())
-				&& revision.getStatus().equals(this.getStatus());
 	}
 
 	@Override
@@ -50,12 +42,6 @@ public class OutageRevision extends AbstractOutageRevision {
 		final OutageRevision r = (OutageRevision) o;
 		return super.equalsIgnoreRun(o) && getCause().equals(r.getCause())
 				&& getStatus().equals(r.getStatus());
-	}
-
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(super.hashCode())
-				.append(getCause()).append(getStatus()).toHashCode();
 	}
 
 	public OutageRevision() {

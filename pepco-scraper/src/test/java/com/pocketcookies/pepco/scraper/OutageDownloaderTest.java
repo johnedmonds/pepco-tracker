@@ -28,6 +28,7 @@ import com.pocketcookies.pepco.model.ParserRun;
 
 public class OutageDownloaderTest {
 
+	private static final int DEFAULT_FIRST_SEEN_ZOOM_LEVEL = 1;
 	@Test
 	public void testParseOutage() throws SAXException, IOException,
 	        ParserConfigurationException {
@@ -37,7 +38,7 @@ public class OutageDownloaderTest {
 	                    TestUtil.loadXml(
 	                            getClass().getResourceAsStream(
 	                                    "/testxml/outages_single.xml"))
-	                            .getElementsByTagName("item"), run);
+	                            .getElementsByTagName("item"), run, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
 	    final AbstractOutageRevision abstractOutageRevision = Iterables
 	            .getOnlyElement(revisions);
 	    assertEquals(OutageRevision.class, abstractOutageRevision.getClass());
@@ -59,6 +60,7 @@ public class OutageDownloaderTest {
 	    assertEquals("Under Evaluation", revision.getCause());
 	    assertEquals(CrewStatus.PENDING, revision.getStatus());
 	    assertEquals(2, revision.getRun().getAsof().getTime());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getFirstSeenZoomLevel());
 	}
 
 	@Test
@@ -70,7 +72,7 @@ public class OutageDownloaderTest {
 	                    TestUtil.loadXml(
 	                            getClass().getResourceAsStream(
 	                                    "/testxml/outages_cluster.xml"))
-	                            .getElementsByTagName("item"), run));
+	                            .getElementsByTagName("item"), run, DEFAULT_FIRST_SEEN_ZOOM_LEVEL));
 	    assertEquals(OutageClusterRevision.class,
 	            abstractOutageRevision.getClass());
 	    final OutageClusterRevision revision = (OutageClusterRevision) abstractOutageRevision;
@@ -91,6 +93,8 @@ public class OutageDownloaderTest {
 	    assertEquals(2, revision.getOutage().getLon(), .0001);
 	    assertEquals(2, revision.getNumOutages());
 	    assertEquals(2, revision.getRun().getAsof().getTime());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getFirstSeenZoomLevel());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getLastSeenZoomLevel());
 	}
 
 	@Test
@@ -104,7 +108,7 @@ public class OutageDownloaderTest {
 	                                    getClass()
 	                                            .getResourceAsStream(
 	                                                    "/testxml/outages_cluster_pending_restoration.xml"))
-	                                    .getElementsByTagName("item"), run));
+	                                    .getElementsByTagName("item"), run, DEFAULT_FIRST_SEEN_ZOOM_LEVEL));
 	    assertEquals(OutageClusterRevision.class,
 	            abstractOutageRevision.getClass());
 	    final OutageClusterRevision revision = (OutageClusterRevision) abstractOutageRevision;
@@ -121,6 +125,8 @@ public class OutageDownloaderTest {
 	    assertEquals(2, revision.getOutage().getLon(), .0001);
 	    assertEquals(2, revision.getNumOutages());
 	    assertEquals(2, revision.getRun().getAsof().getTime());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getFirstSeenZoomLevel());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getLastSeenZoomLevel());
 	    assertNull(revision.getEstimatedRestoration());
 	}
 
@@ -135,7 +141,7 @@ public class OutageDownloaderTest {
 	                                    getClass()
 	                                            .getResourceAsStream(
 	                                                    "/testxml/outages_single_pending_restoration.xml"))
-	                                    .getElementsByTagName("item"), run));
+	                                    .getElementsByTagName("item"), run, DEFAULT_FIRST_SEEN_ZOOM_LEVEL));
 	    assertEquals(OutageRevision.class, abstractOutageRevision.getClass());
 	    final OutageRevision revision = (OutageRevision) abstractOutageRevision;
 	    assertEquals(10, revision.getNumCustomersAffected());
@@ -150,6 +156,7 @@ public class OutageDownloaderTest {
 	    assertEquals("Under Evaluation", revision.getCause());
 	    assertEquals(CrewStatus.PENDING, revision.getStatus());
 	    assertEquals(2, revision.getRun().getAsof().getTime());
+	    assertEquals(DEFAULT_FIRST_SEEN_ZOOM_LEVEL, revision.getFirstSeenZoomLevel());
 	    assertNull(revision.getEstimatedRestoration());
 	}
 

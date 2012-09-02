@@ -27,7 +27,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.pocketcookies.pepco.model.AbstractOutageRevision;
 import com.pocketcookies.pepco.model.Outage;
 import com.pocketcookies.pepco.model.OutageClusterRevision;
@@ -117,7 +116,7 @@ public class OutageDownloader {
 					return ImmutableList.<AbstractOutageRevision> of();
 				}
 				final Collection<AbstractOutageRevision> builtRevisions = parseOutages(
-						doc.getElementsByTagName("item"), run);
+						doc.getElementsByTagName("item"), run, zoom);
 				for (AbstractOutageRevision revision : builtRevisions) {
 					// We only need to zoom in if there's a cluster.
 					// Otherwise, zooming in will give us no more useful
@@ -143,8 +142,7 @@ public class OutageDownloader {
 			revisionFutures.add(downloadExecutor.submit(new Downloader(index,
 					STARTING_ZOOM)));
 		}
-		final ImmutableSet.Builder<AbstractOutageRevision> builder = ImmutableSet
-				.builder();
+		final OutageRevisionCombiner combiner = new OutageRevisionCombiner();
 		/*
 		 * When the queue is empty, we are done. We know the queue will never be
 		 * empty before we're done because each future we're waiting on will not
@@ -152,10 +150,10 @@ public class OutageDownloader {
 		 * to zoom in any more and returns.
 		 */
 		while (!revisionFutures.isEmpty()) {
-			builder.addAll(revisionFutures.poll().get());
+			combiner.addAll(revisionFutures.poll().get());
 		}
 		for (Future<Collection<AbstractOutageRevision>> future : revisionFutures) {
-			builder.addAll(future.get());
+			combiner.addAll(future.get());
 		}
 		downloadExecutor.shutdown();
 		/*
@@ -165,11 +163,11 @@ public class OutageDownloader {
 		 * running.
 		 */
 		assert downloadExecutor.isShutdown();
-		return builder.build();
+		return combiner.getCombinedRevisions();
 	}
 
 	static AbstractOutageRevision parseOutage(final Node item,
-			final ParserRun run) {
+			final ParserRun run, int zoomLevel) {
 		final Document doc = Jsoup.parseBodyFragment(PepcoUtil
 				.getTextFromOnlyElement(item, "description"));
 		final String sCustomersAffected = ((TextNode) doc
@@ -194,7 +192,7 @@ public class OutageDownloader {
 					new Timestamp(earliestReport.getMillis()), null);
 			final OutageClusterRevision outageRevision = new OutageClusterRevision(
 					customersAffected, estimatedRestoration, outage, run,
-					numOutages);
+					numOutages, zoomLevel, zoomLevel);
 			outage.getRevisions().add(outageRevision);
 			return outageRevision;
 		} else {
@@ -210,7 +208,7 @@ public class OutageDownloader {
 					new Timestamp(earliestReport.getMillis()), null);
 			final OutageRevision outageRevision = new OutageRevision(
 					customersAffected, estimatedRestoration, outage, run,
-					cause, status);
+					cause, status, zoomLevel);
 			outage.getRevisions().add(outageRevision);
 			return outageRevision;
 		}
@@ -232,11 +230,11 @@ public class OutageDownloader {
 	}
 
 	static Collection<AbstractOutageRevision> parseOutages(
-			final NodeList items, final ParserRun run) {
+			final NodeList items, final ParserRun run, final int zoomLevel) {
 		final ImmutableList.Builder<AbstractOutageRevision> builder = ImmutableList
 				.builder();
 		for (int i = 0; i < items.getLength(); i++) {
-			builder.add(parseOutage(items.item(i), run));
+			builder.add(parseOutage(items.item(i), run, zoomLevel));
 		}
 		return builder.build();
 	}

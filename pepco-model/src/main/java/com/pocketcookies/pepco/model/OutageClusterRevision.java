@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 @Entity
 public class OutageClusterRevision extends AbstractOutageRevision {
 	// The number of outages associated with this cluster. We don't currently
@@ -11,45 +13,46 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 	// cluster so for now we just keep track of the count.
 	private int numOutages;
 
+	// The last zoom level at which we detected this revision.
+	private int lastSeenZoomLevel;
+
 	public OutageClusterRevision() {
 		super();
 	}
 
 	public OutageClusterRevision(final int numCustomersAffected,
-			final Timestamp estimatedRestoration,
-			final Outage outage,
-			final ParserRun run, int numOutages) {
-		super(numCustomersAffected, estimatedRestoration,
-				outage, run);
+			final Timestamp estimatedRestoration, final Outage outage,
+			final ParserRun run, int numOutages, int firstSeenZoomLevel, int lastSeenZoomLevel) {
+		super(numCustomersAffected, estimatedRestoration, outage, run, firstSeenZoomLevel);
 		setNumOutages(numOutages);
+		setLastSeenZoomLevel(lastSeenZoomLevel);
 	}
-        
+
 	@Override
-	public boolean equals(final Object o) {
-		if (!(o instanceof OutageClusterRevision))
+	public boolean equalsIgnoreRun(final AbstractOutageRevision o) {
+		if (!(o instanceof OutageClusterRevision)) {
 			return false;
-		final OutageClusterRevision revision = (OutageClusterRevision) o;
-		return super.equals(o) && revision.getNumOutages() == this.getNumOutages();
-	}
-	
-	@Override
-	public boolean equalsIgnoreRun(final AbstractOutageRevision o){
-	    if(!(o instanceof OutageClusterRevision))
-	    {
-		return false;
-	    }
-	    final OutageClusterRevision r = (OutageClusterRevision) o;
-	    return super.equalsIgnoreRun(o)&&getNumOutages()==r.getNumOutages();
+		}
+		final OutageClusterRevision r = (OutageClusterRevision) o;
+		return super.equalsIgnoreRun(o)
+				&& new EqualsBuilder()
+						.append(getNumOutages(), r.getNumOutages())
+						.append(getLastSeenZoomLevel(),
+								r.getLastSeenZoomLevel()).isEquals();
 	}
 
-	@Override
-	public int hashCode() {
-		return super.hashCode() + getNumOutages();
-	}
-
-        @Column(name="NUMOUTAGES")
+	@Column(name = "NUMOUTAGES")
 	public int getNumOutages() {
 		return numOutages;
+	}
+
+	@Column(name = "LAST_SEEN_ZOOM_LEVEL")
+	public int getLastSeenZoomLevel() {
+		return lastSeenZoomLevel;
+	}
+
+	public void setLastSeenZoomLevel(int lastSeenZoomLevel) {
+		this.lastSeenZoomLevel = lastSeenZoomLevel;
 	}
 
 	private void setNumOutages(int numOutages) {

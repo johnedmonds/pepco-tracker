@@ -12,6 +12,8 @@ import org.hibernate.SessionFactory;
  * @author John Edmonds
  */
 public class TestParserRunSummary extends TestCase {
+	
+	private static final int DEFAULT_FIRST_SEEN_ZOOM_LEVEL = 1;
 
     private SessionFactory sessionFactory;
 
@@ -31,7 +33,7 @@ public class TestParserRunSummary extends TestCase {
         final OutageDAO dao = new OutageDAO(this.sessionFactory);
         final ParserRun pr = new ParserRun(new Timestamp(1), new Timestamp(1));
         final Outage o = new Outage(1, 1, new Timestamp(1), null);
-        final OutageRevision or = new OutageRevision(0, new Timestamp(1), o, pr, "cause", OutageRevision.CrewStatus.PENDING);
+        final OutageRevision or = new OutageRevision(0, new Timestamp(1), o, pr, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
 
         this.sessionFactory.getCurrentSession().save(pr);
         this.sessionFactory.getCurrentSession().save(o);
@@ -53,8 +55,8 @@ public class TestParserRunSummary extends TestCase {
         final ParserRun pr1 = new ParserRun(new Timestamp(1), new Timestamp(1));
         final ParserRun pr2 = new ParserRun(new Timestamp(2), new Timestamp(2));
         final Outage o = new Outage(1, 1, new Timestamp(1), null);
-        final OutageRevision or1 = new OutageRevision(0, new Timestamp(1), o, pr1, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision or2 = new OutageRevision(0, new Timestamp(1), o, pr2, "cause2", OutageRevision.CrewStatus.PENDING);
+        final OutageRevision or1 = new OutageRevision(0, new Timestamp(1), o, pr1, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision or2 = new OutageRevision(0, new Timestamp(1), o, pr2, "cause2", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
 
         this.sessionFactory.getCurrentSession().save(pr1);
         this.sessionFactory.getCurrentSession().save(pr2);
@@ -89,12 +91,12 @@ public class TestParserRunSummary extends TestCase {
         final Outage updated2=new Outage(4,4, new Timestamp(1), null);
         final Outage closed1=new Outage(5,5, new Timestamp(1), new Timestamp(2));
         final Outage closed2=new Outage(6, 6, new Timestamp(1), new Timestamp(2));
-        final OutageRevision ornew1=new OutageRevision(1, new Timestamp(10), new1, pr2, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision ornew2=new OutageRevision(1, new Timestamp(10), new2, pr2, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision orupdated11=new OutageRevision(1, new Timestamp(10), updated1, pr1, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision orupdated12=new OutageRevision(2, new Timestamp(10), updated1, pr2, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision orupdated21=new OutageRevision(1, new Timestamp(10), updated2, pr1, "cause", OutageRevision.CrewStatus.PENDING);
-        final OutageRevision orupdated22=new OutageRevision(2, new Timestamp(10), updated2, pr2, "cause", OutageRevision.CrewStatus.PENDING);
+        final OutageRevision ornew1=new OutageRevision(1, new Timestamp(10), new1, pr2, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision ornew2=new OutageRevision(1, new Timestamp(10), new2, pr2, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision orupdated11=new OutageRevision(1, new Timestamp(10), updated1, pr1, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision orupdated12=new OutageRevision(2, new Timestamp(10), updated1, pr2, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision orupdated21=new OutageRevision(1, new Timestamp(10), updated2, pr1, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+        final OutageRevision orupdated22=new OutageRevision(2, new Timestamp(10), updated2, pr2, "cause", OutageRevision.CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
         this.sessionFactory.getCurrentSession().save(pr1);
         this.sessionFactory.getCurrentSession().save(pr2);
         this.sessionFactory.getCurrentSession().save(new1);

@@ -15,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * We like to keep track of all the things that happen to a revision over its
@@ -48,35 +47,21 @@ public abstract class AbstractOutageRevision implements Serializable,
 	// group together outages so that we can know the state of all the
 	// outages at a particular time.
 	private ParserRun run;
+	private int firstSeenZoomLevel;
 
 	protected AbstractOutageRevision() {
 		super();
 	}
 
 	public AbstractOutageRevision(int numCustomersAffected,
-			Timestamp estimatedRestoration, Outage outage, final ParserRun run) {
+			Timestamp estimatedRestoration, Outage outage, final ParserRun run,
+			int firstSeenZoomLevel) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
+		setFirstSeenZoomLevel(firstSeenZoomLevel);
 		setOutage(outage);
 		setRun(run);
-	}
-
-	/**
-	 * Checks whether this object is the same as o.
-	 * 
-	 * @param o
-	 *            The object to compare against.
-	 * @return True if this object and o are equal.
-	 */
-	@Override
-	public boolean equals(final Object o) {
-		if (!(o instanceof AbstractOutageRevision)) {
-			return false;
-		}
-		final AbstractOutageRevision revision = (AbstractOutageRevision) o;
-		return equalsIgnoreRun(revision)
-				&& this.getRun().equals(revision.getRun());
 	}
 
 	/**
@@ -88,25 +73,13 @@ public abstract class AbstractOutageRevision implements Serializable,
 	 * @return True of the objects are the same ignoring the observationDate.
 	 */
 	public boolean equalsIgnoreRun(AbstractOutageRevision revision) {
-		if (this.getEstimatedRestoration() != revision
-				.getEstimatedRestoration()) {
-			if (this.getEstimatedRestoration() == null) {
-				return false;
-			} else if (!this.getEstimatedRestoration().equals(
-					revision.getEstimatedRestoration())) {
-				return false;
-			}
-		}
-		return this.getNumCustomersAffected() == revision
-				.getNumCustomersAffected();
-	}
-
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-		    .append(getEstimatedRestoration())
-		    .append(getNumCustomersAffected())
-		    .append(getRun().getAsof().getTime()).toHashCode();
+		return new EqualsBuilder()
+				.append(getEstimatedRestoration(),
+						revision.getEstimatedRestoration())
+				.append(getNumCustomersAffected(),
+						revision.getNumCustomersAffected())
+				.append(getFirstSeenZoomLevel(),
+						revision.getFirstSeenZoomLevel()).isEquals();
 	}
 
 	@Id
@@ -126,6 +99,11 @@ public abstract class AbstractOutageRevision implements Serializable,
 		return estimatedRestoration;
 	}
 
+	@Column(name = "FIRST_SEEN_ZOOM_LEVEL")
+	public int getFirstSeenZoomLevel() {
+		return firstSeenZoomLevel;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "OUTAGE")
 	public Outage getOutage() {
@@ -143,6 +121,10 @@ public abstract class AbstractOutageRevision implements Serializable,
 
 	private void setEstimatedRestoration(Timestamp estimatedRestoration) {
 		this.estimatedRestoration = estimatedRestoration;
+	}
+
+	public void setFirstSeenZoomLevel(int firstSeenZoomLevel) {
+		this.firstSeenZoomLevel = firstSeenZoomLevel;
 	}
 
 	public void setOutage(Outage outage) {

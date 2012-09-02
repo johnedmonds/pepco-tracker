@@ -15,13 +15,14 @@
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="pepcoDataSource" />
 		<property name="configLocation">
-		    <value>
-		        classpath:hibernate-mappings.cfg.xml
-		    </value>
+			<value>
+				classpath:hibernate-mappings.cfg.xml
+			</value>
 		</property>
 		<property name="hibernateProperties">
 			<value>
 				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+				hibernate.hbm2ddl.auto=validate
 			</value>
 		</property>
 	</bean>

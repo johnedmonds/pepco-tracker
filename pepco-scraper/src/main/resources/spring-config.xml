@@ -13,21 +13,4 @@
 	<import resource="model-beans.xml" />
 	<context:component-scan base-package="com.pocketcookies.pepco.scraper" />
 	<tx:annotation-driven proxy-target-class="true"/>
-
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="pepcoDataSource" />
-		<property name="configLocations">
-			<list>
-				<value>classpath:hibernate-mappings.cfg.xml</value>
-				<value>classpath:hibernate.ds.cfg.xml</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<value>
-				hibernate.dialect=org.hibernate.dialect.HSQLDialect
-				hibernate.show_sql=true
-			</value>
-		</property>
-	</bean>
 </beans>

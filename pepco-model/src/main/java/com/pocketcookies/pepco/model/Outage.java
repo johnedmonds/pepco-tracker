@@ -32,8 +32,6 @@ public class Outage implements Serializable {
 	private double lat;
 	private double lon;
 	private Timestamp earliestReport;
-	// The zoom levels on which this outage appears.
-	private Set<Integer> zoomLevels;
 
 	/**
 	 * The time we scraped the site and this outage disappeared. This will
@@ -56,7 +54,6 @@ public class Outage implements Serializable {
 		setLon(lon);
 		setEarliestReport(earliestReport);
 		setObservedEnd(observedEnd);
-		setZoomLevels(new TreeSet<Integer>());
 	}
 
 	@Override
@@ -138,16 +135,5 @@ public class Outage implements Serializable {
 	@SuppressWarnings("unused")
 	private void setRevisions(SortedSet<AbstractOutageRevision> revisions) {
 		this.revisions = revisions;
-	}
-
-	@ElementCollection
-	@CollectionTable(name = "ZOOMLEVELS", joinColumns = { @JoinColumn(name = "ID") })
-	@Column(name = "ZOOMLEVEL")
-	public Set<Integer> getZoomLevels() {
-		return this.zoomLevels;
-	}
-
-	public void setZoomLevels(final Set<Integer> zoomLevels) {
-		this.zoomLevels = zoomLevels;
 	}
 }

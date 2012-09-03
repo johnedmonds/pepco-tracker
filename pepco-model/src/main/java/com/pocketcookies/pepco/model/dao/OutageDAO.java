@@ -104,8 +104,6 @@ public class OutageDAO {
 			// different from the current revision.
 
 			this.sessionFactory.getCurrentSession().refresh(existingOutage);
-			existingOutage.getZoomLevels().addAll(
-					revision.getOutage().getZoomLevels());
 			revision.setOutage(existingOutage);
 			// Test that no updates need to be made to the revision.
 			if (revision.getOutage().getRevisions().first()
@@ -159,7 +157,6 @@ public class OutageDAO {
 			// If there was already an outage.
 			if (entry.outage.isPresent()) {
 				Outage existingOutage = entry.outage.get();
-				existingOutage.getZoomLevels().addAll(outage.getZoomLevels());
 				revision.setOutage(existingOutage);
 				// Test that no updates need to be made to the revision.
 				if (existingOutage.getRevisions().first()
@@ -235,13 +232,14 @@ public class OutageDAO {
 								+ "where o.earliestReport <= ? and "
 								+ "    (o.observedEnd is null or o.observedEnd >= ?)"
 								+ (zoomLevel == null ? ""
-										: "    and ? in (select zoomLevel from zoomlevels where id = orev.outage)")
+										: "    and (? >= orev.first_Seen_Zoom_Level and (orev.last_Seen_Zoom_Level is NULL or ? <= orev.last_seen_zoom_level))")
 								+ (clazz.equals(AbstractOutageRevision.class) ? ""
 										: "    and orev.outagetype = ?"));
 		q.setTimestamp(parameterIndex++, asof)
 				.setTimestamp(parameterIndex++, asof)
 				.setTimestamp(parameterIndex++, asof);
 		if (zoomLevel != null) {
+			q.setInteger(parameterIndex++, zoomLevel);
 			q.setInteger(parameterIndex++, zoomLevel);
 		}
 		if (!clazz.equals(AbstractOutageRevision.class)) {

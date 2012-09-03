@@ -207,47 +207,6 @@ public class TestOutage extends TestCase {
 		assertTrue(run.getOutageRevisions().contains(or2));
 	}
 
-	// Test that zoom levels are saved and controlled by the Outage.
-	public void testSaveZoomLevel() {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		final Timestamp now = new Timestamp(1);
-		Outage o = new Outage(1, 1, now, now);
-		o.getZoomLevels().addAll(Arrays.asList(new Integer[] { 1, 2, 4, 5 }));
-		session.save(o);
-		session.getTransaction().commit();
-
-		session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		o = (Outage) session.get(Outage.class, o.getId());
-		assertTrue(o.getZoomLevels().containsAll(
-				Arrays.asList(new Integer[] { 1, 2, 4, 5 })));
-	}
-
-	// Test that zoom levels are kept separate between outages.
-	public void testSeparateZoomLevels() {
-		final Timestamp now = new Timestamp(1);
-		Outage o1 = new Outage(1, 1, now, now);
-		Outage o2 = new Outage(2, 2, now, now);
-		o1.getZoomLevels().add(1);
-		o2.getZoomLevels().add(2);
-
-		Session session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		session.save(o1);
-		session.save(o2);
-		session.getTransaction().commit();
-
-		session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		o1 = (Outage) session.get(Outage.class, o1.getId());
-		o2 = (Outage) session.get(Outage.class, o2.getId());
-		assertEquals(1, o1.getZoomLevels().size());
-		assertTrue(o1.getZoomLevels().contains(1));
-		assertEquals(1, o2.getZoomLevels().size());
-		assertTrue(o2.getZoomLevels().contains(2));
-	}
-
 	// Make sure Outage can deal with a null observedEnd.
 	public void testHashCode() {
 		assertEquals(

@@ -351,13 +351,12 @@ public class TestOutageDAO extends TestCase {
 		final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 		final OutageDAO dao = new OutageDAO(sessionFactory);
 		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
-		o1.getZoomLevels().add(1);
 		final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
-		o2.getZoomLevels().add(2);
 		final OutageRevision or1 = new OutageRevision(1, new Timestamp(1), o1,
 				run, "test", CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
 		final OutageRevision or2 = new OutageRevision(1, new Timestamp(1), o2,
-				run, "test", CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
+				run, "test", CrewStatus.PENDING,
+				DEFAULT_FIRST_SEEN_ZOOM_LEVEL + 1);
 		this.sessionFactory.getCurrentSession().save(run);
 		this.sessionFactory.getCurrentSession().save(o1);
 		this.sessionFactory.getCurrentSession().save(o2);
@@ -375,14 +374,13 @@ public class TestOutageDAO extends TestCase {
 		final ParserRun run = new ParserRun(new Timestamp(1), new Timestamp(1));
 		final OutageDAO dao = new OutageDAO(sessionFactory);
 		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
-		o1.getZoomLevels().add(1);
 		final Outage o2 = new Outage(2, 2, new Timestamp(1), null);
-		o2.getZoomLevels().add(2);
 		final OutageRevision or1 = new OutageRevision(1, new Timestamp(1), o1,
 				run, "test", CrewStatus.PENDING, DEFAULT_FIRST_SEEN_ZOOM_LEVEL);
 		final OutageClusterRevision or2 = new OutageClusterRevision(1,
-				new Timestamp(1), o2, run, 1, DEFAULT_FIRST_SEEN_ZOOM_LEVEL,
-				DEFAULT_LAST_SEEN_ZOOM_LEVEL);
+				new Timestamp(1), o2, run, 1,
+				DEFAULT_FIRST_SEEN_ZOOM_LEVEL + 1,
+				DEFAULT_LAST_SEEN_ZOOM_LEVEL + 1);
 		this.sessionFactory.getCurrentSession().save(run);
 		this.sessionFactory.getCurrentSession().save(o1);
 		this.sessionFactory.getCurrentSession().save(o2);
@@ -395,12 +393,27 @@ public class TestOutageDAO extends TestCase {
 		assertEquals(1, outages.size());
 		assertEquals(or1, outages.iterator().next());
 
+		// Would have returned an outage revision but we weren't checking for
+		// those.
 		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1,
 				OutageClusterRevision.class);
 		assertEquals(0, outages.size());
 
-		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 2,
+		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1,
 				OutageRevision.class);
+		assertEquals(1, outages.size());
+
+		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1, AbstractOutageRevision.class);
+		assertEquals(1, outages.size());
+
+		// Too zoomed-out to see the revision.
+		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 0,
+				OutageRevision.class);
+		assertEquals(0, outages.size());
+
+		// Too zoomed in to see the cluster.
+		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 4,
+				OutageClusterRevision.class);
 		assertEquals(0, outages.size());
 
 		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 2,
@@ -418,7 +431,6 @@ public class TestOutageDAO extends TestCase {
 		final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
 		// Saved
 		final Outage storedOutage = new Outage(1, 1, new Timestamp(1), null);
-		storedOutage.getZoomLevels().add(1);
 		final OutageClusterRevision storedRevision = new OutageClusterRevision(
 				1, new Timestamp(1), storedOutage, run, 1,
 				DEFAULT_FIRST_SEEN_ZOOM_LEVEL, DEFAULT_LAST_SEEN_ZOOM_LEVEL);
@@ -426,36 +438,13 @@ public class TestOutageDAO extends TestCase {
 		// We need the outage to be in the database with a revision.
 		outageDao.updateOutage(storedRevision);
 
-		// Check that there is exactly one zoom level for this outage.
-		assertEquals(1, ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.size());
-		// Check that the only zoom level is 1.
-		assertEquals(1, (int) ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.iterator().next());
-
 		// Craft the outage revision with the new zoom level.
 		final Outage dummyOutage = new Outage(1, 1, new Timestamp(1), null);
-		dummyOutage.getZoomLevels().add(2);
 		final OutageClusterRevision revision = new OutageClusterRevision(1,
 				new Timestamp(1), dummyOutage, run, 1,
 				DEFAULT_FIRST_SEEN_ZOOM_LEVEL, DEFAULT_LAST_SEEN_ZOOM_LEVEL);
 
 		outageDao.updateOutage(revision);
-
-		// Test that this has added zoom levels.
-		// Check that there are exactly 2 zoom levels for this outage.
-		assertEquals(2, ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.size());
-		// Check that the only zoom level is 1.
-		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.contains(1));
-		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.contains(2));
 	}
 
 	public void testUpdateOutagesZoomLevels() {
@@ -464,7 +453,6 @@ public class TestOutageDAO extends TestCase {
 		final OutageDAO outageDao = new OutageDAO(this.sessionFactory);
 		// Saved
 		final Outage storedOutage = new Outage(1, 1, new Timestamp(1), null);
-		storedOutage.getZoomLevels().add(1);
 		final OutageClusterRevision storedRevision = new OutageClusterRevision(
 				1, new Timestamp(1), storedOutage, run, 1,
 				DEFAULT_FIRST_SEEN_ZOOM_LEVEL, DEFAULT_LAST_SEEN_ZOOM_LEVEL);
@@ -474,37 +462,14 @@ public class TestOutageDAO extends TestCase {
 		outageDao.updateOutages(ImmutableSet
 				.<AbstractOutageRevision> of(storedRevision));
 
-		// Check that there is exactly one zoom level for this outage.
-		assertEquals(1, ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.size());
-		// Check that the only zoom level is 1.
-		assertEquals(1, (int) ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.iterator().next());
-
 		// Craft the outage revision with the new zoom level.
 		final Outage dummyOutage = new Outage(1, 1, new Timestamp(1), null);
-		dummyOutage.getZoomLevels().add(2);
 		final OutageClusterRevision revision = new OutageClusterRevision(1,
 				new Timestamp(1), dummyOutage, run, 1,
 				DEFAULT_FIRST_SEEN_ZOOM_LEVEL, DEFAULT_LAST_SEEN_ZOOM_LEVEL);
 
 		outageDao.updateOutages(ImmutableSet
 				.<AbstractOutageRevision> of(revision));
-
-		// Test that this has added zoom levels.
-		// Check that there are exactly 2 zoom levels for this outage.
-		assertEquals(2, ((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.size());
-		// Check that the only zoom level is 1.
-		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.contains(1));
-		assertTrue(((Outage) this.sessionFactory.getCurrentSession()
-				.createQuery("from Outage").list().get(0)).getZoomLevels()
-				.contains(2));
 	}
 
 	/**

@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import org.hibernate.SessionFactory;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.pocketcookies.pepco.model.OutageRevision.CrewStatus;
 import com.pocketcookies.pepco.model.dao.OutageDAO;
 
@@ -403,7 +404,8 @@ public class TestOutageDAO extends TestCase {
 				OutageRevision.class);
 		assertEquals(1, outages.size());
 
-		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1, AbstractOutageRevision.class);
+		outages = dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1,
+				AbstractOutageRevision.class);
 		assertEquals(1, outages.size());
 
 		// Too zoomed-out to see the revision.
@@ -420,6 +422,34 @@ public class TestOutageDAO extends TestCase {
 				OutageClusterRevision.class);
 		assertEquals(1, outages.size());
 		assertEquals(or2, outages.iterator().next());
+	}
+
+	// Testing that zoom levels from the wrong as-of don't count.
+	public void testNewZoomLevelsOverrideOld() {
+		final Outage o1 = new Outage(1, 1, new Timestamp(1), null);
+		final ParserRun run1 = new ParserRun(new Timestamp(1), new Timestamp(1));
+		final ParserRun run2 = new ParserRun(new Timestamp(1), new Timestamp(2));
+		final OutageClusterRevision revision1 = new OutageClusterRevision(1,
+				new Timestamp(1), o1, run1, 1, 1, 1);
+		final OutageClusterRevision revision2 = new OutageClusterRevision(1,
+				new Timestamp(1), o1, run2, 1, 2, 2);
+		sessionFactory.getCurrentSession().save(run1);
+		sessionFactory.getCurrentSession().save(run2);
+		sessionFactory.getCurrentSession().save(o1);
+		sessionFactory.getCurrentSession().save(revision1);
+		sessionFactory.getCurrentSession().save(revision2);
+
+		final OutageDAO dao = new OutageDAO(sessionFactory);
+		assertEquals(revision1, Iterables.getOnlyElement(dao
+				.getOutagesAtZoomLevelAsOf(new Timestamp(1), 1,
+						AbstractOutageRevision.class)));
+		assertEquals(revision2, Iterables.getOnlyElement(dao
+				.getOutagesAtZoomLevelAsOf(new Timestamp(2), 2,
+						AbstractOutageRevision.class)));
+		assertTrue(dao.getOutagesAtZoomLevelAsOf(new Timestamp(1), 2,
+				AbstractOutageRevision.class).isEmpty());
+		assertTrue(dao.getOutagesAtZoomLevelAsOf(new Timestamp(2), 1,
+				AbstractOutageRevision.class).isEmpty());
 	}
 
 	// Test that updating an outage adds zoom levels to the existing outage in

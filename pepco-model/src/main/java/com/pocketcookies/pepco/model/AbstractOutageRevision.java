@@ -47,7 +47,8 @@ public abstract class AbstractOutageRevision implements Serializable,
 	// group together outages so that we can know the state of all the
 	// outages at a particular time.
 	private ParserRun run;
-	private int firstSeenZoomLevel;
+	// The zoom level at which we first detected this outage.
+	private Integer firstSeenZoomLevel;
 
 	protected AbstractOutageRevision() {
 		super();
@@ -55,7 +56,7 @@ public abstract class AbstractOutageRevision implements Serializable,
 
 	public AbstractOutageRevision(int numCustomersAffected,
 			Timestamp estimatedRestoration, Outage outage, final ParserRun run,
-			int firstSeenZoomLevel) {
+			Integer firstSeenZoomLevel) {
 		this();
 		setNumCustomersAffected(numCustomersAffected);
 		setEstimatedRestoration(estimatedRestoration);
@@ -99,8 +100,8 @@ public abstract class AbstractOutageRevision implements Serializable,
 		return estimatedRestoration;
 	}
 
-	@Column(name = "FIRST_SEEN_ZOOM_LEVEL")
-	public int getFirstSeenZoomLevel() {
+	@Column(name = "FIRSTSEENZOOMLEVEL")
+	public Integer getFirstSeenZoomLevel() {
 		return firstSeenZoomLevel;
 	}
 
@@ -123,7 +124,7 @@ public abstract class AbstractOutageRevision implements Serializable,
 		this.estimatedRestoration = estimatedRestoration;
 	}
 
-	public void setFirstSeenZoomLevel(int firstSeenZoomLevel) {
+	public void setFirstSeenZoomLevel(Integer firstSeenZoomLevel) {
 		this.firstSeenZoomLevel = firstSeenZoomLevel;
 	}
 

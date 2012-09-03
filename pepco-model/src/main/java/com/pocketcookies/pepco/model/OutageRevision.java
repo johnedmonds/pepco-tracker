@@ -1,12 +1,11 @@
 package com.pocketcookies.pepco.model;
 
 import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 public class OutageRevision extends AbstractOutageRevision {
@@ -27,7 +26,7 @@ public class OutageRevision extends AbstractOutageRevision {
 	public OutageRevision(int numCustomersAffected,
 			Timestamp estimatedRestoration, final Outage outage,
 			final ParserRun run, String cause, CrewStatus status,
-			int firstSeenZoomLevel) {
+			Integer firstSeenZoomLevel) {
 		super(numCustomersAffected, estimatedRestoration, outage, run,
 				firstSeenZoomLevel);
 		setCause(cause);

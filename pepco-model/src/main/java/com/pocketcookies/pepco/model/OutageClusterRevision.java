@@ -14,7 +14,7 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 	private int numOutages;
 
 	// The last zoom level at which we detected this revision.
-	private int lastSeenZoomLevel;
+	private Integer lastSeenZoomLevel;
 
 	public OutageClusterRevision() {
 		super();
@@ -22,7 +22,7 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 
 	public OutageClusterRevision(final int numCustomersAffected,
 			final Timestamp estimatedRestoration, final Outage outage,
-			final ParserRun run, int numOutages, int firstSeenZoomLevel, int lastSeenZoomLevel) {
+			final ParserRun run, int numOutages, int firstSeenZoomLevel, Integer lastSeenZoomLevel) {
 		super(numCustomersAffected, estimatedRestoration, outage, run, firstSeenZoomLevel);
 		setNumOutages(numOutages);
 		setLastSeenZoomLevel(lastSeenZoomLevel);
@@ -46,12 +46,12 @@ public class OutageClusterRevision extends AbstractOutageRevision {
 		return numOutages;
 	}
 
-	@Column(name = "LAST_SEEN_ZOOM_LEVEL")
-	public int getLastSeenZoomLevel() {
+	@Column(name = "LASTSEENZOOMLEVEL")
+	public Integer getLastSeenZoomLevel() {
 		return lastSeenZoomLevel;
 	}
 
-	public void setLastSeenZoomLevel(int lastSeenZoomLevel) {
+	public void setLastSeenZoomLevel(Integer lastSeenZoomLevel) {
 		this.lastSeenZoomLevel = lastSeenZoomLevel;
 	}
 

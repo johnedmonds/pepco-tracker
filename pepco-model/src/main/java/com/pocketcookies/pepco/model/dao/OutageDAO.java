@@ -232,7 +232,7 @@ public class OutageDAO {
 								+ "where o.earliestReport <= ? and "
 								+ "    (o.observedEnd is null or o.observedEnd >= ?)"
 								+ (zoomLevel == null ? ""
-										: "    and (? >= orev.first_Seen_Zoom_Level and (orev.last_Seen_Zoom_Level is NULL or ? <= orev.last_seen_zoom_level))")
+										: "    and (? >= orev.firstSeenZoomLevel and (orev.lastSeenZoomLevel is NULL or ? <= orev.lastSeenZoomLevel))")
 								+ (clazz.equals(AbstractOutageRevision.class) ? ""
 										: "    and orev.outagetype = ?"));
 		q.setTimestamp(parameterIndex++, asof)

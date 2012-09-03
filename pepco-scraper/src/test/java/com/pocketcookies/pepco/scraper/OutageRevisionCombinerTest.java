@@ -30,8 +30,8 @@ public class OutageRevisionCombinerTest {
 		combiner.addAll(ImmutableList.<AbstractOutageRevision> of(r1, r2, r3));
 		final OutageClusterRevision combinedRevision = (OutageClusterRevision) Iterables
 				.getOnlyElement(combiner.getCombinedRevisions());
-		assertEquals(1, combinedRevision.getFirstSeenZoomLevel());
-		assertEquals(3, combinedRevision.getLastSeenZoomLevel());
+		assertEquals(1, (int) combinedRevision.getFirstSeenZoomLevel());
+		assertEquals(3, (int) combinedRevision.getLastSeenZoomLevel());
 	}
 
 	@Test
@@ -48,6 +48,6 @@ public class OutageRevisionCombinerTest {
 		combiner.addAll(ImmutableList.<AbstractOutageRevision> of(r1, r2, r3));
 		final OutageRevision combinedRevision = (OutageRevision) Iterables
 				.getOnlyElement(combiner.getCombinedRevisions());
-		assertEquals(1, combinedRevision.getFirstSeenZoomLevel());
+		assertEquals(1, (int)combinedRevision.getFirstSeenZoomLevel());
 	}
 }

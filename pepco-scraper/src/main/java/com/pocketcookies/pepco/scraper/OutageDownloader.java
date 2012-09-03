@@ -62,8 +62,8 @@ public class OutageDownloader {
 				DEFAULT_STARTING_POINT);
 	}
 
-	public OutageDownloader(final StormCenterLoader stormCenterLoader, String outagesFolderName,
-			PointDouble startingPoint) {
+	public OutageDownloader(final StormCenterLoader stormCenterLoader,
+			String outagesFolderName, PointDouble startingPoint) {
 		this.stormCenterLoader = stormCenterLoader;
 		this.outagesFolderName = outagesFolderName;
 		this.startingPoint = startingPoint;

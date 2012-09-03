@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r09</version>
+			<version>13.0-rc1</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

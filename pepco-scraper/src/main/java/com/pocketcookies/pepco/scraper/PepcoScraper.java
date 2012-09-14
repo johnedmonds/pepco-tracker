@@ -29,8 +29,8 @@ import com.pocketcookies.pepco.model.dao.ParserRunDao;
  */
 @Service
 public class PepcoScraper {
-    public static final String DATA_HTML_PREFIX = "http://www.pepco.com/home/emergency/maps/stormcenter/data/";
-    public static final String DIRECTORY_SUFFIX = "/outages/metadata.xml";
+    public static final String DATA_HTML_PREFIX = "http://stormcenterphiexternal.s3.amazonaws.com/pep/data/";
+    public static final String DIRECTORY_SUFFIX = "outages/metadata.xml";
     private static final Logger logger = Logger.getLogger("PepcoScraper");
     private final OutageScraper outageScraper;
     private final SummaryScraper summaryScraper;

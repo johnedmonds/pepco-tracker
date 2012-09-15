@@ -202,7 +202,7 @@ public class OutageDownloader {
 			final String cause = ((TextNode) doc.select(":containsOwn(Cause)")
 					.first().nextSibling()).text().trim();
 			final CrewStatus status = CrewStatus.valueOf(((TextNode) doc
-					.select(":containsOwn(Crew Status)").first().nextSibling())
+					.select(":containsOwn(Status)").first().nextSibling())
 					.text().trim().replace(' ', '_').toUpperCase());
 			final Outage outage = new Outage(latLon.lat, latLon.lon,
 					new Timestamp(earliestReport.getMillis()), null);
